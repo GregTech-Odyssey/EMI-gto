@@ -17,7 +17,6 @@ bin/
 .classpath
 .project
 
-#fabric
+#Forge development runs
 run/
-
-.architectury-transformer/
+run-data/

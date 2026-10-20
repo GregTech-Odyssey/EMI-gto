@@ -13,17 +13,16 @@ Some notable examples of patterns in the codebase:
 * No usage of star imports, for example, `import net.minecraft.*;`, all imports should be explicitly specified
 * No single line blocks, for example `if (foo) bar();`, all blocks should use curly braces
 
-### Target Latest
-EMI backports all features to all supported branches, only target the branch for the latest version in PRs and do not open additional PRs for previous versions.
+### Target Environment
+This branch targets Minecraft 1.20.1 and Forge 47, using Java 21 for Gradle, compilation, and development runs. The bytecode target remains Java 17 for the Mixin version bundled with Forge 1.20.1. Use Forge APIs and Mojang official mappings. All code and resources live in `src/main`; there are no shared or alternate-loader modules.
+
+Build with `./gradlew build` (`.\gradlew.bat build` on Windows). Use `./gradlew runClient` and `./gradlew runServer` to check client and dedicated-server behavior. Build artifacts are written to `build/libs`.
 
 ### Stable Diffs
 It is useful to have the last time a line was touched be the last time its functionality was modified, not its formatting or structure. Limit refactors and keep modifications relevant.
 
-### Minecraft is not an API
-Avoid Minecraft functions where possible and use EMI's abstractions. Such abstractions exist for GUIs and drawing, input, config, loader function, and more.
-The existing codebase should provide a decent example.
-EMI supports many versions of minecraft such as `1.21.1`, `1.19.4`, `1.4.7`, `1.6.4`, and more.
-Changes are merged down and abstraction is key.
+### Forge Integration
+Use Forge lifecycle events, networking, fluid stacks, and access transformers directly. Keep client classes out of dedicated-server initialization. Update Mixin selectors and access transformers alongside changes to Minecraft access.
 
 ### EMI *is* an API
 Do not break EMI's API or ABI. Breakages are taken very seriously and almost entirely avoided.

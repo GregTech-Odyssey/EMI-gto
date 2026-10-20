@@ -5,50 +5,48 @@ EMI is a featureful and accessible item and recipe viewer for Minecraft.
 
 ![Recipe Tree](https://user-images.githubusercontent.com/14813658/224562258-1a5ee67a-fd7f-489f-9eed-ae67c184ddac.png)
 
+## Build and run
+
+This branch is a Forge-only mod for Minecraft 1.20.1. It uses Java 21, ForgeGradle 6, and Mojang official mappings. The bytecode target remains Java 17 for the Mixin version bundled with Forge 1.20.1.
+
+All Java sources and resources are in `src/main/java` and `src/main/resources`.
+
+```sh
+./gradlew build
+./gradlew runClient
+./gradlew runServer
+```
+
+On Windows, use `.\gradlew.bat` in place of `./gradlew`. Set `JAVA_HOME` to a Java 21 JDK.
+Build output is in `build/libs/`: the reobfuscated Forge mod, its API jar, and its sources jar.
+JEI is optional at runtime; install the matching Forge JEI jar in `run/mods` to test JEI integration.
+
 ## Developers
-To add EMI to your project as a dependency you need to add the following to your `build.gradle`:
+
+Add the repository and Forge dependency to your `build.gradle`:
+
 ```gradle
 repositories {
-	maven {
-		name = "TerraformersMC"
-		url = "https://maven.terraformersmc.com/"
-	}
+    maven { url = "https://maven.terraformersmc.com/" }
 }
-```
 
-How EMI gets added to your dependencies varies based on modloader and setup.
-The Gradle property `emi_version` should be something like `1.0.0+1.19.4` with EMI's version and Minecraft's version.
-Here are common dependency setups for different loaders and build systems.
-
-```gradle
 dependencies {
-	// Fabric
-	modCompileOnly "dev.emi:emi-fabric:${emi_version}:api"
-	modLocalRuntime "dev.emi:emi-fabric:${emi_version}"
-
-	// Forge (see below block as well if you use Forge Gradle)
-	compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
-	runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}") 
-
-	// Architectury
-	modCompileOnly "dev.emi:emi-xplat-intermediary:${emi_version}:api"
-
-	// MultiLoader Template/VanillaGradle
-	compileOnly "dev.emi:emi-xplat-mojmap:${emi_version}:api"
+    compileOnly fg.deobf("dev.emi:emi-forge:${emi_version}:api")
+    runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}")
 }
 ```
 
-For Forge Gradle users, you will need to enable Mixin refmaps in your client sourceset. This can be done by adding 2 lines inside of your client runs, to look like below.
+`emi_version` is the Maven version, for example `1.1.24-crazer.1+1.20.1` for a release or `1.1.24-crazer.1-SNAPSHOT+1.20.1` for a development build. Publish this branch to your Maven repository before consuming its custom version.
+
+Enable Mixin refmap remapping in your ForgeGradle client run:
 
 ```gradle
-runs {
-	client {
-		// Add these two lines
-		property 'mixin.env.remapRefMap', 'true'
-		property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-		// The rest of the code that was already here
-		// ...
-	}
+minecraft {
+    runs {
+        client {
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+        }
+    }
 }
 ```
