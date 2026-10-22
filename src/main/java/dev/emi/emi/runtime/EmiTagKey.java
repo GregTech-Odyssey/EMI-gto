@@ -1,155 +1,163 @@
 package dev.emi.emi.runtime;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import dev.emi.emi.EmiPort;
+import dev.emi.emi.EmiUtil;
+import dev.emi.emi.registry.EmiTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet.Named;
 import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Maps;
-
-import dev.emi.emi.EmiPort;
-import dev.emi.emi.EmiUtil;
-import dev.emi.emi.registry.EmiTags;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
 // Wrapper around TagKeys
 public class EmiTagKey<T> {
-	public static final Map<TagKey<?>, EmiTagKey<?>> CACHE = Maps.newHashMap();
-	private final TagKey<T> raw;
-	private List<T> cached;
-	
-	private EmiTagKey(TagKey<T> raw) {
-		this.raw = raw;
-		recalculate();
-	}
+    private static final Reference2ObjectOpenHashMap<TagKey<?>, EmiTagKey<?>> KEYS = new Reference2ObjectOpenHashMap<>();
+    public static final Map<TagKey<?>, EmiTagKey<?>> CACHE = KEYS;
+    private final TagKey<T> raw;
+    private Registry<T> registry;
+    private ObjectArrayList<T> cached;
+    private ReferenceOpenHashSet<T> cachedSet;
+    private final String idString;
 
-	public void recalculate() {
-		cached = stream().toList();
-	}
+    private EmiTagKey(TagKey<T> raw) {
+        this.raw = raw;
+        this.idString = raw.location().toString();
+        recalculate();
+    }
 
-	public TagKey<T> raw() {
-		return raw;
-	}
+    public void recalculate() {
+        registry = Minecraft.getInstance().level.registryAccess().registry(raw.registry()).orElseThrow();
+        var holders = registry.getTag(raw).orElse(null);
+        cached = new ObjectArrayList<>(holders == null ? 0 : holders.size());
+        if (holders != null) {
+            boolean fluidRegistry = registry == EmiPort.getFluidRegistry();
+            for (var holder : holders) {
+                var value = holder.value();
+                if (!fluidRegistry || ((Fluid) value).isSource(((Fluid) value).defaultFluidState()))
+                    cached.add(value);
+            }
+        }
+        cachedSet = new ReferenceOpenHashSet<>(cached.size());
+        cachedSet.addAll(cached);
+    }
 
-	public boolean isOf(Registry<?> registry) {
-		return raw.isFor(registry.key());
-	}
+    public String idString() {
+        return idString;
+    }
 
-	public ResourceLocation id() {
-		return raw.location();
-	}
+    public TagKey<T> raw() {
+        return raw;
+    }
 
-	public Registry<T> registry() {
-		Minecraft client = Minecraft.getInstance();
-		return client.level.registryAccess().registry(raw.registry()).orElse(null);
-	}
+    public boolean isOf(Registry<?> registry) {
+        return raw.isFor(registry.key());
+    }
 
-	public Stream<T> stream() {
-		Registry<T> registry = registry();
-		Optional<Named<T>> opt = registry.getTag(raw);
-		if (opt.isEmpty()) {
-			return Stream.of();
-		} else {
-			if (registry == EmiPort.getFluidRegistry()) {
-				return opt.get().stream().filter(o -> {
-					Fluid f = (Fluid) o.value();
-					return f.isSource(f.defaultFluidState());
-				}).map(Holder::value);
-			}
-			return opt.get().stream().map(Holder::value);
-		}
-	}
+    public ResourceLocation id() {
+        return raw.location();
+    }
 
-	public List<T> getList() {
-		return cached;
-	}
+    public @NotNull Registry<T> registry() {
+        return registry;
+    }
 
-	public Set<T> getSet() {
-		return stream().collect(Collectors.toSet());
-	}
+    public Stream<T> stream() {
+        // Compatibility boundary for integrations; internal consumers use the cached collections.
+        return cached.stream();
+    }
 
-	public Component getTagName() {
-		String s = getTagTranslationKey();
-		if (s == null) {
-			return EmiPort.literal("#" + this.id());
-		} else {
-			return EmiPort.translatable(s);
-		}
-	}
+    public @NotNull @UnmodifiableView List<@NotNull T> getList() {
+        return cached;
+    }
 
-	public boolean hasTranslation() {
-		return getTagTranslationKey() != null;
-	}
+    public @NotNull @UnmodifiableView Set<@NotNull T> getSet() {
+        return cachedSet;
+    }
 
-	private @Nullable String getTagTranslationKey() {
-		ResourceLocation registry = raw.registry().location();
-		if (registry.getNamespace().equals("minecraft")) {
-			String s = translatePrefix("tag." + registry.getPath().replace("/", ".") + ".", this.id());
-			if (s != null) {
-				return s;
-			}
-		} else {
-			String s = translatePrefix("tag." + registry.getNamespace() + "." + registry.getPath().replace("/", ".") + ".", this.id());
-			if (s != null) {
-				return s;
-			}
-		}
-		return translatePrefix("tag.", this.id());
-	}
+    public Component getTagName() {
+        String s = getTagTranslationKey();
+        if (s == null) {
+            return EmiPort.literal("#" + this.id());
+        } else {
+            return EmiPort.translatable(s);
+        }
+    }
 
-	private static @Nullable String translatePrefix(String prefix, ResourceLocation id) {
-		String s = EmiUtil.translateId(prefix, id);
-		if (I18n.exists(s)) {
-			return s;
-		}
-		return null;
-	}
+    public boolean hasTranslation() {
+        return getTagTranslationKey() != null;
+    }
 
-	public @Nullable ResourceLocation getCustomModel() {
-		return EmiTags.MODELED_TAGS.get(raw());
-	}
+    private @Nullable String getTagTranslationKey() {
+        ResourceLocation registry = raw.registry().location();
+        if (registry.getNamespace().equals("minecraft")) {
+            String s = translatePrefix("tag." + registry.getPath().replace("/", ".") + ".", this.id());
+            if (s != null) {
+                return s;
+            }
+        } else {
+            String s = translatePrefix(
+                    "tag." + registry.getNamespace() + "." + registry.getPath().replace("/", ".") + ".", this.id());
+            if (s != null) {
+                return s;
+            }
+        }
+        return translatePrefix("tag.", this.id());
+    }
 
-	public boolean hasCustomModel() {
-		return getCustomModel() != null;
-	}
+    private static @Nullable String translatePrefix(String prefix, ResourceLocation id) {
+        String s = EmiUtil.translateId(prefix, id);
+        if (I18n.exists(s)) {
+            return s;
+        }
+        return null;
+    }
 
-	@Override
-	public int hashCode() {
-		return raw().hashCode();
-	}
+    public @Nullable ResourceLocation getCustomModel() {
+        return EmiTags.MODELED_TAGS.get(raw());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		return obj instanceof EmiTagKey other && raw().equals(other.raw());
-	}
+    public boolean hasCustomModel() {
+        return getCustomModel() != null;
+    }
 
-	@SuppressWarnings("unchecked")
-	public static <T> EmiTagKey<T> of(TagKey<T> raw) {
-		return (EmiTagKey<T>) CACHE.computeIfAbsent(raw, k -> new EmiTagKey<>(k));
-	}
+    @Override
+    public int hashCode() {
+        return raw().hashCode();
+    }
 
-	public static <T> EmiTagKey<T> of(Registry<T> registry, ResourceLocation id) {
-		return of(TagKey.create(registry.key(), id));
-	}
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof EmiTagKey other && raw().equals(other.raw());
+    }
 
-	public static <T> Stream<EmiTagKey<T>> fromRegistry(Registry<T> registry) {
-		return registry.getTagNames().map(EmiTagKey::of);
-	}
+    @SuppressWarnings("unchecked")
+    public static <T> EmiTagKey<T> of(TagKey<T> raw) {
+        return (EmiTagKey<T>) KEYS.computeIfAbsent(raw, (TagKey<?> key) -> new EmiTagKey<>(key));
+    }
 
-	public static void reload() {
-		for (EmiTagKey<?> key : CACHE.values()) {
-			key.recalculate();
-		}
-	}
+    public static <T> EmiTagKey<T> of(Registry<T> registry, ResourceLocation id) {
+        return of(TagKey.create(registry.key(), id));
+    }
+
+    public static <T> Stream<EmiTagKey<T>> fromRegistry(Registry<T> registry) {
+        return registry.getTagNames().map(EmiTagKey::of);
+    }
+
+    public static void reload() {
+        for (EmiTagKey<?> key : KEYS.values()) {
+            key.recalculate();
+        }
+    }
 }

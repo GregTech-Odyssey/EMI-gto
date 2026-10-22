@@ -8,10 +8,10 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import dev.emi.emi.registry.EmiIngredientSerializers;
+import net.minecraft.util.GsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.util.GsonHelper;
 
 public class ListEmiIngredientSerializer implements EmiIngredientSerializer<ListEmiIngredient> {
     @Override

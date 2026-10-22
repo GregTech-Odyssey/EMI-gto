@@ -1,6 +1,7 @@
 package dev.emi.emi.config;
 
 import dev.emi.emi.EmiPort;
+import dev.emi.emi.config.ConfigEnum;
 import net.minecraft.network.chat.Component;
 
 public enum CheatMode implements ConfigEnum {

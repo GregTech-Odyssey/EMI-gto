@@ -1,206 +1,171 @@
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Opcodes
-
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7.38'
-        classpath 'com.modrinth.minotaur:Minotaur:2.4.3'
-        classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.4.0'
-    }
-}
-
 plugins {
     id 'java'
-    id 'idea'
-    id 'eclipse'
+    id 'java-library'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '6.0.54'
+    id 'net.neoforged.moddev.legacyforge' version '2.0.142'
+    id 'com.gto.gtopublishgradleplugin' version '1.0.27'
 }
 
-apply plugin: 'org.spongepowered.mixin'
-if (System.getenv('MODRINTH_TOKEN')) {
-    apply plugin: 'com.modrinth.minotaur'
-}
-if (System.getenv('CURSEFORGE_TOKEN')) {
-    apply plugin: 'com.matthewprenger.cursegradle'
-}
-
+version = gto_version
 group = maven_group
-def mavenVersion = "${mod_version}${System.getenv('RELEASE') == null ? '-SNAPSHOT' : ''}+${minecraft_version}"
-version = "${mavenVersion}+forge"
-base.archivesName = archives_base_name
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-    withSourcesJar()
+base {
+    archivesName = archives_base_name
 }
 
-minecraft {
-    mappings channel: 'official', version: minecraft_version
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    copyIdeResources = true
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'info'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            mods {
-                emi { source sourceSets.main }
-            }
-        }
-        client {}
-        server { args '--nogui' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.withSourcesJar()
+
+legacyForge {
+    enable {
+        forgeVersion = "${minecraft_version}-${forge_version}"
     }
-}
+    accessTransformers = [file('src/main/resources/META-INF/accesstransformer.cfg')]
 
-repositories {
-    mavenCentral()
-    maven { url = 'https://maven.blamejared.com/' }
-    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-}
+    runs {
+        client {
+            client()
+        }
+        server {
+            server()
+        }
+        configureEach {
+            gameDirectory = file('run')
+            systemProperty('forge.logging.console.level', 'info')
+            systemProperty('fml.earlyprogresswindow', 'false')
+        }
+    }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-    compileOnly 'org.jetbrains:annotations:24.1.0'
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    mods {
+        emi {
+            sourceSet sourceSets.main
+        }
+    }
+
+    addModdingDependenciesTo(sourceSets.test)
 }
 
 mixin {
-    add sourceSets.main, 'emi.refmap.json'
-    config 'emi.mixins.json'
+    add sourceSets.main, "emi.refmap.json"
+    config "emi.mixins.json"
+    config "emitrades.mixins.json"
+}
+
+repositories {
+    maven {
+        name = 'GTOdyssey'
+        url = 'https://gtodyssey.com/maven/releases'
+        content {
+            includeGroup 'com.gto.fastcollection'
+        }
+    }
+    maven {
+        name = 'ModMaven'
+        url = 'https://modmaven.dev/'
+        content {
+            includeGroup 'mezz.jei'
+        }
+    }
+    maven {
+        name = 'Sponge / Mixin'
+        url = 'https://repo.spongepowered.org/repository/maven-public/'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.jetbrains:annotations:24.1.0'
+    testCompileOnly 'org.jetbrains:annotations:24.1.0'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
+    // 运行时由整合包里的 LeanObject 提供
+    implementation "com.gto.fastcollection:FastCollection:${fastcollection_version}"
+
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
+    modRuntimeOnly "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
+
+    testImplementation(platform("org.junit:junit-bom:${junit_version}"))
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+}
+
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // Forge 1.20.1 bundles Mixin 0.8.5, so keep its supported class-file version.
-    options.release = 17
+    options.release = 21
+    options.compilerArgs.addAll(['-Xmaxerrs', '100000', '-Xlint:-deprecation', '-Xlint:-removal'])
+}
+
+tasks.withType(GenerateModuleMetadata).configureEach {
+    enabled = false
 }
 
 processResources {
     inputs.property 'version', project.version
-    filesMatching('META-INF/mods.toml') { expand version: project.version }
-}
-
-// The mixin plugin transforms EMI's API and records third-party mixins on EMI classes.
-def generatedMixinDirectory = layout.buildDirectory.dir('generated/mixins')
-def generateClassLists = tasks.register('generateClassLists') {
-    dependsOn tasks.named('compileJava')
-    inputs.files(sourceSets.main.output.classesDirs)
-    outputs.dir(generatedMixinDirectory)
-    doLast {
-        def targets = new TreeSet<String>()
-        sourceSets.main.output.classesDirs.each { directory ->
-            if (directory.exists()) {
-                directory.eachFileRecurse(groovy.io.FileType.FILES) { entry ->
-                    def path = directory.toPath().relativize(entry.toPath()).toString().replace(File.separator, '/')
-                    if (path.endsWith('.class') && !path.contains('mixin') && !path.contains('EmiConfig$')) {
-                        targets.add(path.substring(0, path.length() - 6).replace('/', '.'))
-                    }
-                }
-            }
-        }
-        def writer = new ClassWriter(0)
-        writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_INTERFACE,
-            'dev/emi/emi/mixin/GlobalMixin', null, 'java/lang/Object', null)
-        writer.visitAnnotation('Lorg/spongepowered/asm/mixin/Pseudo;', false).visitEnd()
-        def annotation = writer.visitAnnotation('Lorg/spongepowered/asm/mixin/Mixin;', false)
-        def targetArray = annotation.visitArray('targets')
-        targets.each { targetArray.visit(null, it) }
-        targetArray.visitEnd()
-        annotation.visitEnd()
-        writer.visitEnd()
-        def outputFile = generatedMixinDirectory.get().file('dev/emi/emi/mixin/GlobalMixin.class').asFile
-        outputFile.parentFile.mkdirs()
-        outputFile.bytes = writer.toByteArray()
+    filesMatching('META-INF/mods.toml') {
+        expand 'version': project.version
     }
 }
-sourceSets.main.output.dir(generatedMixinDirectory, builtBy: generateClassLists)
 
 jar {
-    manifest.attributes('MixinConfigs': 'emi.mixins.json')
-    from('LICENSE') { rename { "${it}_${archives_base_name}" } }
+    from('LICENSE') {
+        rename { 'LICENSE-EMI' }
+    }
+    manifest {
+        attributes([
+                'Specification-Title'     : 'EMI',
+                'Specification-Vendor'    : 'Emi',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : 'EMI GTO Edition',
+                'Implementation-Version'  : "${version}",
+                'Implementation-Vendor'   : 'GregTech Odyssey',
+                'MixinConfigs'            : 'emi.mixins.json,emitrades.mixins.json'
+        ])
+    }
     finalizedBy 'reobfJar'
 }
-sourcesJar { exclude 'dev/emi/emi/jemi/**' }
-
-def apiJar = tasks.register('apiJar', Jar) {
-    archiveClassifier = 'api'
-    from sourceSets.main.output
-    include 'dev/emi/emi/api/**'
-    exclude 'dev/emi/emi/api/EmiRecipeHandler**'
-    exclude 'dev/emi/emi/api/stack/FluidEmiStack**'
-    exclude 'dev/emi/emi/api/stack/ItemEmiStack**'
-    exclude 'dev/emi/emi/api/stack/EmptyEmiStack**'
-    exclude 'dev/emi/emi/api/stack/TagEmiIngredient**'
-    exclude 'dev/emi/emi/api/stack/ListEmiIngredient**'
-}
-reobf { create('apiJar') }
-apiJar.configure { finalizedBy 'reobfApiJar' }
-tasks.named('build') { dependsOn apiJar, 'reobfJar', 'reobfApiJar' }
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            artifactId = 'emi-forge'
-            version = mavenVersion
-            artifact(tasks.named('jar')) { builtBy { tasks.named('reobfJar').get() } }
-            artifact(tasks.named('sourcesJar'))
-            artifact(apiJar) { builtBy { tasks.named('reobfApiJar').get() } }
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId base.archivesName.get()
+            version project.version
+            artifact reobfJar
+            artifact sourcesJar
         }
     }
     repositories {
-        if (project.hasProperty('mavenUrl')) {
-            maven {
-                url = project.mavenUrl
-                credentials {
-                    username = project.findProperty('mavenUsername')
-                    password = project.findProperty('mavenPassword')
-                }
+        maven {
+            name = 'gtodysseyRepository'
+            url = 'https://gtodyssey.com/maven/releases'
+            credentials {
+                username = findProperty('gtodysseyRepositoryUsername') ?: ''
+                password = findProperty('gtodysseyRepositoryPassword') ?: ''
             }
         }
     }
 }
 
-if (System.getenv('MODRINTH_TOKEN')) {
-    modrinth {
-        token = System.getenv('MODRINTH_TOKEN')
-        projectId = 'emi'
-        versionNumber = project.version
-        versionName = project.version
-        versionType = 'release'
-        uploadFile = tasks.named('jar')
-        gameVersions = [minecraft_version]
-        loaders = ['forge']
-        detectLoaders = false
-        changelog = file('CHANGELOG.md').text
-    }
-    tasks.named('modrinth') { dependsOn 'reobfJar' }
-}
+tasks.named('publishMavenJavaPublicationToMavenLocal') { dependsOn 'reobfJar' }
+tasks.named('publishMavenJavaPublicationToGtodysseyRepositoryRepository') { dependsOn 'reobfJar' }
 
-if (System.getenv('CURSEFORGE_TOKEN')) {
-    curseforge {
-        apiKey = System.getenv('CURSEFORGE_TOKEN')
-        project {
-            id = '580555'
-            releaseType = 'release'
-            changelogType = 'markdown'
-            changelog = file('CHANGELOG.md')
-            addGameVersion minecraft_version
-            addGameVersion 'Forge'
-            mainArtifact(tasks.named('jar')) { displayName = "emi-${project.version}" }
-        }
-        options {
-            javaIntegration = false
-            forgeGradleIntegration = false
-            javaVersionAutoDetect = false
-        }
-    }
-    tasks.matching { it.name.startsWith('curseforge') }.configureEach { dependsOn 'reobfJar' }
+gtoPublish {
+    publishMaven      = true
+    publishGithub     = false
+    publishCurseforge = false
+    mavenRepoName     = 'gtodysseyRepository'
+    mavenRepoUrl      = 'releases'
+    minecraftVersion  = '1.20.1'
+    modLoader         = 'Forge'
+    curseforgeJavaVersion = 'Java 21'
+    curseforgeEnvironment = 'both'
 }

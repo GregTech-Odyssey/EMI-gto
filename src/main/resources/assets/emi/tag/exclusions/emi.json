@@ -1,7 +1,5 @@
 {
-  "exclusions": [
-    "forge:hidden_from_recipe_viewers"
-  ],
+  "exclusions": ["forge:hidden_from_recipe_viewers"],
   "item": [
     "minecraft:occludes_vibration_signals",
     "minecraft:cluster_max_harvestables",

@@ -1,22 +1,24 @@
 modLoader = "javafml"
 loaderVersion = "[47,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/GregTech-Odyssey/GregTech-Odyssey/issues"
+displayURL = "https://github.com/GregTech-Odyssey/EMI-gto"
 license = "MIT"
 
 [[mods]]
 modId = "emi"
 version = "${version}"
-displayName = "EMI"
+displayName = "EMI GTO Edition"
 authors = "Emi"
+credits = "Original EMI by Emi (emilyploszaj). Fork by Crazerium, with further changes by Hophenby and GregTech Odyssey."
 description = '''
-A featureful and accessible item and recipe viewer
+A featureful and accessible item and recipe viewer, maintained for the GregTech Odyssey modpack.
 '''
 logoFile = "icon.png"
 
 [[dependencies.emi]]
 modId = "forge"
 mandatory = true
-versionRange = "[47.0.1,48)"
+versionRange = "[47,)"
 ordering = "NONE"
 side = "BOTH"
 
@@ -32,4 +34,21 @@ modId = "jei"
 mandatory = false
 versionRange = "[15.20.0.0,)"
 ordering = "BEFORE"
+side = "CLIENT"
+
+[[mods]]
+modId = "emitrades"
+version = "1.2.1-gto.1"
+displayName = "EMI Trades"
+authors = "Prismwork, Flamarine"
+credits = "Original EMI Trades by Prismwork and Flamarine; MIT License (LICENSE-EMITrades). Adapted by GregTech Odyssey."
+description = '''
+Villager and wandering trader recipes for EMI.
+'''
+
+[[dependencies.emitrades]]
+modId = "emi"
+mandatory = true
+versionRange = "[1.0,)"
+ordering = "AFTER"
 side = "CLIENT"

@@ -1,16 +1,14 @@
 package dev.emi.emi.registry;
 
-import java.util.Map;
-
 import dev.emi.emi.api.stack.Comparison;
 
-public class EmiComparisonDefaults {
-	public static Map<Object, Comparison> comparisons = Map.of();
+import java.util.Map;
 
-	public static Comparison get(Object obj) {
-		if (comparisons.containsKey(obj)) {
-			return comparisons.get(obj);
-		}
-		return Comparison.DEFAULT_COMPARISON;
-	}
+public class EmiComparisonDefaults {
+    public static Map<Object, Comparison> comparisons = Map.of();
+
+    public static Comparison get(Object obj) {
+        var comparison = comparisons.get(obj);
+        return comparison == null ? Comparison.DEFAULT_COMPARISON : comparison;
+    }
 }

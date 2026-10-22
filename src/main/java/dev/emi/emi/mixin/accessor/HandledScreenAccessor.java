@@ -1,29 +1,30 @@
 package dev.emi.emi.mixin.accessor;
 
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.world.inventory.Slot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+
 @Mixin(AbstractContainerScreen.class)
 public interface HandledScreenAccessor {
-	
-	@Accessor("hoveredSlot")
-	Slot getFocusedSlot();
 
-	@Accessor("leftPos")
-	int getX();
+    @Accessor("hoveredSlot")
+    Slot getFocusedSlot();
 
-	@Accessor("topPos")
-	int getY();
+    @Accessor("leftPos")
+    int getX();
 
-	@Accessor("imageWidth")
-	int getBackgroundWidth();
+    @Accessor("topPos")
+    int getY();
 
-	@Accessor("imageHeight")
-	int getBackgroundHeight();
+    @Accessor("imageWidth")
+    int getBackgroundWidth();
 
-	@Invoker("findSlot")
-	Slot invokeGetSlotAt(double x, double y);
+    @Accessor("imageHeight")
+    int getBackgroundHeight();
+
+    @Invoker("findSlot")
+    Slot invokeGetSlotAt(double x, double y);
 }

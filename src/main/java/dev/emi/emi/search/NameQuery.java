@@ -1,31 +1,32 @@
 package dev.emi.emi.search;
 
-import java.util.Set;
-import net.minecraft.network.chat.Component;
-import com.google.common.collect.Sets;
-
 import dev.emi.emi.api.stack.EmiStack;
+import net.minecraft.network.chat.Component;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
 public class NameQuery extends Query {
-	private final Set<EmiStack> valid = Sets.newIdentityHashSet();
-	private final String name;
-	
-	public NameQuery(String name) {
-		EmiSearch.names.search(name.toLowerCase()).forEach(s -> valid.add(s.stack));
-		this.name = name.toLowerCase();
-	}
+    private final ReferenceOpenHashSet<EmiStack> valid;
+    private final String name;
 
-	@Override
-	public boolean matches(EmiStack stack) {
-		return valid.contains(stack);
-	}
+    public NameQuery(String name) {
+        this.name = name.toLowerCase();
+        var matches = EmiSearch.names.search(this.name);
+        valid = new ReferenceOpenHashSet<>(matches.size());
+        for (var match : matches)
+            valid.add(match.stack);
+    }
 
-	@Override
-	public boolean matchesUnbaked(EmiStack stack) {
-		return getText(stack).getString().toLowerCase().contains(name);
-	}
+    @Override
+    public boolean matches(EmiStack stack) {
+        return valid.contains(stack);
+    }
 
-	public static Component getText(EmiStack stack) {
-		return stack.getName();
-	}
+    @Override
+    public boolean matchesUnbaked(EmiStack stack) {
+        return getText(stack).getString().toLowerCase().contains(name);
+    }
+
+    public static Component getText(EmiStack stack) {
+        return stack.getName();
+    }
 }
