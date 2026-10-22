@@ -14,7 +14,7 @@ Some notable examples of patterns in the codebase:
 * No single line blocks, for example `if (foo) bar();`, all blocks should use curly braces
 
 ### Target Environment
-This branch targets Minecraft 1.20.1 and Forge 47, using Java 21 for Gradle, compilation, and development runs. The bytecode target remains Java 17 for the Mixin version bundled with Forge 1.20.1. Use Forge APIs and Mojang official mappings. All code and resources live in `src/main`; there are no shared or alternate-loader modules.
+This branch targets Minecraft 1.20.1 and Forge 47, using Java 21 for Gradle, compilation, bytecode, and development runs, built with ModDevGradle (legacyforge). Use Forge APIs and Mojang official mappings. All code and resources live in `src/main`; there are no shared or alternate-loader modules.
 
 Build with `./gradlew build` (`.\gradlew.bat build` on Windows). Use `./gradlew runClient` and `./gradlew runServer` to check client and dedicated-server behavior. Build artifacts are written to `build/libs`.
 

@@ -20,3 +20,6 @@ bin/
 #Forge development runs
 run/
 run-data/
+
+#Test logs
+logs/

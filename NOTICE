@@ -1,0 +1,20 @@
+EMI GTO Edition attributions
+
+EMI: original author Emi (emilyploszaj), copyright (c) 2022 Emi.
+Source: https://github.com/emilyploszaj/emi
+License: MIT; full copyright and permission notice in LICENSE-EMI.
+This build is based on upstream version 1.1.24+1.20.1,
+commit 23d251ea8ea3a5fd7d760948f36014b185eac69f.
+Forge-only port with Mojang mappings and GTNH NEI style features by Crazerium
+(https://github.com/GregTech-Odyssey/emi). Further changes by Hophenby,
+alcox233 and the GregTech Odyssey team.
+Source of this build: https://github.com/GregTech-Odyssey/EMI-gto
+
+EMI Trades: original authors Prismwork and Flamarine.
+Copyright (c) 2022-2023 Prismwork.
+Source: https://github.com/Prismwork/EMITrades/tree/xplat/1.20.1
+Port based on commit 98271be1425accea90df1006f885d5af29886ef9.
+License: MIT; full copyright and permission notice in LICENSE-EMITrades.
+Included source: io.github.prismwork.emitrades and assets/emitrades.
+Modified for Forge/Mojang mappings, bounded custom trade sampling,
+namespace-safe recipe IDs, and world-independent entity snapshots.
