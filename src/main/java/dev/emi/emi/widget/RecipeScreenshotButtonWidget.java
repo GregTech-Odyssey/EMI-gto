@@ -40,7 +40,7 @@ public class RecipeScreenshotButtonWidget extends RecipeButtonWidget {
         int height = recipe.getDisplayHeight() + 8;
         Minecraft client = Minecraft.getInstance();
         GuiGraphics context = new GuiGraphics(client, client.renderBuffers().bufferSource());
-        EmiScreenshotRecorder.saveScreenshot("dev/emi/emi/recipes/" + path, width, height,
+        EmiScreenshotRecorder.saveScreenshot("emi/recipes/" + path, width, height,
             () -> EmiRenderHelper.renderRecipe(recipe, EmiDrawContext.wrap(context), 0, 0, false, -1));
 
         return true;

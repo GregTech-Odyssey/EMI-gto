@@ -51,7 +51,7 @@ public class PluginCallerMixin {
             }
         } else if (uid != null) {
             String namespace = uid.getNamespace();
-            if (SKIPPED_MODS.contains(namespace) && !namespace.equals("jei") && !namespace.equals("dev/emi/emi")) {
+            if (SKIPPED_MODS.contains(namespace) && !namespace.equals("jei") && !namespace.equals("emi")) {
                 return;
             }
         }
