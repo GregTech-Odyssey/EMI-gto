@@ -1,7 +1,7 @@
 /*
  * Adapted from EMI Trades by Prismwork and Flamarine.
  * Copyright (c) 2022-2023 Prismwork. Licensed under MIT; see LICENSE-EMITrades.
- * Modified for the GTO AE fork: detached snapshots and Mojang mappings.
+ * Modified for GregTech Odyssey: detached snapshots and Mojang mappings.
  */
 package io.github.prismwork.emitrades.util;
 

@@ -8,10 +8,10 @@ import java.util.function.Function;
 
 public class Comparison {
     private static final Comparison COMPARE_NBT = Comparison.of((a, b) -> {
-        var ak = a.getAEKey();
-        var bk = b.getAEKey();
+        var ak = a.getStackKey();
+        var bk = b.getStackKey();
         return bk != null && ak == bk;
-    }, stack -> stack.getAEKey() != null ? stack.getAEKey().hashCode() : 0);
+    }, stack -> stack.getStackKey() != null ? stack.getStackKey().hashCode() : 0);
     public static final Comparison DEFAULT_COMPARISON = Comparison.of((a, b) -> true);
     private Predicate predicate;
     private HashFunction hash;

@@ -25,13 +25,12 @@ import net.minecraft.world.item.*;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
-import appeng.api.stacks.AEItemKey;
 
 @ApiStatus.Internal
 public class ItemEmiStack extends EmiStack implements Batchable {
     private static final Minecraft client = Minecraft.getInstance();
 
-    private final AEItemKey item;
+    private final EmiItemKey item;
 
     private boolean unbatchable;
 
@@ -40,16 +39,16 @@ public class ItemEmiStack extends EmiStack implements Batchable {
     }
 
     public ItemEmiStack(ItemStack stack, long amount) {
-        this.item = AEItemKey.of(stack.getItem(), stack.getTag());
+        this.item = EmiItemKey.of(stack.getItem(), stack.getTag());
         this.amount = amount;
     }
 
     public ItemEmiStack(Item item, CompoundTag nbt, long amount) {
-        this.item = AEItemKey.of(item, nbt);
+        this.item = EmiItemKey.of(item, nbt);
         this.amount = amount;
     }
 
-    public ItemEmiStack(AEItemKey item, long amount) {
+    public ItemEmiStack(EmiItemKey item, long amount) {
         this.item = item;
         this.amount = amount;
     }
@@ -84,7 +83,7 @@ public class ItemEmiStack extends EmiStack implements Batchable {
     }
 
     @Override
-    public AEItemKey getAEKey() {
+    public EmiItemKey getStackKey() {
         return item;
     }
 

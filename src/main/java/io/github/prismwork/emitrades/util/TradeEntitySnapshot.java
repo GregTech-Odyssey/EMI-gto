@@ -1,5 +1,5 @@
 /*
- * GTO AE adaptation of EMI Trades display entity lifetime.
+ * GregTech Odyssey adaptation of EMI Trades display entity lifetime.
  * Licensed under MIT; see LICENSE-EMITrades.
  */
 package io.github.prismwork.emitrades.util;

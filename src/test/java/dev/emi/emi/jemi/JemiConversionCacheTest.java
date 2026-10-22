@@ -1,5 +1,6 @@
 package dev.emi.emi.jemi;
 
+import dev.emi.emi.TestBootstrap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -11,16 +12,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 
+import dev.emi.emi.api.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiRegistryAdapter;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
@@ -39,7 +39,6 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.runtime.IIngredientManager;
 import mezz.jei.api.runtime.IJeiRuntime;
 
-import appeng.api.stacks.AEItemKey;
 
 class JemiConversionCacheTest {
     private boolean hadItemAdapter;
@@ -63,14 +62,13 @@ class JemiConversionCacheTest {
 
     @BeforeAll
     static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
+        TestBootstrap.init();
     }
 
     @Test
     void reusesNormalizationAcrossRecipesWithoutSharingMutableAlternatives() {
-        var firstKey = mock(AEItemKey.class);
-        var secondKey = mock(AEItemKey.class);
+        var firstKey = mock(EmiItemKey.class);
+        var secondKey = mock(EmiItemKey.class);
         when(firstKey.getItem()).thenReturn(Items.STICK);
         when(secondKey.getItem()).thenReturn(Items.PAPER);
         var cache = new JemiConversionCache(mock(IIngredientManager.class));
@@ -93,7 +91,7 @@ class JemiConversionCacheTest {
             assertEquals(1, second.getChance());
             assertEquals(1, second.getEmiStacks().getFirst().getAmount());
             assertTrue(second.getEmiStacks().getFirst().getRemainder().isEmpty());
-            assertSame(firstKey, second.getEmiStacks().getFirst().getAEKey());
+            assertSame(firstKey, second.getEmiStacks().getFirst().getStackKey());
             assertNotSame(first.getEmiStacks().getFirst(), second.getEmiStacks().getFirst());
             tags.verify(() -> EmiTags.getIngredient(eq(Item.class), anyList(), eq(3L)), times(1));
             verify(firstKey, never()).toStack(anyInt());
@@ -106,8 +104,8 @@ class JemiConversionCacheTest {
 
     @Test
     void cacheKeysKeepExactVariantsOrderAndCountsAfterSourceMutation() {
-        var firstKey = mock(AEItemKey.class);
-        var secondKey = mock(AEItemKey.class);
+        var firstKey = mock(EmiItemKey.class);
+        var secondKey = mock(EmiItemKey.class);
         // Two canonical variants of the same item must remain distinct.
         when(firstKey.getItem()).thenReturn(Items.STICK);
         when(secondKey.getItem()).thenReturn(Items.STICK);
@@ -123,7 +121,7 @@ class JemiConversionCacheTest {
             assertEquals(4, mixed.getEmiStacks().getFirst().getAmount());
             var original = cache.getIngredient(stacks(firstKey, secondKey, 2));
             assertEquals(2, original.getAmount());
-            assertSame(secondKey, original.getEmiStacks().get(1).getAEKey());
+            assertSame(secondKey, original.getEmiStacks().get(1).getStackKey());
             cache.getIngredient(stacks(secondKey, firstKey, 2));
             cache.getIngredient(stacks(firstKey, firstKey, 2));
             tags.verify(() -> EmiTags.getIngredient(eq(Item.class), anyList(), anyLong()), times(4));
@@ -202,7 +200,7 @@ class JemiConversionCacheTest {
         assertFalse(JemiPlugin.isTagCategory(new ResourceLocation("minecraft", "crafting")));
     }
 
-    private static ObjectArrayList<EmiStack> stacks(AEItemKey first, AEItemKey second, long amount) {
+    private static ObjectArrayList<EmiStack> stacks(EmiItemKey first, EmiItemKey second, long amount) {
         return new ObjectArrayList<>(List.of(new ItemEmiStack(first, amount), new ItemEmiStack(second, amount)));
     }
 }

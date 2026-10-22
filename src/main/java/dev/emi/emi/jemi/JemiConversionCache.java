@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.EmiStackKey;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.stack.TagEmiIngredient;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -18,7 +19,6 @@ import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.runtime.IIngredientManager;
 
-import appeng.api.stacks.AEKey;
 
 /** Shared by one registration pass, never retained by the converted recipes. */
 public final class JemiConversionCache {
@@ -92,13 +92,13 @@ public final class JemiConversionCache {
     }
 
     private static final class IngredientKey {
-        private AEKey[] keys;
+        private EmiStackKey[] keys;
         private long[] amounts;
         private int size;
         private int hash;
 
         private IngredientKey() {
-            keys = new AEKey[0];
+            keys = new EmiStackKey[0];
             amounts = new long[0];
         }
 
@@ -112,13 +112,13 @@ public final class JemiConversionCache {
         private boolean set(ObjectArrayList<EmiStack> stacks) {
             size = stacks.size();
             if (keys.length < size) {
-                keys = new AEKey[size];
+                keys = new EmiStackKey[size];
                 amounts = new long[size];
             }
             int hash = 1;
             for (int i = 0; i < size; i++) {
                 var stack = stacks.get(i);
-                keys[i] = stack.getAEKey();
+                keys[i] = stack.getStackKey();
                 if (keys[i] == null)
                     return false;
                 amounts[i] = stack.getAmount();

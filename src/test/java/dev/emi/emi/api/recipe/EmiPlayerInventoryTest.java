@@ -1,5 +1,6 @@
 package dev.emi.emi.api.recipe;
 
+import dev.emi.emi.TestBootstrap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -8,8 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import net.minecraft.SharedConstants;
-import net.minecraft.server.Bootstrap;
 
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.stack.EmiStack;
@@ -17,8 +16,7 @@ import dev.emi.emi.api.stack.EmiStack;
 class EmiPlayerInventoryTest {
     @BeforeAll
     static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
+        TestBootstrap.init();
     }
 
     @Test

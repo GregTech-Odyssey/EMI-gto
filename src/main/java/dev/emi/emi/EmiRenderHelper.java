@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.EmiHooks;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
@@ -46,12 +47,7 @@ import java.util.List;
 public class EmiRenderHelper {
     public static void renderAmount(EmiDrawContext context, int x, int y,
             EmiStack stack, long amount, net.minecraft.network.chat.Component fallback) {
-        var key = stack.getAEKey();
-        if (amount > 99 && key != null) {
-            var text = key.formatAmount(amount, appeng.api.stacks.AmountFormat.SLOT);
-            appeng.client.gui.me.common.StackSizeRenderer.renderSizeLabel(context.raw(),
-                    net.minecraft.client.Minecraft.getInstance().font, x + 1, y + 1, text, false);
-        } else {
+        if (!EmiHooks.renderAmount(context.raw(), x, y, stack, amount)) {
             renderAmount(context, x, y, fallback);
         }
     }

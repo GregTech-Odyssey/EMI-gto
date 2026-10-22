@@ -14,6 +14,7 @@ import net.minecraft.util.GsonHelper;
 
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.EmiHooks;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiResolutionRecipe;
@@ -28,7 +29,6 @@ import dev.emi.emi.bom.MaterialNode;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 
-import appeng.integration.modules.emi.EmiFavoriteKeyCache;
 
 public class EmiFavorites {
     public static List<EmiFavorite> favorites = Lists.newArrayList();
@@ -72,7 +72,7 @@ public class EmiFavorites {
                 }
             }
         }
-        EmiFavoriteKeyCache.recalculate();
+        EmiHooks.onFavoritesChanged();
     }
 
     public static boolean canFavorite(EmiIngredient stack, EmiRecipe recipe) {
@@ -100,7 +100,7 @@ public class EmiFavorites {
         int index = indexOf(stack);
         if (index != -1) {
             favorites.remove(index);
-            EmiFavoriteKeyCache.recalculate();
+            EmiHooks.onFavoritesChanged();
             return true;
         }
         return false;
@@ -148,7 +148,7 @@ public class EmiFavorites {
         } else {
             favorites.add(offset, favorite);
         }
-        EmiFavoriteKeyCache.recalculate();
+        EmiHooks.onFavoritesChanged();
         EmiPersistentData.save();
     }
 
@@ -192,7 +192,7 @@ public class EmiFavorites {
                 favorites.add(new EmiFavorite(stack, null));
             }
         }
-        EmiFavoriteKeyCache.recalculate();
+        EmiHooks.onFavoritesChanged();
         EmiPersistentData.save();
     }
 

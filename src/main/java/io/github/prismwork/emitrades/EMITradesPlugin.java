@@ -1,7 +1,7 @@
 /*
  * Adapted from EMI Trades by Prismwork and Flamarine.
  * Copyright (c) 2022-2023 Prismwork. Licensed under MIT; see LICENSE-EMITrades.
- * Modified for the GTO AE fork: bounded sampling and detached display data.
+ * Modified for GregTech Odyssey: bounded sampling and detached display data.
  */
 package io.github.prismwork.emitrades;
 

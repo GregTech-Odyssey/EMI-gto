@@ -119,6 +119,7 @@ jar {
     from('LICENSE') {
         rename { 'LICENSE-EMI' }
     }
+    from('NOTICE')
     manifest {
         attributes([
                 'Specification-Title'     : 'EMI',

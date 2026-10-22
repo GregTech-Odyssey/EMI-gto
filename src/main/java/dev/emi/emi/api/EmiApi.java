@@ -40,8 +40,6 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 
-import appeng.api.stacks.AEFluidKey;
-import appeng.api.stacks.GenericStack;
 
 public class EmiApi {
     private static final Minecraft client = Minecraft.getInstance();
@@ -200,9 +198,9 @@ public class EmiApi {
             return fluid == Fluids.EMPTY ? null : EmiStack.of(fluid);
         }
         var item = stack.getItemStack();
-        var wrapped = GenericStack.fromItemStack(item);
-        if (wrapped != null && wrapped.what() instanceof AEFluidKey fluid) {
-            return new FluidEmiStack(fluid, wrapped.amount());
+        var wrapped = EmiHooks.resolveFluid(item);
+        if (wrapped != null) {
+            return wrapped;
         }
         if (stack.hasNbt()) {
             var handler = item

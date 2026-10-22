@@ -17,7 +17,9 @@
     "conversion.FluidMixin",
     "conversion.ItemConvertibleMixin",
     "conversion.ItemStackMixin",
-    "jei.PluginCallerMixin"
+    "jei.PluginCallerMixin",
+    "key.FluidKeyMixin",
+    "key.ItemKeyMixin"
   ],
   "client": [
     "AbstractInventoryScreenMixin",

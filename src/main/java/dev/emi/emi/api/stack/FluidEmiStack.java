@@ -16,14 +16,13 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
-import appeng.api.stacks.AEFluidKey;
 
 @ApiStatus.Internal
 public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
-    private final AEFluidKey fluid;
+    private final EmiFluidKey fluid;
 
     public FluidEmiStack(Fluid fluid) {
-        this.fluid = AEFluidKey.of(fluid);
+        this.fluid = EmiFluidKey.of(fluid);
         this.amount = 0;
     }
 
@@ -32,11 +31,11 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
     }
 
     public FluidEmiStack(Fluid fluid, @Nullable CompoundTag nbt, long amount) {
-        this.fluid = AEFluidKey.of(fluid, nbt);
+        this.fluid = EmiFluidKey.of(fluid, nbt);
         this.amount = amount;
     }
 
-    public FluidEmiStack(AEFluidKey fluid, long amount) {
+    public FluidEmiStack(EmiFluidKey fluid, long amount) {
         this.fluid = fluid;
         this.amount = amount;
     }
@@ -66,7 +65,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
     }
 
     @Override
-    public AEFluidKey getAEKey() {
+    public EmiFluidKey getStackKey() {
         return fluid;
     }
 

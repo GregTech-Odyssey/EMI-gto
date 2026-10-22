@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
-import appeng.api.stacks.AEKey;
 import org.jetbrains.annotations.Unmodifiable;
 
 /**
@@ -88,8 +87,8 @@ public abstract class EmiStack implements EmiIngredient {
 
     public abstract Object getKey();
 
-    /** Returns the canonical AE key for item/fluid stacks, or null for custom resources. */
-    public @Nullable AEKey getAEKey() {
+    /** Returns the interned key for item/fluid stacks, or null for custom resources. */
+    public @Nullable EmiStackKey getStackKey() {
         return null;
     }
 

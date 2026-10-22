@@ -1,5 +1,6 @@
 package io.github.prismwork.emitrades;
 
+import dev.emi.emi.TestBootstrap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -8,34 +9,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import dev.emi.emi.api.stack.EmiItemKey;
 import io.github.prismwork.emitrades.recipe.VillagerTrade;
 import io.github.prismwork.emitrades.util.EntityEmiStack;
 import io.github.prismwork.emitrades.util.TradeEntitySnapshot;
 import io.github.prismwork.emitrades.util.TradeProfile;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.ItemLike;
 
-import appeng.api.stacks.AEItemKey;
 
 class EMITradesPluginTest {
     @BeforeAll
     static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
+        TestBootstrap.init();
     }
 
     @Test
@@ -116,11 +115,11 @@ class EMITradesPluginTest {
     @Test
     void everyVanillaFactoryHasANonemptyPreviewWithoutCallingServerTradeGeneration() {
         var profile = new TradeProfile(new ResourceLocation("minecraft", "farmer"), 1, null, false);
-        // Ordinary JUnit does not apply AE's Item mixin. Stub only its canonical key lookup;
+        // Ordinary JUnit does not apply EMI's Item mixin. Stub only its canonical key lookup;
         // the recipe adapters and EMI item stacks still execute normally.
-        try (var keys = mockStatic(AEItemKey.class)) {
-            keys.when(() -> AEItemKey.of(any(ItemLike.class), nullable(CompoundTag.class))).thenAnswer(invocation -> {
-                var key = mock(AEItemKey.class);
+        try (var keys = mockStatic(EmiItemKey.class)) {
+            keys.when(() -> EmiItemKey.of(any(Item.class), nullable(CompoundTag.class))).thenAnswer(invocation -> {
+                var key = mock(EmiItemKey.class);
                 ItemLike item = invocation.getArgument(0);
                 when(key.getItem()).thenReturn(item.asItem());
                 when(key.getTag()).thenReturn(invocation.getArgument(1));

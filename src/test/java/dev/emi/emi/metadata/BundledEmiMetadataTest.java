@@ -25,7 +25,7 @@ class BundledEmiMetadataTest {
         for (var mod : mods) {
             bundled.add(mod.get("modId"));
         }
-        assertTrue(bundled.containsAll(List.of("ae2", "emi", "emitrades")));
+        assertTrue(bundled.containsAll(List.of("emi", "emitrades")));
         var directions = new HashMap<String, String>();
         for (var mod : bundled) {
             List<Config> dependencies = metadata.get(List.of("dependencies", mod));

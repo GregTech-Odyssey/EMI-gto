@@ -1,5 +1,6 @@
 package dev.emi.emi.registry;
 
+import dev.emi.emi.TestBootstrap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -10,18 +11,16 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Bootstrap;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import appeng.api.stacks.AEItemKey;
+import dev.emi.emi.api.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
@@ -33,8 +32,7 @@ import dev.emi.emi.runtime.EmiTagKey;
 class EmiIngredientCacheTest {
     @BeforeAll
     static void bootstrap() {
-        SharedConstants.tryDetectVersion();
-        Bootstrap.bootStrap();
+        TestBootstrap.init();
     }
 
     @AfterEach
@@ -47,7 +45,7 @@ class EmiIngredientCacheTest {
         var source = mock(Ingredient.class);
         when(source.getItems()).thenReturn(new ItemStack[] { new ItemStack(Items.STICK, 3),
                 new ItemStack(Items.PAPER, 3) });
-        var key = mock(AEItemKey.class);
+        var key = mock(EmiItemKey.class);
         when(key.getItem()).thenReturn(Items.STICK);
         var stack = new ItemEmiStack(key, 1);
         var rawTag = TagKey.create(Registries.ITEM, new ResourceLocation("test", "alternatives"));
@@ -70,7 +68,7 @@ class EmiIngredientCacheTest {
             assertEquals(3, first.getAmount());
             assertEquals(7, second.getAmount());
             assertEquals(1, second.getChance());
-            assertSame(key, second.getEmiStacks().getFirst().getAEKey());
+            assertSame(key, second.getEmiStacks().getFirst().getStackKey());
             assertNotSame(first.getEmiStacks().getFirst(), second.getEmiStacks().getFirst());
             assertTrue(second.getEmiStacks().getFirst().getRemainder().isEmpty());
             assertTrue(template.getEmiStacks().getFirst().getRemainder().isEmpty());
@@ -111,8 +109,8 @@ class EmiIngredientCacheTest {
         firstInput.setTag(firstTag);
         secondInput.setTag(secondTag);
         when(source.getItems()).thenReturn(new ItemStack[] { firstInput, secondInput });
-        var firstKey = mock(AEItemKey.class);
-        var secondKey = mock(AEItemKey.class);
+        var firstKey = mock(EmiItemKey.class);
+        var secondKey = mock(EmiItemKey.class);
         when(firstKey.getItem()).thenReturn(Items.STICK);
         when(secondKey.getItem()).thenReturn(Items.STICK);
         when(firstKey.getTag()).thenReturn(firstTag);
@@ -127,8 +125,8 @@ class EmiIngredientCacheTest {
             var converted = EmiIngredient.of(source);
             assertEquals(1, converted.getAmount());
             assertEquals(2, converted.getEmiStacks().size());
-            assertSame(firstKey, converted.getEmiStacks().get(0).getAEKey());
-            assertSame(secondKey, converted.getEmiStacks().get(1).getAEKey());
+            assertSame(firstKey, converted.getEmiStacks().get(0).getStackKey());
+            assertSame(secondKey, converted.getEmiStacks().get(1).getStackKey());
             assertEquals(firstTag, converted.getEmiStacks().get(0).getNbt());
             assertEquals(secondTag, converted.getEmiStacks().get(1).getNbt());
             assertEquals(2, converted.getEmiStacks().get(0).getAmount());

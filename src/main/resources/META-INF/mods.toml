@@ -50,5 +50,5 @@ Villager and wandering trader recipes for EMI.
 modId = "emi"
 mandatory = true
 versionRange = "[1.0,)"
-ordering = "AFTER"
+ordering = "NONE"
 side = "CLIENT"
