@@ -1,6 +1,5 @@
 package dev.emi.emi.bom;
 
-import com.google.common.collect.Maps;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -8,13 +7,14 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.bom.MaterialNode;
 import dev.emi.emi.bom.TreeCost;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Map;
 
 public class MaterialTree {
     public MaterialNode goal;
     public TreeCost cost = new TreeCost();
-    public Map<EmiIngredient, EmiRecipe> resolutions = Maps.newHashMap();
+    public Map<EmiIngredient, EmiRecipe> resolutions = new Object2ObjectOpenHashMap<>();
     public long batches = 1;
 
     public MaterialTree(EmiRecipe recipe) {

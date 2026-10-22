@@ -2,7 +2,6 @@ package dev.emi.emi.registry;
 
 import dev.emi.emi.mixin.accessor.CraftingResultSlotAccessor;
 import dev.emi.emi.mixin.accessor.HandledScreenAccessor;
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.EmiStackProvider;
@@ -20,11 +19,12 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import java.util.List;
 import java.util.Map;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class EmiStackProviders {
     public static Map<Class<?>, List<EmiStackProvider<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
-    public static List<EmiStackProvider<?>> generic = Lists.newArrayList();
+    public static List<EmiStackProvider<?>> generic = new ObjectArrayList<>();
 
     public static void clear() {
         fromClass.clear();

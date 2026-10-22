@@ -1,6 +1,5 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Lighting;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
@@ -9,6 +8,7 @@ import dev.emi.emi.forge.EmiForgePlatform;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.StackBatcher.Batchable;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTextTooltip;
@@ -155,7 +155,7 @@ public class ItemEmiStack extends EmiStack implements Batchable {
     @Override
     public List<ClientTooltipComponent> getTooltip() {
         ItemStack stack = getItemStack();
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         if (!isEmpty()) {
             list.addAll(EmiForgePlatform.getItemTooltip(stack));
             if (!list.isEmpty() && list.getFirst() instanceof ClientTextTooltip ottc) {

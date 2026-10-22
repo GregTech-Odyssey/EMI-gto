@@ -1,6 +1,5 @@
 package dev.emi.emi.api.recipe;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -9,6 +8,7 @@ import dev.emi.emi.api.render.EmiRenderable;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.data.EmiRecipeCategoryProperties;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -69,7 +69,7 @@ public class EmiRecipeCategory implements EmiRenderable {
     }
 
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         list.add(ClientTooltipComponent.create(EmiPort.ordered(getName())));
         if (EmiUtil.showAdvancedTooltips()) {
             list.add(ClientTooltipComponent.create(EmiPort.ordered(EmiPort.literal(id.toString(), ChatFormatting.DARK_GRAY))));

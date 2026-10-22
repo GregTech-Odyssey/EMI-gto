@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.widget.config.ConfigEntryWidget;
@@ -13,12 +12,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class GroupNameWidget extends Entry {
     protected static final Minecraft CLIENT = Minecraft.getInstance();
     public final String id;
     public final Component text;
-    public final List<ConfigEntryWidget> children = Lists.newArrayList();
+    public final List<ConfigEntryWidget> children = new ObjectArrayList<>();
     public boolean collapsed = false;
 
     public GroupNameWidget(String id, Component text) {

@@ -1,7 +1,6 @@
 package dev.emi.emi.chess;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -11,6 +10,7 @@ import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.screen.EmiScreenManager;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -235,7 +235,7 @@ public class EmiChess {
     }
 
     static {
-        List<EmiStack> list = Lists.newArrayList();
+        List<EmiStack> list = new ObjectArrayList<>();
         for (int i = 0; i < 64; i++) {
             list.add(new ChessEmiStack(i));
         }

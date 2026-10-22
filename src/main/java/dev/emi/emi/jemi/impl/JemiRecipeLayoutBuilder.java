@@ -2,11 +2,10 @@ package dev.emi.emi.jemi.impl;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.jetbrains.annotations.Nullable;
 
 import dev.emi.emi.jemi.JemiConversionCache;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.builder.IIngredientAcceptor;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
@@ -14,8 +13,8 @@ import mezz.jei.api.gui.widgets.ISlottedWidgetFactory;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 
 public class JemiRecipeLayoutBuilder implements IRecipeLayoutBuilder {
-    public final List<dev.emi.emi.jemi.impl.JemiIngredientAcceptor> ingredients = Lists.newArrayList();
-    public final List<JemiRecipeSlotBuilder> slots = Lists.newArrayList();
+    public final List<dev.emi.emi.jemi.impl.JemiIngredientAcceptor> ingredients = new ObjectArrayList<>();
+    public final List<JemiRecipeSlotBuilder> slots = new ObjectArrayList<>();
     public boolean shapeless = false;
     private final @Nullable JemiConversionCache conversions;
 

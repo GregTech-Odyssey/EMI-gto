@@ -1,12 +1,12 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.runtime.EmiDrawContext;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,7 +18,7 @@ import java.util.Random;
 
 public class EmiNameWidget implements Renderable {
     private static Minecraft client = Minecraft.getInstance();
-    private List<String[]> NAMES = Lists.<String[]>newArrayList(
+    private List<String[]> NAMES = ObjectArrayList.<String[]>of(
         "Emi Memy Imi".split(" "),
         "Exhaustively Many Ingredients".split(" "),
         "Explicitly Mandated Items".split(" "),

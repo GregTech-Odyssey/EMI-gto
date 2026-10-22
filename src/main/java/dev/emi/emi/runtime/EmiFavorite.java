@@ -2,8 +2,6 @@ package dev.emi.emi.runtime;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +25,7 @@ import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.screen.MicroTextRenderer;
 import dev.emi.emi.screen.StackBatcher.Batchable;
 import dev.emi.emi.screen.tooltip.RecipeTooltipComponent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiFavorite implements EmiIngredient, Batchable {
     protected final EmiIngredient stack;
@@ -89,7 +88,7 @@ public class EmiFavorite implements EmiIngredient, Batchable {
 
     @Override
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         list.addAll(stack.getTooltip());
         if (recipe != null) {
             list.add(new RecipeTooltipComponent(recipe, true));
@@ -193,7 +192,7 @@ public class EmiFavorite implements EmiIngredient, Batchable {
 
         @Override
         public List<ClientTooltipComponent> getTooltip() {
-            List<ClientTooltipComponent> list = Lists.newArrayList();
+            List<ClientTooltipComponent> list = new ObjectArrayList<>();
             list.addAll(super.getTooltip());
 
             long diff = total - amount;

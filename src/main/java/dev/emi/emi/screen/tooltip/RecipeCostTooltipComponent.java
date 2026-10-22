@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.tooltip;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -18,7 +17,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RecipeCostTooltipComponent implements EmiTooltipComponent {
     private static final Component COST = EmiPort.translatable("emi.cost_per");
-    private final List<Node> nodes = Lists.newArrayList();
+    private final List<Node> nodes = new ObjectArrayList<>();
     public final MaterialTree tree;
     private int maxWidth = 0;
 

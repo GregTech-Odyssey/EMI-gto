@@ -1,12 +1,12 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.render.EmiRender;
 import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.forge.EmiForgePlatform;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.nbt.CompoundTag;
@@ -95,7 +95,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
 
     @Override
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         List<Component> text = getTooltipText();
         if (!text.isEmpty()) {
             list.add(new EmiTextTooltipWrapper(this, EmiPort.ordered(text.get(0))));

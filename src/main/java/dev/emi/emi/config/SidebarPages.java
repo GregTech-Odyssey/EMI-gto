@@ -1,18 +1,18 @@
 package dev.emi.emi.config;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import dev.emi.emi.config.SidebarSettings;
 import dev.emi.emi.config.SidebarSubpanels;
 import dev.emi.emi.config.SidebarTheme;
 import dev.emi.emi.config.SidebarType;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
 import java.util.List;
 import java.util.Set;
 
 public class SidebarPages {
     public final dev.emi.emi.config.SidebarSettings settings;
-    public List<SidebarPage> pages = Lists.newArrayList();
+    public List<SidebarPage> pages = new ObjectArrayList<>();
 
     public SidebarPages(List<SidebarPage> pages, SidebarSettings settings) {
         this.pages.addAll(pages);
@@ -21,7 +21,7 @@ public class SidebarPages {
     }
 
     public void unique() {
-        Set<SidebarType> types = Sets.newHashSet();
+        Set<SidebarType> types = new ReferenceOpenHashSet<>();
         for (int i = 0; i < pages.size(); i++) {
             if (pages.get(i).type == SidebarType.NONE || types.contains(pages.get(i).type)) {
                 pages.remove(i--);

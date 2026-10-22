@@ -18,10 +18,10 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public interface StandardRecipeHandler<T extends AbstractContainerMenu> extends EmiRecipeHandler<T> {
 
@@ -114,7 +114,7 @@ public interface StandardRecipeHandler<T extends AbstractContainerMenu> extends 
     }
 
     private static Map<EmiIngredient, Boolean> getAvailable(EmiRecipe recipe, EmiPlayerInventory inventory) {
-        Map<EmiIngredient, Boolean> availableForCrafting = new IdentityHashMap<>();
+        Map<EmiIngredient, Boolean> availableForCrafting = new Reference2ObjectOpenHashMap<>();
         List<Boolean> list = inventory.getCraftAvailability(recipe);
         List<EmiIngredient> inputs = recipe.getInputs();
         if (list.size() != inputs.size()) {

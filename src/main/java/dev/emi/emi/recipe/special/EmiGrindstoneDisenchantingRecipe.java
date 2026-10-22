@@ -1,6 +1,5 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -75,7 +74,7 @@ public class EmiGrindstoneDisenchantingRecipe implements EmiRecipe {
         ItemStack itemStack = new ItemStack(tool);
         int enchantments = 1 + Math.max(random.nextInt(5), random.nextInt(3));
 
-        List<Enchantment> list = Lists.newArrayList();
+        List<Enchantment> list = new ObjectArrayList<>();
 
         outer: for (int i = 0; i < enchantments; i++) {
             Enchantment enchantment = getEnchantment(random);

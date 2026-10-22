@@ -2,7 +2,6 @@ package dev.emi.emi.screen;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -22,13 +21,14 @@ import dev.emi.emi.widget.*;
 import dev.emi.emi.widget.RecipeDefaultButtonWidget;
 import dev.emi.emi.widget.RecipeScreenshotButtonWidget;
 import dev.emi.emi.widget.RecipeTreeButtonWidget;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RecipeDisplay {
     public static final int DISPLAY_PADDING = 8;
     public final EmiRecipe recipe;
     private final int width, height;
-    private List<ButtonType> rightButtons = Lists.newArrayList();
-    private List<ButtonType> leftButtons = Lists.newArrayList();
+    private List<ButtonType> rightButtons = new ObjectArrayList<>();
+    private List<ButtonType> leftButtons = new ObjectArrayList<>();
     private int leftWidth = 0, rightWidth = 0;
     private int rows = 0;
     public Throwable exception;

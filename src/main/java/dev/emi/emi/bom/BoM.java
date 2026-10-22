@@ -10,6 +10,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -28,7 +31,7 @@ import dev.emi.emi.runtime.EmiPersistentData;
 public class BoM {
     private static RecipeDefaults defaults = new RecipeDefaults();
     public static MaterialTree tree;
-    public static Map<EmiIngredient, EmiRecipe> defaultRecipes = Maps.newHashMap();
+    public static Map<EmiIngredient, EmiRecipe> defaultRecipes = new Object2ObjectOpenHashMap<>();
     public static Map<EmiIngredient, EmiRecipe> addedRecipes = Maps.newHashMap();
     public static Set<EmiRecipe> disabledRecipes = Sets.newHashSet();
     public static boolean craftingMode = false;
@@ -42,7 +45,7 @@ public class BoM {
         JsonArray added = new JsonArray();
         JsonObject addedTags = new JsonObject();
         JsonObject resolutions = new JsonObject();
-        Set<ResourceLocation> placed = Sets.newHashSet();
+        Set<ResourceLocation> placed = new ObjectOpenHashSet<>();
         for (Map.Entry<EmiIngredient, EmiRecipe> entry : addedRecipes.entrySet()) {
             EmiRecipe recipe = entry.getValue();
             if (recipe instanceof EmiResolutionRecipe err) {

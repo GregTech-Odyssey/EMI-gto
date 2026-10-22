@@ -2,8 +2,9 @@ package dev.emi.emi.com.unascribed.qdcss;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.*;
 import java.net.URL;
@@ -85,13 +86,13 @@ public class QDCSS {
     }
 
     public void put(String key, String value) {
-        List<BlameString> li = new ArrayList<>();
+        List<BlameString> li = new ObjectArrayList<>();
         li.add(new BlameString(value));
         data.put(key, li);
     }
 
     public void put(String key, String... values) {
-        List<BlameString> li = new ArrayList<>();
+        List<BlameString> li = new ObjectArrayList<>();
         for (String v : values) {
             li.add(new BlameString(v));
         }
@@ -99,7 +100,7 @@ public class QDCSS {
     }
 
     public void put(String key, Iterable<String> values) {
-        List<BlameString> li = new ArrayList<>();
+        List<BlameString> li = new ObjectArrayList<>();
         for (String v : values) {
             li.add(new BlameString(v));
         }
@@ -281,11 +282,11 @@ public class QDCSS {
      * {@link #get}, this is equivalent to an override.
      */
     public QDCSS merge(QDCSS that) {
-        Map<String, List<BlameString>> newData = new LinkedHashMap<>(Math.max(this.size(), that.size()));
+        Map<String, List<BlameString>> newData = new Object2ObjectLinkedOpenHashMap<>(Math.max(this.size(), that.size()));
         newData.putAll(data);
         for (Map.Entry<String, List<BlameString>> en : that.data.entrySet()) {
             if (newData.containsKey(en.getKey())) {
-                List<BlameString> merged = new ArrayList<>(newData.get(en.getKey()).size()+en.getValue().size());
+                List<BlameString> merged = new ObjectArrayList<>(newData.get(en.getKey()).size()+en.getValue().size());
                 merged.addAll(newData.get(en.getKey()));
                 merged.addAll(en.getValue());
                 newData.put(en.getKey(), Collections.unmodifiableList(merged));
@@ -362,7 +363,7 @@ public class QDCSS {
     
     public static QDCSS load(String fileName, String s) throws SyntaxErrorException {
         // vanilla CSS is a very simple grammar, so we can parse it using only regexes
-        Map<String, List<BlameString>> data = new LinkedHashMap<>();
+        Map<String, List<BlameString>> data = new Object2ObjectLinkedOpenHashMap<>();
         Matcher ruleset = RULESET_PATTERN.matcher(s);
         int lastEnd = 0;
         while (ruleset.find()) {
@@ -383,7 +384,7 @@ public class QDCSS {
                 String value = rule.group(2);
                 String key = selector+"."+property;
                 if (!data.containsKey(key)) {
-                    data.put(key, Lists.newArrayList());
+                    data.put(key, new ObjectArrayList<>());
                 }
                 data.get(key).add(new BlameString(value, fileName, getLine(s, ruleset.start(2)+rule.start())));
                 lastRulesEnd = rule.end();

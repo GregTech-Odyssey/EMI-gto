@@ -1,6 +1,5 @@
 package dev.emi.emi.screen;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -95,7 +94,7 @@ public class StackBatcher {
     private int y;
     private int z;
 
-    public static final List<RenderType> EXTRA_RENDER_LAYERS = Lists.newArrayList();
+    public static final List<RenderType> EXTRA_RENDER_LAYERS = new ObjectArrayList<>();
 
     public static boolean isEnabled() {
         return EmiConfig.useBatchedRenderer && !isIncompatibleSodiumLoaded;
@@ -350,7 +349,7 @@ public class StackBatcher {
 
     private static class UnlitFacade implements MultiBufferSource {
         private final MultiBufferSource delegate;
-        private final IdentityHashMap<VertexConsumer, VertexConsumer> cache = new IdentityHashMap<>();
+        private final Reference2ObjectOpenHashMap<VertexConsumer, VertexConsumer> cache = new Reference2ObjectOpenHashMap<>();
 
         public UnlitFacade(MultiBufferSource delegate) {
             this.delegate = delegate;

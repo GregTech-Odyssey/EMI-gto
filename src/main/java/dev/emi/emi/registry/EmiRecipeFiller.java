@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
@@ -38,11 +35,13 @@ import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiSidebars;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 import dev.emi.emi.mixin.accessor.CraftingResultSlotAccessor;
 
 public class EmiRecipeFiller {
-    public static Map<MenuType<?>, List<EmiRecipeHandler<?>>> handlers = Maps.newHashMap();
+    public static Map<MenuType<?>, List<EmiRecipeHandler<?>>> handlers = new Reference2ObjectOpenHashMap<>();
     public static BiFunction<AbstractContainerMenu, EmiRecipe, EmiRecipeHandler<?>> extraHandlers = (h, r) -> null;
 
     public static void clear() {
@@ -145,10 +144,10 @@ public class EmiRecipeFiller {
                 List<Slot> slots = handler.getInputSources(screenHandler);
                 List<Slot> craftingSlots = handler.getCraftingSlots(recipe, screenHandler);
                 List<EmiIngredient> ingredients = recipe.getInputs();
-                List<DiscoveredItem> discovered = Lists.newArrayList();
+                List<DiscoveredItem> discovered = new ObjectArrayList<>();
                 Object2IntMap<EmiStack> weightDivider = new Object2IntOpenHashMap<>();
                 for (int i = 0; i < ingredients.size(); i++) {
-                    List<DiscoveredItem> d = Lists.newArrayList();
+                    List<DiscoveredItem> d = new ObjectArrayList<>();
                     EmiIngredient ingredient = ingredients.get(i);
                     List<EmiStack> emiStacks = ingredient.getEmiStacks();
                     if (ingredient.isEmpty()) {
@@ -199,7 +198,7 @@ public class EmiRecipeFiller {
                 if (discovered.isEmpty()) {
                     return null;
                 }
-                List<DiscoveredItem> unique = Lists.newArrayList();
+                List<DiscoveredItem> unique = new ObjectArrayList<>();
                 outer: for (DiscoveredItem di : discovered) {
                     if (di == null) {
                         continue;
@@ -223,7 +222,7 @@ public class EmiRecipeFiller {
                 if (maxAmount == 0) {
                     return null;
                 }
-                List<ItemStack> desired = Lists.newArrayList();
+                List<ItemStack> desired = new ObjectArrayList<>();
                 for (int i = 0; i < discovered.size(); i++) {
                     DiscoveredItem di = discovered.get(i);
                     if (di != null) {
@@ -246,7 +245,7 @@ public class EmiRecipeFiller {
     public static <T extends AbstractContainerMenu> int batchesAlreadyPresent(EmiRecipe recipe,
             StandardRecipeHandler<T> handler, AbstractContainerScreen<T> screen) {
         List<EmiIngredient> inputs = recipe.getInputs();
-        List<ItemStack> stacks = Lists.newArrayList();
+        List<ItemStack> stacks = new ObjectArrayList<>();
         Slot output = handler.getOutputSlot(screen.getMenu());
         if (output != null && !output.getItem().isEmpty() && recipe.getOutputs().size() > 0
                 && !ItemStack.matches(output.getItem(), recipe.getOutputs().get(0).getItemStack())) {

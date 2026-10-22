@@ -1,6 +1,5 @@
 package dev.emi.emi;
 
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiInitRegistry;
@@ -338,7 +337,7 @@ public class VanillaPlugin implements EmiPlugin {
                         } else {
                             int width = recipe.canCraftInDimensions(2, 3) ? recipe.canCraftInDimensions(1, 3) ? 1 : 2
                                     : 3;
-                            input = Lists.newArrayList();
+                            input = new ObjectArrayList<>();
                             for (int i = 0; i < recipe.getIngredients().size(); i++) {
                                 input.add(EmiIngredient.of(recipe.getIngredients().get(i)));
                                 if ((i + 1) % width == 0) {
@@ -407,8 +406,8 @@ public class VanillaPlugin implements EmiPlugin {
     }
 
     private static void addRepair(EmiRegistry registry, ReferenceOpenHashSet<Item> hiddenItems) {
-        List<Enchantment> targetedEnchantments = Lists.newArrayList();
-        List<Enchantment> universalEnchantments = Lists.newArrayList();
+        List<Enchantment> targetedEnchantments = new ObjectArrayList<>();
+        List<Enchantment> universalEnchantments = new ObjectArrayList<>();
         for (Enchantment enchantment : dev.emi.emi.EmiPort.getEnchantmentRegistry()) {
             try {
                 if (enchantment.canEnchant(ItemStack.EMPTY)) {

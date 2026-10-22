@@ -1,12 +1,12 @@
 package dev.emi.emi.runtime;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.runtime.EmiLog;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
 public class EmiReloadLog {
-    private static List<String> pendingWarnings = Lists.newArrayList();
+    private static List<String> pendingWarnings = new ObjectArrayList<>();
     public static List<String> warnings = List.of();
     private static int pendingWarningCount;
     public static int warningCount;
@@ -14,7 +14,7 @@ public class EmiReloadLog {
     public static void bake() {
         warnings = pendingWarnings;
         warningCount = pendingWarningCount;
-        pendingWarnings = Lists.newArrayList();
+        pendingWarnings = new ObjectArrayList<>();
         pendingWarningCount = 0;
     }
 

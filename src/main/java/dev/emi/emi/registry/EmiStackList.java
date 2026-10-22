@@ -1,6 +1,5 @@
 package dev.emi.emi.registry;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiRegistryAdapter;
@@ -38,8 +37,8 @@ public class EmiStackList {
             EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
     private static final TagKey<Fluid> FLUID_HIDDEN = TagKey.create(EmiPort.getFluidRegistry().key(),
             EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
-    public static List<EmiAlias.Baked> registryAliases = Lists.newArrayList();
-    public static List<Predicate<EmiStack>> invalidators = Lists.newArrayList();
+    public static List<EmiAlias.Baked> registryAliases = new ObjectArrayList<>();
+    public static List<Predicate<EmiStack>> invalidators = new ObjectArrayList<>();
     public static List<EmiStack> stacks = List.of();
     public static List<EmiStack> filteredStacks = List.of();
     private static final O2IOpenCustomCacheHashMap<EmiStack> strictIndices = new O2IOpenCustomCacheHashMap<>(
@@ -59,7 +58,7 @@ public class EmiStackList {
         CreativeModeTab.ItemDisplayParameters context = new CreativeModeTab.ItemDisplayParameters(
                 client.player.connection.enabledFeatures(), false, client.level.registryAccess());
         var groups = new ObjectArrayList<IndexGroup>();
-        var namespaceGroups = new LinkedHashMap<String, IndexGroup>();
+        var namespaceGroups = new Object2ObjectLinkedOpenHashMap<String, IndexGroup>();
         for (Item item : EmiPort.getItemRegistry()) {
             String itemName = "null";
             try {

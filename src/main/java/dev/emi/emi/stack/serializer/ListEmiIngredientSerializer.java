@@ -8,9 +8,9 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
 import dev.emi.emi.registry.EmiIngredientSerializers;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.GsonHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ListEmiIngredientSerializer implements EmiIngredientSerializer<ListEmiIngredient> {
@@ -36,7 +36,7 @@ public class ListEmiIngredientSerializer implements EmiIngredientSerializer<List
         } else {
             return EmiStack.EMPTY;
         }
-        List<EmiIngredient> ingredients = new ArrayList<>();
+        List<EmiIngredient> ingredients = new ObjectArrayList<>();
         for (JsonElement ingredientElement : ingredientsArray) {
             ingredients.add(EmiIngredientSerializers.deserialize(ingredientElement));
         }

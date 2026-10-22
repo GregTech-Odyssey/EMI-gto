@@ -1,7 +1,5 @@
 package dev.emi.emi.data;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,6 +19,8 @@ import dev.emi.emi.data.EmiResourceReloadListener;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.IndexStackData;
 import dev.emi.emi.data.RecipeDefaultLoader;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -46,7 +46,7 @@ public class EmiData {
         register.accept(new EmiTagExclusionsLoader());
         register.accept(
             new EmiDataLoader<Map<String, EmiRecipeCategoryProperties>>(
-                EmiPort.id("emi:category_properties"), "category/properties", Maps::newHashMap,
+                EmiPort.id("emi:category_properties"), "category/properties", Object2ObjectOpenHashMap::new,
                 (map, json, id) -> {
                     for (String k : json.keySet()) {
                         if (GsonHelper.isObjectNode(json, k)) {
@@ -92,13 +92,13 @@ public class EmiData {
                 }, map -> categoryPriorities = map));
         register.accept(
             new EmiDataLoader<List<Predicate<EmiRecipe>>>(
-                EmiPort.id("emi:recipe_filters"), "recipe/filters", Lists::newArrayList,
+                EmiPort.id("emi:recipe_filters"), "recipe/filters", ObjectArrayList::new,
                 (list, json, oid) -> {
                     JsonArray arr = GsonHelper.getAsJsonArray(json, "filters", new JsonArray());
                     for (JsonElement el : arr) {
                         if (el.isJsonObject()) {
                             JsonObject obj = el.getAsJsonObject();
-                            List<Predicate<EmiRecipe>> predicates = Lists.newArrayList();
+                            List<Predicate<EmiRecipe>> predicates = new ObjectArrayList<>();
                             if (GsonHelper.isStringValue(obj, "id")) {
                                 String id = GsonHelper.getAsString(obj, "id");
                                 if (id.startsWith("/") && id.endsWith("/")) {
@@ -144,11 +144,11 @@ public class EmiData {
                 }, list -> recipeFilters = list));
         register.accept(
             new EmiDataLoader<List<Supplier<dev.emi.emi.data.IndexStackData>>>(
-                EmiPort.id("emi:index_stacks"), "index/stacks", Lists::newArrayList,
+                EmiPort.id("emi:index_stacks"), "index/stacks", ObjectArrayList::new,
                 (list, json, oid) -> list.add(() -> {
-                    List<dev.emi.emi.data.IndexStackData.Added> added = Lists.newArrayList();
-                    List<EmiIngredient> removed = Lists.newArrayList();
-                    List<dev.emi.emi.data.IndexStackData.Filter> filters = Lists.newArrayList();
+                    List<dev.emi.emi.data.IndexStackData.Added> added = new ObjectArrayList<>();
+                    List<EmiIngredient> removed = new ObjectArrayList<>();
+                    List<dev.emi.emi.data.IndexStackData.Filter> filters = new ObjectArrayList<>();
                     if (GsonHelper.isArrayNode(json, "added")) {
                         for (JsonElement el : json.getAsJsonArray("added")) {
                             if (el.isJsonObject()) {
@@ -185,7 +185,7 @@ public class EmiData {
                 }), list -> stackData = list));
         register.accept(
             new EmiDataLoader<List<Supplier<dev.emi.emi.data.EmiAlias>>>(
-                EmiPort.id("emi:aliases"), "aliases", Lists::newArrayList,
+                EmiPort.id("emi:aliases"), "aliases", ObjectArrayList::new,
                 (list, json, id) -> {
                     if (GsonHelper.isArrayNode(json, "aliases")) {
                         for (JsonElement el : json.getAsJsonArray("aliases")) {
@@ -200,7 +200,7 @@ public class EmiData {
                 }, list -> aliases = list));
         register.accept(
             new EmiDataLoader<List<Supplier<EmiRecipe>>>(
-                EmiPort.id("emi:recipe_additions"), "recipe/additions", Lists::newArrayList,
+                EmiPort.id("emi:recipe_additions"), "recipe/additions", ObjectArrayList::new,
                 (list, json, oid) -> {
                     String s = GsonHelper.getAsString(json, "type", "");
                     ResourceLocation id = EmiPort.id("emi:/generated/" + oid.getPath());

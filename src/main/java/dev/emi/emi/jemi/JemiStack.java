@@ -2,8 +2,6 @@ package dev.emi.emi.jemi;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -19,6 +17,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.jemi.impl.JemiTooltipBuilder;
 import dev.emi.emi.runtime.EmiDrawContext;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.IIngredientType;
@@ -96,7 +95,7 @@ public class JemiStack<T> extends EmiStack {
 
     @Override
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         Minecraft client = Minecraft.getInstance();
         JemiTooltipBuilder builder = new JemiTooltipBuilder();
         renderer.getTooltip(builder, ingredient,

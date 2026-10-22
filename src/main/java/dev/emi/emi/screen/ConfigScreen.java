@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.lwjgl.glfw.GLFW;
@@ -62,6 +60,8 @@ import dev.emi.emi.screen.widget.config.SidebarPagesWidget;
 import dev.emi.emi.screen.widget.config.SidebarSubpanelsWidget;
 import dev.emi.emi.screen.widget.config.SubGroupNameWidget;
 import dev.emi.emi.search.EmiSearch;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ConfigScreen extends Screen {
     private static final int maxWidth = 240;
@@ -122,7 +122,7 @@ public class ConfigScreen extends Screen {
         super.init(); // Persistent-ish state
         int scroll = 0;
         String query = "";
-        Set<String> collapsed = Sets.newHashSet();
+        Set<String> collapsed = new ObjectOpenHashSet<>();
         if (list != null) {
             scroll = (int) list.getScrollAmount();
             query = search.getSearch();
@@ -288,7 +288,7 @@ public class ConfigScreen extends Screen {
     }
 
     private void addJumpButtons() {
-        List<String> jumps = Lists.newArrayList("general", "general.search", "ui", "ui.left-sidebar",
+        List<String> jumps = ObjectArrayList.of("general", "general.search", "ui", "ui.left-sidebar",
                 "ui.right-sidebar", "ui.top-sidebar", "ui.bottom-sidebar", "binds", "binds.crafts", "binds.cheats",
                 "dev");
         List<List<String>> removes = List.of(List.of("binds.cheats"), List.of("general.search"),

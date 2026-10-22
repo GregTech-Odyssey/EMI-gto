@@ -3,17 +3,16 @@ package dev.emi.emi.runtime;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 import dev.emi.emi.api.EmiApi;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiHistory {
-    private static final List<Screen> HISTORIES = Lists.newArrayList();
-    private static final List<Screen> FORWARD_HISTORIES = Lists.newArrayList();
+    private static final List<Screen> HISTORIES = new ObjectArrayList<>();
+    private static final List<Screen> FORWARD_HISTORIES = new ObjectArrayList<>();
 
     public static boolean isEmpty() {
         return HISTORIES.isEmpty();

@@ -1,8 +1,8 @@
 package dev.emi.emi.input;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.emi.emi.EmiPort;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -131,7 +131,7 @@ public class EmiBind {
     }
 
     public void setKey(List<String> keys) {
-        List<ModifiedKey> modifiedKeys = Lists.newArrayList();
+        List<ModifiedKey> modifiedKeys = new ObjectArrayList<>();
         for (String string : keys) {
             String[] parts = string.split(" ");
             InputConstants.Key key = InputConstants.UNKNOWN;

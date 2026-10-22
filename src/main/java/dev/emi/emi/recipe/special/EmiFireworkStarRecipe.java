@@ -1,11 +1,12 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
@@ -53,7 +54,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<DyeItem> getDyes(Random random, int max) {
-        List<DyeItem> dyes = Lists.newArrayList();
+        List<DyeItem> dyes = new ObjectArrayList<>();
         int amount = 1 + random.nextInt(max);
         for (int i = 0; i < amount; i++) {
             dyes.add(DYES.get(random.nextInt(DYES.size())));
@@ -62,7 +63,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<Item> getItems(Random random) {
-        List<Item> items = Lists.newArrayList();
+        List<Item> items = new ObjectArrayList<>();
         int amount = random.nextInt(4);
         if (amount < 2) {
             items.add(EFFECTS.get(amount));
@@ -92,7 +93,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
         byte star = 2;
         byte creeper = 3;
         byte burst = 4;
-        List<Integer> colors = Lists.newArrayList();
+        IntArrayList colors = new IntArrayList();
 
         for (Item item : items) {
             if (Items.GLOWSTONE_DUST.equals(item)) {
@@ -120,7 +121,7 @@ public class EmiFireworkStarRecipe extends EmiPatternCraftingRecipe {
             explosion.putByte("Type", smallBall);
         }
 
-        explosion.putIntArray("Colors", colors);
+        explosion.putIntArray("Colors", colors.toIntArray());
         tag.put("Explosion", explosion);
         stack.setTag(tag);
         return EmiStack.of(stack);

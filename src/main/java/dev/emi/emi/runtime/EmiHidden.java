@@ -1,6 +1,5 @@
 package dev.emi.emi.runtime;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import dev.emi.emi.EmiPort;
@@ -17,16 +16,17 @@ import java.util.Set;
 import java.util.function.Predicate;
 import com.gto.fastcollection.fastutil.O2ZOpenCacheHashMap;
 import com.gto.fastcollection.fastutil.OpenCacheHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiHidden {
     // Data loaded
     public static Set<EmiIngredient> disabledStacks = new OpenCacheHashSet<>();
-    public static List<IndexStackData.Filter> disabledFilters = Lists.newArrayList();
+    public static List<IndexStackData.Filter> disabledFilters = new ObjectArrayList<>();
     private static final O2ZOpenCacheHashMap<String> FILTER_LOOKUP = new O2ZOpenCacheHashMap<>();
     public static Map<String, Boolean> disabledFilterLookup = FILTER_LOOKUP;
     // Plugin defined
     public static Set<EmiIngredient> pluginDisabledStacks = new OpenCacheHashSet<>();
-    public static List<Predicate<EmiStack>> pluginDisabledFilters = Lists.newArrayList();
+    public static List<Predicate<EmiStack>> pluginDisabledFilters = new ObjectArrayList<>();
     // User edited
     public static Set<EmiIngredient> hiddenStacks = new LinkedHashSet<>();
 

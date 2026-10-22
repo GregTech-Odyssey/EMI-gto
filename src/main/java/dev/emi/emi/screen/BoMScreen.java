@@ -1,6 +1,5 @@
 package dev.emi.emi.screen;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.emi.emi.EmiPort;
@@ -56,8 +55,8 @@ public class BoMScreen extends Screen {
     private Bounds mode = new Bounds(-24, -50, 16, 16);
     private Bounds help = new Bounds(0, 0, 16, 16);
     private double offX, offY;
-    private List<Node> nodes = Lists.newArrayList();
-    private List<Cost> costs = Lists.newArrayList();
+    private List<Node> nodes = new ObjectArrayList<>();
+    private List<Cost> costs = new ObjectArrayList<>();
     private EmiPlayerInventory playerInv;
     private boolean hasRemainders = false;;
     public AbstractContainerScreen<?> old;
@@ -150,7 +149,7 @@ public class BoMScreen extends Screen {
             int totalCostWidth = font.width(EmiPort.translatable("emi.total_cost"));
             mode = new Bounds(totalCostWidth / 2 + 4, cy - 20, 16, 16);
 
-            List<Cost> remainders = Lists.newArrayList();
+            List<Cost> remainders = new ObjectArrayList<>();
 
             var remainderCosts = new ObjectArrayList<FlatMaterialCost>(
                     BoM.tree.cost.remainders.size() + BoM.tree.cost.chanceRemainders.size());
@@ -176,7 +175,7 @@ public class BoMScreen extends Screen {
             costs.addAll(remainders);
             hasRemainders = !remainders.isEmpty();
         } else {
-            nodes = Lists.newArrayList();
+            nodes = new ObjectArrayList<>();
         }
         batcher.repopulate();
     }
@@ -255,7 +254,7 @@ public class BoMScreen extends Screen {
         if (hover != null) {
             hover.drawTooltip(this, context, mouseX, mouseY);
         } else if (BoM.tree != null && batches.contains(mx, my)) {
-            List<ClientTooltipComponent> list = Lists.newArrayList();
+            List<ClientTooltipComponent> list = new ObjectArrayList<>();
             list.addAll(EmiTooltip.splitTranslate("tooltip.emi.bom.batch_size", BoM.tree.batches));
             list.add(EmiTooltipComponents
                     .of(EmiPort.translatable("tooltip.emi.bom.batch_size.ideal", EmiBind.LEFT_CLICK.getBindText())));
@@ -613,7 +612,7 @@ public class BoMScreen extends Screen {
 
         public boolean drawTooltip(Screen screen, EmiDrawContext context, int mouseX, int mouseY) {
             if (stack != null) {
-                List<ClientTooltipComponent> list = Lists.newArrayList();
+                List<ClientTooltipComponent> list = new ObjectArrayList<>();
                 list.addAll(stack.getTooltip());
                 if (EmiInput.isShiftDown()) {
                     getAutoResolutions(this, (stack, recipe) -> {
@@ -787,8 +786,8 @@ public class BoMScreen extends Screen {
     }
 
     private class TreeVolume {
-        public List<Width> widths = Lists.newArrayList();
-        public List<Node> nodes = Lists.newArrayList();
+        public List<Width> widths = new ObjectArrayList<>();
+        public List<Node> nodes = new ObjectArrayList<>();
 
         public TreeVolume(MaterialNode node, long amount, int y, ChanceState chance) {
             Node head = new Node(node, amount, 0, y, chance);

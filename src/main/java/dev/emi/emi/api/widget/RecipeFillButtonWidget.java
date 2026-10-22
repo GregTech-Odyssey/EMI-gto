@@ -1,6 +1,5 @@
 package dev.emi.emi.api.widget;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
@@ -10,6 +9,7 @@ import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.widget.RecipeButtonWidget;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import org.jetbrains.annotations.ApiStatus;
@@ -55,7 +55,7 @@ public class RecipeFillButtonWidget extends RecipeButtonWidget {
 
     @Override
     public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         if (canFill) {
             list.add(ClientTooltipComponent.create(EmiPort.ordered(EmiPort.translatable("tooltip.emi.fill_recipe"))));
         }

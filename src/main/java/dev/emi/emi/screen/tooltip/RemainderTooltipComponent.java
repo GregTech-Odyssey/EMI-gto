@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.tooltip;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -15,9 +14,10 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Map;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RemainderTooltipComponent implements EmiTooltipComponent {
-    public List<Remainder> remainders = Lists.newArrayList();
+    public List<Remainder> remainders = new ObjectArrayList<>();
 
     public RemainderTooltipComponent(EmiIngredient ingredient) {
         Map<Integer, List<EmiStack>> tools = Maps.newHashMap();
@@ -25,7 +25,7 @@ public class RemainderTooltipComponent implements EmiTooltipComponent {
         for (EmiStack stack : ingredient.getEmiStacks()) {
             int damage = getDamageDelta(stack, stack.getRemainder());
             if (damage != 0) {
-                tools.computeIfAbsent(damage, i -> Lists.newArrayList()).add(stack);
+                tools.computeIfAbsent(damage, i -> new ObjectArrayList<>()).add(stack);
                 continue;
             }
             for (Remainder remainder : remainders) {
@@ -99,7 +99,7 @@ public class RemainderTooltipComponent implements EmiTooltipComponent {
     }
 
     private static class Remainder {
-        public final List<EmiStack> inputs = Lists.newArrayList();
+        public final List<EmiStack> inputs = new ObjectArrayList<>();
         public final EmiStack remainder;
         public int damage = 0;
         public float chance = 1;

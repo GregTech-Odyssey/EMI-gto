@@ -1,6 +1,6 @@
 package dev.emi.emi.chess;
 
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.util.Mth;
 
 import java.util.List;
@@ -137,7 +137,7 @@ class ChessBoard {
     }
 
     public List<ChessMove> getAllMoves(PieceColor color) {
-        List<ChessMove> list = Lists.newArrayList();
+        List<ChessMove> list = new ObjectArrayList<>();
         for (int i = 0; i < 64; i++) {
             ChessPiece p = get(i);
             if (p != null && p.color() == color) {
@@ -153,7 +153,7 @@ class ChessBoard {
         int x = position % 8;
         int y = position / 8;
         if (self != null) {
-            List<ChessMove> list = Lists.newArrayList();
+            List<ChessMove> list = new ObjectArrayList<>();
             switch (self.type()) {
                 case PAWN:
                     int pOff = self.color() == PieceColor.BLACK ? 1 : -1;

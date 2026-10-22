@@ -1,11 +1,11 @@
 package dev.emi.emi.chess;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.EmiScreenManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -107,7 +107,7 @@ class ChessEmiStack extends EmiStack {
     public List<ClientTooltipComponent> getTooltip() {
         ChessPiece piece = EmiChess.getBoard().get(position);
         if (piece != null) {
-            List<ClientTooltipComponent> list = Lists.newArrayList();
+            List<ClientTooltipComponent> list = new ObjectArrayList<>();
             list.add(ClientTooltipComponent.create(EmiPort.ordered(EmiPort.translatable("emi.chess.piece."
                 + piece.color().toString().toLowerCase() + "_" + piece.type().toString().toLowerCase()))));
             Minecraft client = Minecraft.getInstance();

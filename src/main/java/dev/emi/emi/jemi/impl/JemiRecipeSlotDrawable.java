@@ -1,6 +1,5 @@
 package dev.emi.emi.jemi.impl;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.widget.Bounds;
 import dev.emi.emi.jemi.impl.JemiIngredientConsumer;
 import dev.emi.emi.jemi.widget.JemiSlotWidget;
@@ -24,7 +23,7 @@ import java.util.stream.Stream;
 
 public class JemiRecipeSlotDrawable implements IRecipeSlotDrawable {
     public JemiSlotWidget widget;
-    public List<IIngredientConsumer> overrides = Lists.newArrayList();
+    public List<IIngredientConsumer> overrides = new ObjectArrayList<>();
 
     @Override
     public List<ITypedIngredient<?>> getAllIngredientsList() { return widget.slot.getAllIngredientsList(); }

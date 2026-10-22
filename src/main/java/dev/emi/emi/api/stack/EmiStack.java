@@ -1,9 +1,9 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.registry.EmiComparisonDefaults;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -127,7 +127,7 @@ public abstract class EmiStack implements EmiIngredient {
     public abstract List<Component> getTooltipText();
 
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         if (!getRemainder().isEmpty()) {
             list.add(new RemainderTooltipComponent(this));
         }

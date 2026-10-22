@@ -1,6 +1,5 @@
 package dev.emi.emi.registry;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.*;
 import dev.emi.emi.config.EmiConfig;
@@ -35,7 +34,7 @@ public class EmiTags {
     private static final O2OOpenCacheHashMap<Set<?>, ObjectArrayList<EmiTagKey<?>>> CACHED_TAGS = new O2OOpenCacheHashMap<>();
     private static final Reference2ObjectOpenHashMap<EmiTagKey<?>, List<?>> TAG_VALUES = new Reference2ObjectOpenHashMap<>();
     private static final O2OOpenCacheHashMap<ResourceLocation, ObjectArrayList<EmiTagKey<?>>> SORTED_TAGS = new O2OOpenCacheHashMap<>();
-    public static final List<EmiTagKey<?>> TAGS = Lists.newArrayList();
+    public static final List<EmiTagKey<?>> TAGS = new ObjectArrayList<>();
     public static TagExclusions exclusions = new TagExclusions();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -1,10 +1,10 @@
 package dev.emi.emi.jemi.impl;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.config.FluidUnit;
 import dev.emi.emi.jemi.JemiUtil;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.builder.IIngredientConsumer;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JemiIngredientConsumer implements IIngredientConsumer {
-    public List<EmiIngredient> stacks = Lists.newArrayList();
+    public List<EmiIngredient> stacks = new ObjectArrayList<>();
 
     @Override
     public <I> IIngredientConsumer addIngredients(IIngredientType<I> ingredientType, List<@Nullable I> ingredients) {

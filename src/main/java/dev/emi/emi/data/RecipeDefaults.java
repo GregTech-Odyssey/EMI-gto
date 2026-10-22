@@ -1,7 +1,5 @@
 package dev.emi.emi.data;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import dev.emi.emi.api.EmiApi;
@@ -10,6 +8,8 @@ import dev.emi.emi.api.recipe.EmiRecipeManager;
 import dev.emi.emi.api.recipe.EmiResolutionRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Map;
 
 public class RecipeDefaults {
-    public final List<ResourceLocation> added = Lists.newArrayList();
-    public final List<Resolution> resolutions = Lists.newArrayList();
-    public final List<Tag> tags = Lists.newArrayList();
+    public final List<ResourceLocation> added = new ObjectArrayList<>();
+    public final List<Resolution> resolutions = new ObjectArrayList<>();
+    public final List<Tag> tags = new ObjectArrayList<>();
 
     public void add(ResourceLocation id) {
         added.add(id);
@@ -45,7 +45,7 @@ public class RecipeDefaults {
     }
 
     public Map<EmiIngredient, EmiRecipe> bake() {
-        Map<EmiIngredient, EmiRecipe> map = Maps.newHashMap();
+        Map<EmiIngredient, EmiRecipe> map = new Object2ObjectOpenHashMap<>();
         Minecraft client = Minecraft.getInstance();
         if (client.level == null) {
             return map;

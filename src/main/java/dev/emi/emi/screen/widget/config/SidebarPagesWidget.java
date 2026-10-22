@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.SidebarPages;
 import dev.emi.emi.config.SidebarType;
@@ -13,9 +12,10 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Supplier;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SidebarPagesWidget extends ConfigEntryWidget {
-    private List<Button> buttons = Lists.newArrayList();
+    private List<Button> buttons = new ObjectArrayList<>();
     private Mutator<SidebarPages> mutator;
 
     public SidebarPagesWidget(Component name, List<ClientTooltipComponent> tooltip, Supplier<String> search, Mutator<SidebarPages> mutator) {

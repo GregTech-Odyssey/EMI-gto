@@ -1,6 +1,5 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.render.EmiRender;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
@@ -114,7 +113,7 @@ public class ListEmiIngredient implements EmiIngredient {
 
     @Override
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> tooltip = Lists.newArrayList();
+        List<ClientTooltipComponent> tooltip = new ObjectArrayList<>();
         tooltip.add(new EmiTextTooltipWrapper(this, EmiPort.ordered(EmiPort.translatable("tooltip.emi.accepts"))));
         tooltip.add(new IngredientTooltipComponent(ingredients));
         int item = (int) (System.currentTimeMillis() / 1000 % ingredients.size());

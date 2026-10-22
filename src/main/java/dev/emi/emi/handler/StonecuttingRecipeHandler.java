@@ -1,11 +1,11 @@
 package dev.emi.emi.handler;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -23,7 +23,7 @@ public class StonecuttingRecipeHandler implements StandardRecipeHandler<Stonecut
 
     @Override
     public List<Slot> getInputSources(StonecutterMenu handler) {
-        List<Slot> list = Lists.newArrayList();
+        List<Slot> list = new ObjectArrayList<>();
         list.add(handler.getSlot(0));
         int invStart = 2;
         for (int i = invStart; i < invStart + 36; i++) { 

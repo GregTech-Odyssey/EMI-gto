@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.IntGroup;
 import dev.emi.emi.screen.ConfigScreen.Mutator;
@@ -12,6 +11,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Supplier;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class IntGroupWidget extends ConfigEntryWidget {
     public final IntGroup group;
@@ -19,10 +19,10 @@ public class IntGroupWidget extends ConfigEntryWidget {
 
     public IntGroupWidget(Component name, List<ClientTooltipComponent> tooltip, Supplier<String> search, Mutator<IntGroup> mutator) {
         super(name, tooltip, search, 20);
-        this.edits = Lists.newArrayList();
+        this.edits = new ObjectArrayList<>();
         this.group = mutator.get();
         int width = getWidth();
-        List<GuiEventListener> children = Lists.newArrayList();
+        List<GuiEventListener> children = new ObjectArrayList<>();
         for (int i = 0; i < group.size; i++) {
             final int f = i;
             IntEdit edit = new IntEdit(width, () -> group.values.getInt(f), v -> {

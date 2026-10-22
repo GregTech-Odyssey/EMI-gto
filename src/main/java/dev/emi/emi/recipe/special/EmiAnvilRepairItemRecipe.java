@@ -1,6 +1,5 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -9,6 +8,7 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -72,7 +72,7 @@ public class EmiAnvilRepairItemRecipe implements EmiRecipe {
     }
 
     protected EmiStack getItem(Random random, int item) {
-        List<ItemStack> items = Lists.newArrayList();
+        List<ItemStack> items = new ObjectArrayList<>();
         items.add(getTool(random));
         items.add(getTool(random));
         items.add(getMergeItems(items));

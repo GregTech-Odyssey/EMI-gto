@@ -1,6 +1,5 @@
 package dev.emi.emi.screen;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.EmiApi;
@@ -22,11 +21,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 import java.util.Objects;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class WidgetGroup implements WidgetHolder {
     public final EmiRecipe recipe;
     public final int x, y, width, height;
-    public final List<Widget> widgets = Lists.newArrayList();
+    public final List<Widget> widgets = new ObjectArrayList<>();
 
     public WidgetGroup(EmiRecipe recipe, int x, int y, int width, int height) {
         this.recipe = recipe;
@@ -53,11 +53,11 @@ public class WidgetGroup implements WidgetHolder {
         EmiRecipeCategory category = recipe.getCategory();
         ResourceLocation cid = category == null ? null : category.getId();
         ResourceLocation id = recipe.getId();
-        List<RecipeError> errors = Lists.newArrayList();
+        List<RecipeError> errors = new ObjectArrayList<>();
         if (id == null) {
             errors.add(new RecipeError(RecipeError.Severity.WARNING, EmiTooltip.splitTranslate("emi.dev.null_recipe_id")));
         } else if (EmiDev.duplicateRecipeIds.contains(id)) {
-            List<ClientTooltipComponent> tooltip = Lists.newArrayList();
+            List<ClientTooltipComponent> tooltip = new ObjectArrayList<>();
             if (Objects.equals(id.getNamespace(), "minecraft") || Objects.equals(id.getNamespace(), "emi")) {
                 tooltip.addAll(EmiTooltip.splitTranslate("emi.dev.duplicate_vanilla_recipe_id", id));
             } else {
@@ -75,7 +75,7 @@ public class WidgetGroup implements WidgetHolder {
             }
             errors.add(new RecipeError(RecipeError.Severity.ERROR, tooltip));
         } else if (EmiDev.incorrectRecipeIds.contains(id)) {
-            List<ClientTooltipComponent> tooltip = Lists.newArrayList();
+            List<ClientTooltipComponent> tooltip = new ObjectArrayList<>();
             tooltip.addAll(EmiTooltip.splitTranslate("emi.dev.synthetic_nag_explanation", id));
             tooltip.addAll(EmiTooltip.splitTranslate("emi.dev.synthetic_id"));
             errors.add(new RecipeError(RecipeError.Severity.ERROR, tooltip));
@@ -120,7 +120,7 @@ public class WidgetGroup implements WidgetHolder {
         }
 
         if (!errors.isEmpty()) {
-            List<ClientTooltipComponent> tooltip = Lists.newArrayList();
+            List<ClientTooltipComponent> tooltip = new ObjectArrayList<>();
             RecipeError.Severity severity = RecipeError.Severity.WARNING;
             for (RecipeError error : errors) {
                 if (error.severity() == RecipeError.Severity.ERROR) {

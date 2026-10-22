@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -24,10 +23,11 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiSearchWidget extends EditBox {
     private static final Pattern ESCAPE = Pattern.compile("\\\\.");
-    private List<String> searchHistory = Lists.newArrayList();
+    private List<String> searchHistory = new ObjectArrayList<>();
     private int searchHistoryIndex = 0;
     private List<Tuple<Integer, Style>> styles;
     private long lastClick = 0;
@@ -84,7 +84,7 @@ public class EmiSearchWidget extends EditBox {
             }
             EmiScreenManager.updateSearchSidebar();
             Matcher matcher = EmiSearch.TOKENS.matcher(string);
-            List<Tuple<Integer, Style>> styles = Lists.newArrayList();
+            List<Tuple<Integer, Style>> styles = new ObjectArrayList<>();
             int last = 0;
             while (matcher.find()) {
                 int start = matcher.start();

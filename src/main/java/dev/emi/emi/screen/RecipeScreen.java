@@ -3,7 +3,6 @@ package dev.emi.emi.screen;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -50,11 +49,11 @@ public class RecipeScreen extends Screen {
     public static @Nullable EmiIngredient resolve = null;
     private Map<EmiRecipeCategory, List<EmiRecipe>> recipes;
     public AbstractContainerScreen<?> old;
-    private List<RecipeTab> tabs = Lists.newArrayList();
+    private List<RecipeTab> tabs = new ObjectArrayList<>();
     private int tabPageSize = 6;
     private int tabPage = 0, tab = 0, page = 0;
     private List<SizedButtonWidget> arrows;
-    private List<WidgetGroup> currentPage = Lists.newArrayList();
+    private List<WidgetGroup> currentPage = new ObjectArrayList<>();
     private int buttonOff = 0, tabOff = 0;
     private Widget hoveredWidget = null, pressedSlot = null;
     private ResolutionButtonWidget resolutionButton;
@@ -400,7 +399,7 @@ public class RecipeScreen extends Screen {
         if (page < tab.getPageCount()) {
             int width = Math.max(minimumWidth - 16, tab.getWidth());
             setRecipePageWidth(width + 16);
-            currentPage = Lists.newArrayList();
+            currentPage = new ObjectArrayList<>();
             currentPage.addAll(tab.constructWidgets(page, x, y, backgroundWidth, backgroundHeight));
             List<EmiIngredient> workstations = EmiApi.getRecipeManager().getWorkstations(tab.category);
             if (!workstations.isEmpty()) {

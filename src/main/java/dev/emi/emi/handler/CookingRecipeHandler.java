@@ -1,9 +1,9 @@
 package dev.emi.emi.handler;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.world.inventory.AbstractFurnaceMenu;
 import net.minecraft.world.inventory.Slot;
 
@@ -18,7 +18,7 @@ public class CookingRecipeHandler<T extends AbstractFurnaceMenu> implements Stan
 
     @Override
     public List<Slot> getInputSources(T handler) {
-        List<Slot> list = Lists.newArrayList();
+        List<Slot> list = new ObjectArrayList<>();
         list.add(handler.getSlot(0));
         int invStart = 3;
         for (int i = invStart; i < invStart + 36; i++) { 

@@ -2,8 +2,8 @@ package dev.emi.emi.widget;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 
 import dev.emi.emi.EmiPort;
@@ -35,10 +35,10 @@ public class RecipeDefaultButtonWidget extends RecipeButtonWidget {
 
     @Override
     public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         switch (BoM.getRecipeStatus(recipe)) {
             case PARTIAL:
-                List<EmiStack> stacks = Lists.newArrayList();
+                List<EmiStack> stacks = new ObjectArrayList<>();
                 for (EmiStack stack : recipe.getOutputs()) {
                     if (BoM.getRecipe(stack) == recipe) {
                         stacks.add(stack);

@@ -1,6 +1,5 @@
 package dev.emi.emi.forge;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
@@ -17,6 +16,7 @@ import dev.emi.emi.registry.EmiPluginContainer;
 import dev.emi.emi.runtime.EmiLog;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -94,7 +94,7 @@ public final class EmiForgePlatform {
     }
 
     public static List<String> getModsWithPlugins() {
-        List<String> mods = Lists.newArrayList();
+        List<String> mods = new ObjectArrayList<>();
         Type entrypointType = Type.getType(EmiEntrypoint.class);
         for (ModFileScanData data : ModList.get().getAllScanData()) {
             for (ModFileScanData.AnnotationData annot : data.getAnnotations()) {
@@ -112,7 +112,7 @@ public final class EmiForgePlatform {
     }
 
     public static List<EmiPluginContainer> getPlugins() {
-        List<EmiPluginContainer> containers = Lists.newArrayList();
+        List<EmiPluginContainer> containers = new ObjectArrayList<>();
         Type entrypointType = Type.getType(EmiEntrypoint.class);
         for (ModFileScanData data : ModList.get().getAllScanData()) {
             for (ModFileScanData.AnnotationData annot : data.getAnnotations()) {
@@ -215,7 +215,7 @@ public final class EmiForgePlatform {
             if (opt.isPresent()) {
                 Object obj = opt.get();
                 if (obj instanceof String authors) {
-                    return Lists.newArrayList(authors.split("\\,")).stream().map(s -> s.trim());
+                    return new ObjectArrayList<>(authors.split("\\,")).stream().map(s -> s.trim());
                 } else if (obj instanceof List<?> list) {
                     if (list.size() > 0 && list.get(0) instanceof String) {
                         List<String> authors = (List<String>) list;

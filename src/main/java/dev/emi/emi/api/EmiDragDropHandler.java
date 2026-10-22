@@ -8,9 +8,9 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -96,7 +96,7 @@ public interface EmiDragDropHandler<T extends Screen> {
 
         private static <T extends AbstractContainerScreen<?>> Collection<Slot> filter(T t,
                 BiPredicate<T, Slot> slotFilter) {
-            List<Slot> slots = Lists.newArrayList();
+            List<Slot> slots = new ObjectArrayList<>();
             AbstractContainerMenu handler = t.getMenu();
             for (Slot slot : handler.slots) {
                 if (slotFilter.test(t, slot)) {

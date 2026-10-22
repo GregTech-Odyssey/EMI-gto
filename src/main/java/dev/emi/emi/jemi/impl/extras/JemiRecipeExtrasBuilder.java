@@ -1,7 +1,7 @@
 package dev.emi.emi.jemi.impl.extras;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.render.EmiTexture;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawablesView;
@@ -15,9 +15,9 @@ import java.util.List;
 
 public class JemiRecipeExtrasBuilder implements IRecipeExtrasBuilder {
     public IRecipeSlotDrawablesView slots;
-    public List<IJeiInputHandler> inputHandlers = Lists.newArrayList();
-    public List<IJeiGuiEventListener> eventListeners = Lists.newArrayList();
-    public List<JemiWidgetBuilder> widgets = Lists.newArrayList();
+    public List<IJeiInputHandler> inputHandlers = new ObjectArrayList<>();
+    public List<IJeiGuiEventListener> eventListeners = new ObjectArrayList<>();
+    public List<JemiWidgetBuilder> widgets = new ObjectArrayList<>();
 
     public JemiRecipeExtrasBuilder(IRecipeSlotDrawablesView slots) {
         this.slots = slots;

@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -28,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Shamelessly modified vanilla lists to support variable width.
@@ -35,7 +35,7 @@ import java.util.function.Predicate;
  */
 public class ListWidget extends AbstractContainerEventHandler implements Renderable, NarratableEntry {
     protected final Minecraft client;
-    private final List<Entry> children = Lists.newArrayList();
+    private final List<Entry> children = new ObjectArrayList<>();
     protected int width;
     protected int height;
     protected int top;

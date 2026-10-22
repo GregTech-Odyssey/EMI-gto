@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.collect.Sets;
-
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -14,6 +12,7 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.forge.EmiForgePlatform;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.ingredients.IIngredientHelper;
@@ -93,7 +92,7 @@ public class JemiUtil {
     }
 
     public static Set<String> getHandledMods() {
-        Set<String> set = Sets.newHashSet();
+        Set<String> set = new ObjectOpenHashSet<>();
         set.addAll(EmiForgePlatform.getModsWithPlugins());
         return set;
     }

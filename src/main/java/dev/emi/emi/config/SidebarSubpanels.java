@@ -1,14 +1,14 @@
 package dev.emi.emi.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.config.SidebarSettings;
 import dev.emi.emi.config.SidebarType;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
 public class SidebarSubpanels {
     public final dev.emi.emi.config.SidebarSettings settings;
-    public List<Subpanel> subpanels = Lists.newArrayList();
+    public List<Subpanel> subpanels = new ObjectArrayList<>();
 
     public SidebarSubpanels(List<Subpanel> subpanels, SidebarSettings settings) {
         this.subpanels.addAll(subpanels);

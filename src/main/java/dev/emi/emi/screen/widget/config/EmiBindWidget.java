@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.input.EmiBind;
@@ -13,11 +12,12 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 
 import java.util.List;
 import java.util.function.Supplier;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiBindWidget extends ConfigEntryWidget {
     private final ConfigScreen screen;
     private EmiBind bind;
-    private List<Button> buttons = Lists.newArrayList();
+    private List<Button> buttons = new ObjectArrayList<>();
 
     public EmiBindWidget(ConfigScreen screen, List<ClientTooltipComponent> tooltip, Supplier<String> search, EmiBind bind) {
         super(EmiPort.translatable(bind.translationKey), tooltip, search, 0);

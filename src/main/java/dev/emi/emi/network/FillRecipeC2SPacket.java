@@ -3,7 +3,7 @@ package dev.emi.emi.network;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +38,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
         syncId = buf.readInt();
         action = buf.readByte();
         slots = parseCompressedSlots(buf);
-        crafting = Lists.newArrayList();
+        crafting = new ObjectArrayList<>();
         int craftingSize = buf.readVarInt();
         for (int i = 0; i < craftingSize; i++) {
             int s = buf.readVarInt();
@@ -50,7 +50,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
             output = -1;
         }
         int size = buf.readVarInt();
-        stacks = Lists.newArrayList();
+        stacks = new ObjectArrayList<>();
         for (int i = 0; i < size; i++) {
             stacks.add(buf.readItem());
         }
@@ -88,8 +88,8 @@ public class FillRecipeC2SPacket implements EmiPacket {
             EmiLog.warn("Client requested fill but screen handler has changed, aborting");
             return;
         }
-        List<Slot> slots = Lists.newArrayList();
-        List<Slot> crafting = Lists.newArrayList();
+        List<Slot> slots = new ObjectArrayList<>();
+        List<Slot> crafting = new ObjectArrayList<>();
         Slot output = null;
         for (int i : this.slots) {
             if (i < 0 || i >= handler.slots.size()) {
@@ -111,7 +111,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
             }
         }
         if (crafting.size() >= stacks.size()) {
-            List<ItemStack> rubble = Lists.newArrayList();
+            List<ItemStack> rubble = new ObjectArrayList<>();
             for (int i = 0; i < crafting.size(); i++) {
                 Slot s = crafting.get(i);
                 if (s != null && s.mayPickup(player) && !s.getItem().isEmpty()) {
@@ -172,7 +172,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
     }
 
     private static List<Integer> parseCompressedSlots(FriendlyByteBuf buf) {
-        List<Integer> list = Lists.newArrayList();
+        List<Integer> list = new ObjectArrayList<>();
         int amount = buf.readVarInt();
         for (int i = 0; i < amount; i++) {
             int low = buf.readVarInt();
@@ -188,7 +188,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
     }
 
     private static void writeCompressedSlots(List<Integer> list, FriendlyByteBuf buf) {
-        List<Consumer<FriendlyByteBuf>> postWrite = Lists.newArrayList();
+        List<Consumer<FriendlyByteBuf>> postWrite = new ObjectArrayList<>();
         int groups = 0;
         int i = 0;
         while (i < list.size()) {

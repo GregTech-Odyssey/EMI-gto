@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.google.common.collect.Lists;
 import com.gto.fastcollection.fastutil.OpenCacheHashSet;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -176,13 +175,13 @@ public class EmiScreenManager {
         int top = bounds.left();
         int bottom = bounds.bottom();
         batchers.unclaimAll();
-        List<Bounds> spaceExclusion = Lists.newArrayList();
+        List<Bounds> spaceExclusion = new ObjectArrayList<>();
         spaceExclusion.addAll(exclusion);
         createScreenSpace(panels.get(0), screen, spaceExclusion, false, new Bounds(0, 0, left, screen.height),
                 SidebarSettings.LEFT);
         createScreenSpace(panels.get(1), screen, spaceExclusion, true,
                 new Bounds(right, 0, screen.width - right, screen.height), SidebarSettings.RIGHT);
-        spaceExclusion = Lists.newArrayList();
+        spaceExclusion = new ObjectArrayList<>();
         if (panels.get(0).isVisible()) {
             spaceExclusion.add(panels.get(0).getBounds());
         }
@@ -335,7 +334,7 @@ public class EmiScreenManager {
         panel.header = header;
         panel.theme = theme;
         ScreenSpace space = new ScreenSpace(tx, ty, tw, th, rtl, exclusion, () -> panel.getType(), panel.isSearch());
-        List<ScreenSpace> subspaces = Lists.newArrayList();
+        List<ScreenSpace> subspaces = new ObjectArrayList<>();
         for (SidebarSubpanels.Subpanel subpanel : subpanels.subpanels) {
             ty += th * ENTRY_SIZE + SUBPANEL_SEPARATOR_SIZE;
             th = subpanel.rows();
@@ -757,7 +756,7 @@ public class EmiScreenManager {
                         hov = sesi.getStack();
                         sidebar = sesi.getType();
                     }
-                    List<ClientTooltipComponent> list = Lists.newArrayList();
+                    List<ClientTooltipComponent> list = new ObjectArrayList<>();
                     list.addAll(hov.getTooltip());
                     if (EmiApi.getRecipeContext(hov) == null && EmiConfig.showCraft.isHeld()) {
                         EmiRecipe recipe = EmiUtil.getPreferredRecipe(hov, lastPlayerInventory, false);

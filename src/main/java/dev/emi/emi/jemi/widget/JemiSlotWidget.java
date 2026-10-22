@@ -1,6 +1,5 @@
 package dev.emi.emi.jemi.widget;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.widget.Bounds;
@@ -12,6 +11,7 @@ import dev.emi.emi.jemi.impl.JemiRecipeSlot;
 import dev.emi.emi.jemi.impl.JemiTooltipBuilder;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.ingredients.IIngredientRenderer;
 import mezz.jei.api.ingredients.ITypedIngredient;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -124,7 +124,7 @@ public class JemiSlotWidget extends SlotWidget {
             }
         } else if (slot.tooltipCallback != null) {
             try {
-                List<Component> event = Lists.newArrayList();
+                List<Component> event = new ObjectArrayList<>();
                 List<Component> original = stack.getEmiStacks().get(0).getTooltipText();
                 Set<Component> toRemove = original.stream().collect(Collectors.toSet());
                 event.addAll(stack.getEmiStacks().get(0).getTooltipText());
@@ -141,7 +141,7 @@ public class JemiSlotWidget extends SlotWidget {
 
     @Override
     public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         if (getStack().isEmpty()) {
             return List.of();
         }

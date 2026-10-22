@@ -1,6 +1,5 @@
 package dev.emi.emi.api.stack;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.Lighting;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
@@ -15,6 +14,7 @@ import dev.emi.emi.runtime.EmiTagKey;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
 import dev.emi.emi.screen.tooltip.RemainderTooltipComponent;
 import dev.emi.emi.screen.tooltip.TagTooltipComponent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -168,7 +168,7 @@ public class TagEmiIngredient implements EmiIngredient {
 
     @Override
     public List<ClientTooltipComponent> getTooltip() {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         list.add(new EmiTextTooltipWrapper(this, EmiPort.ordered(tagKey.getTagName())));
         if (EmiUtil.showAdvancedTooltips()) {
             list.add(ClientTooltipComponent.create(EmiPort.ordered(EmiPort.literal("#" + id, ChatFormatting.DARK_GRAY))));

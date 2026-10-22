@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.config.EmiConfig;
@@ -13,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class SidebarButtonWidget extends SizedButtonWidget {
     private final SidebarPanel panel;
@@ -21,7 +21,7 @@ public class SidebarButtonWidget extends SizedButtonWidget {
         super(x, y, width, height, 0, 0, () -> {
             return panel.pages.pages.size() > 0;
         }, null, () -> 0, () -> {
-            List<Component> list = Lists.newArrayList();
+            List<Component> list = new ObjectArrayList<>();
             list.add(panel.getType().getText());
             list.add(panel.getType().getDescription());
             if (panel.getType() == SidebarType.FAVORITES && EmiConfig.favorite.isBound()) {

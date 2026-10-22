@@ -1,11 +1,11 @@
 package dev.emi.emi;
 
-import com.google.common.collect.Maps;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.network.FillRecipeC2SPacket;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class EmiClient {
-    public static final Map<Consumer<UseOnContext>, List<ItemLike>> HOE_ACTIONS = Maps.newHashMap();
+    public static final Map<Consumer<UseOnContext>, List<ItemLike>> HOE_ACTIONS = new Reference2ObjectOpenHashMap<>();
     public static boolean onServer = false;
 
     public static void init() {

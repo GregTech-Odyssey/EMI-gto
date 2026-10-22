@@ -4,8 +4,6 @@ import java.util.AbstractList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -28,11 +26,13 @@ import dev.emi.emi.bom.FlatMaterialCost;
 import dev.emi.emi.bom.MaterialNode;
 import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 
 public class EmiFavorites {
-    public static List<EmiFavorite> favorites = Lists.newArrayList();
-    public static List<EmiFavorite.Synthetic> syntheticFavorites = Lists.newArrayList();
+    public static List<EmiFavorite> favorites = new ObjectArrayList<>();
+    public static List<EmiFavorite.Synthetic> syntheticFavorites = new ObjectArrayList<>();
     public static List<EmiFavorite> favoriteSidebar = new CompoundList<>(favorites, syntheticFavorites);
 
     public static JsonArray save() {
@@ -200,8 +200,8 @@ public class EmiFavorites {
         syntheticFavorites.clear();
         if (BoM.tree != null && BoM.craftingMode) {
             BoM.tree.calculateCost();
-            Map<EmiIngredient, FlatMaterialCost> originalCosts = Maps.newHashMap(BoM.tree.cost.costs);
-            Map<EmiIngredient, ChanceMaterialCost> chancedCosts = Maps.newHashMap(BoM.tree.cost.chanceCosts);
+            Map<EmiIngredient, FlatMaterialCost> originalCosts = new Object2ObjectOpenHashMap<>(BoM.tree.cost.costs);
+            Map<EmiIngredient, ChanceMaterialCost> chancedCosts = new Object2ObjectOpenHashMap<>(BoM.tree.cost.chanceCosts);
             Object2LongMap<EmiRecipe> originalBatches = new Object2LongLinkedOpenHashMap<>();
             Object2LongMap<EmiRecipe> originalAmounts = new Object2LongLinkedOpenHashMap<>();
             EmiPlayerInventory emptyInventory = new EmiPlayerInventory(List.of());

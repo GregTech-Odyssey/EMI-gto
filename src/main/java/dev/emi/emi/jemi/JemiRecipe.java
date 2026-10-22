@@ -3,7 +3,6 @@ package dev.emi.emi.jemi;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +29,7 @@ import dev.emi.emi.jemi.widget.JemiTankWidget;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreenManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.RecipeIngredientRole;
@@ -37,9 +37,9 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.library.focus.FocusGroup;
 
 public class JemiRecipe<T> implements EmiRecipe {
-    public List<EmiIngredient> inputs = Lists.newArrayList();
-    public List<EmiIngredient> catalysts = Lists.newArrayList();
-    public List<EmiStack> outputs = Lists.newArrayList();
+    public List<EmiIngredient> inputs = new ObjectArrayList<>();
+    public List<EmiIngredient> catalysts = new ObjectArrayList<>();
+    public List<EmiStack> outputs = new ObjectArrayList<>();
     public EmiRecipeCategory recipeCategory;
     public ResourceLocation originalId, id;
     public IRecipeCategory<T> category;

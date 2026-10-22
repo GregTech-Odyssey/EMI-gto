@@ -3,18 +3,17 @@ package dev.emi.emi.registry;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 
 import dev.emi.emi.api.EmiDragDropHandler;
 import dev.emi.emi.api.stack.EmiIngredient;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class EmiDragDropHandlers {
     public static Map<Class<?>, List<EmiDragDropHandler<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
-    public static List<EmiDragDropHandler<?>> generic = Lists.newArrayList();
+    public static List<EmiDragDropHandler<?>> generic = new ObjectArrayList<>();
 
     public static void clear() {
         fromClass.clear();

@@ -1,11 +1,11 @@
 package dev.emi.emi.handler;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.mixin.accessor.CraftingResultSlotAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -31,7 +31,7 @@ public class CoercedRecipeHandler<T extends AbstractContainerMenu> implements St
     @Override
     public List<Slot> getInputSources(AbstractContainerMenu handler) {
         Minecraft client = Minecraft.getInstance();
-        List<Slot> slots = Lists.newArrayList();
+        List<Slot> slots = new ObjectArrayList<>();
         if (output != null) {
             for (Slot slot : handler.slots) {
                 if (slot.isActive() && slot.mayPickup(client.player) && slot != output) {
@@ -44,7 +44,7 @@ public class CoercedRecipeHandler<T extends AbstractContainerMenu> implements St
 
     @Override
     public List<Slot> getCraftingSlots(AbstractContainerMenu handler) {
-        List<Slot> slots = Lists.newArrayList();
+        List<Slot> slots = new ObjectArrayList<>();
         int width = inv.getWidth();
         int height = inv.getHeight();
         for (int i = 0; i < 9; i++) {

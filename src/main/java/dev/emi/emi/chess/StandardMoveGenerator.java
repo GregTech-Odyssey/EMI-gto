@@ -1,6 +1,6 @@
 package dev.emi.emi.chess;
 
-import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +71,7 @@ class StandardMoveGenerator extends MoveGenerator {
         public void run() {
             int bestEval = Integer.MIN_VALUE + 1;
             ChessMove bestMove = null;
-            List<ChessMove> legal = Lists.newArrayList(board.getLegal(board.getAllMoves(color)).iterator());
+            List<ChessMove> legal = new ObjectArrayList<>(board.getLegal(board.getAllMoves(color)).iterator());
             Collections.shuffle(legal);
             for (ChessMove move : legal) {
                 ChessBoard copy = board.copy();

@@ -1,6 +1,5 @@
 package dev.emi.emi.registry;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.*;
@@ -35,12 +34,12 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 public class EmiRecipes {
     public static volatile Worker activeWorker = null;
     public static EmiRecipeManager manager = Manager.EMPTY;
-    public static List<Consumer<Consumer<EmiRecipe>>> lateRecipes = Lists.newArrayList();
-    public static List<Predicate<EmiRecipe>> invalidators = Lists.newArrayList();
+    public static List<Consumer<Consumer<EmiRecipe>>> lateRecipes = new ObjectArrayList<>();
+    public static List<Predicate<EmiRecipe>> invalidators = new ObjectArrayList<>();
 
-    public static List<EmiRecipeCategory> categories = Lists.newArrayList();
+    public static List<EmiRecipeCategory> categories = new ObjectArrayList<>();
     private static Reference2ObjectOpenHashMap<EmiRecipeCategory, ObjectArrayList<EmiIngredient>> workstations = new Reference2ObjectOpenHashMap<>();
-    private static List<EmiRecipe> recipes = Lists.newArrayList();
+    private static List<EmiRecipe> recipes = new ObjectArrayList<>();
 
     private static final O2OOpenCacheHashMap<EmiStack, List<EmiRecipe>> WORKSTATION_INDEX = new O2OOpenCacheHashMap<>();
     // Preserve the Map field descriptor used by existing EMI integrations.
@@ -50,7 +49,7 @@ public class EmiRecipes {
         WORKSTATION_INDEX.computeIfAbsent(stack, key -> new ObjectArrayList<>(recipes.size())).addAll(recipes);
     }
 
-    public static List<EmiRecipeDecorator> decorators = Lists.newArrayList();
+    public static List<EmiRecipeDecorator> decorators = new ObjectArrayList<>();
 
     public static void clear() {
         setWorker(null);

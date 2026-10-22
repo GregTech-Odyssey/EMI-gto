@@ -1,6 +1,5 @@
 package dev.emi.emi.registry;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.*;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -22,6 +21,7 @@ import dev.emi.emi.registry.EmiStackProviders;
 import dev.emi.emi.runtime.EmiHidden;
 import dev.emi.emi.runtime.EmiReloadLog;
 import dev.emi.emi.screen.EmiScreenBase;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -119,7 +119,7 @@ public class EmiRegistryImpl implements EmiRegistry {
 
     @Override
     public <T extends Screen> void addExclusionArea(Class<T> clazz, EmiExclusionArea<T> area) {
-        EmiExclusionAreas.fromClass.computeIfAbsent(clazz, c -> Lists.newArrayList()).add(area);
+        EmiExclusionAreas.fromClass.computeIfAbsent(clazz, c -> new ObjectArrayList<>()).add(area);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class EmiRegistryImpl implements EmiRegistry {
 
     @Override
     public <T extends Screen> void addDragDropHandler(Class<T> clazz, EmiDragDropHandler<T> handler) {
-        EmiDragDropHandlers.fromClass.computeIfAbsent(clazz, c -> Lists.newArrayList()).add(handler);
+        EmiDragDropHandlers.fromClass.computeIfAbsent(clazz, c -> new ObjectArrayList<>()).add(handler);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class EmiRegistryImpl implements EmiRegistry {
 
     @Override
     public <T extends Screen> void addStackProvider(Class<T> clazz, EmiStackProvider<T> provider) {
-        EmiStackProviders.fromClass.computeIfAbsent(clazz, c -> Lists.newArrayList()).add(provider);
+        EmiStackProviders.fromClass.computeIfAbsent(clazz, c -> new ObjectArrayList<>()).add(provider);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class EmiRegistryImpl implements EmiRegistry {
     
     @Override
     public <T extends AbstractContainerMenu> void addRecipeHandler(MenuType<T> type, EmiRecipeHandler<T> handler) {
-        EmiRecipeFiller.handlers.computeIfAbsent(type, (c) -> Lists.newArrayList()).add(handler);
+        EmiRecipeFiller.handlers.computeIfAbsent(type, (c) -> new ObjectArrayList<>()).add(handler);
     }
 
     @Override

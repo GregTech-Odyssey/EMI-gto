@@ -1,10 +1,11 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
@@ -77,7 +78,7 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<EmiStack> getItems(Random random) {
-        List<EmiStack> items = Lists.newArrayList();
+        List<EmiStack> items = new ObjectArrayList<>();
         int amount = random.nextInt(3);
         for(int i= 0; i<= amount; i++) {
             items.add(EmiStack.of(Items.GUNPOWDER));
@@ -91,7 +92,7 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<DyeItem> getDyes(Random random, int max) {
-        List<DyeItem> dyes = Lists.newArrayList();
+        List<DyeItem> dyes = new ObjectArrayList<>();
         int amount = 1 + random.nextInt(max);
         for (int i = 0; i < amount; i++) {
             dyes.add(DYES.get(random.nextInt(DYES.size())));
@@ -127,21 +128,21 @@ public class EmiFireworkRocketRecipe extends EmiPatternCraftingRecipe {
         }
 
         List<DyeItem> dyeItems = getDyes(random, 8 - items);
-        List<Integer> colors = Lists.newArrayList();
+        IntArrayList colors = new IntArrayList();
         for (DyeItem dyeItem : dyeItems) {
             colors.add(dyeItem.getDyeColor().getFireworkColor());
         }
-        explosion.putIntArray("Colors", colors);
+        explosion.putIntArray("Colors", colors.toIntArray());
 
         amount = random.nextInt(2);
 
         if (amount == 1) {
             List<DyeItem> dyeItemsFaded = getDyes(random, 8);
-            List<Integer> fadedColors = Lists.newArrayList();
+            IntArrayList fadedColors = new IntArrayList();
             for (DyeItem dyeItem : dyeItemsFaded) {
                 fadedColors.add(dyeItem.getDyeColor().getFireworkColor());
             }
-            explosion.putIntArray("FadeColors", fadedColors);
+            explosion.putIntArray("FadeColors", fadedColors.toIntArray());
         }
 
         tag.put("Explosion", explosion);

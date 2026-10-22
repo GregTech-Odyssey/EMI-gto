@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.google.common.collect.Maps;
-
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +13,7 @@ import dev.emi.emi.jemi.JemiConversionCache;
 import dev.emi.emi.jemi.impl.JemiRecipeSlot.IngredientRenderer;
 import dev.emi.emi.jemi.impl.JemiRecipeSlot.OffsetDrawable;
 import dev.emi.emi.jemi.impl.JemiRecipeSlot.TankInfo;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.TilingDirection;
@@ -125,7 +124,7 @@ public class JemiRecipeSlotBuilder implements IRecipeSlotBuilder {
     public <T> IRecipeSlotBuilder setCustomRenderer(IIngredientType<T> ingredientType,
             IIngredientRenderer<T> ingredientRenderer) {
         if (renderers == null) {
-            renderers = Maps.newHashMap();
+            renderers = new Reference2ObjectOpenHashMap<>();
         }
         renderers.put(ingredientType, new IngredientRenderer<T>(ingredientType, ingredientRenderer));
         return this;

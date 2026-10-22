@@ -7,15 +7,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.lwjgl.glfw.GLFW;
@@ -31,14 +29,19 @@ import dev.emi.emi.input.EmiBind;
 import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.runtime.EmiLog;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import joptsimple.internal.Strings;
 
 public class EmiConfig {
-    private static final Map<Class<?>, Setter> SETTERS = Maps.newHashMap();
-    private static final Map<Class<?>, Writer<?>> WRITERS = Maps.newHashMap();
-    private static final Map<Class<?>, MultiWriter<?>> MULTI_WRITERS = Maps.newHashMap();
-    private static final Map<String, List<String>> unparsed = Maps.newHashMap();
-    public static final Map<String, Predicate<?>> FILTERS = Maps.newHashMap();
+    private static final Map<Class<?>, Setter> SETTERS = new Reference2ObjectOpenHashMap<>();
+    private static final Map<Class<?>, Writer<?>> WRITERS = new Reference2ObjectOpenHashMap<>();
+    private static final Map<Class<?>, MultiWriter<?>> MULTI_WRITERS = new Reference2ObjectOpenHashMap<>();
+    private static final Map<String, List<String>> unparsed = new HashMap<>();
+    public static final Map<String, Predicate<?>> FILTERS = new Object2ObjectOpenHashMap<>();
     public static final String DEFAULT_CONFIG;
     public static boolean useGlobalConfig = false;
     public static String startupConfig; // General
@@ -439,7 +442,7 @@ public class EmiConfig {
 
     public static void loadConfig(QDCSS css) {
         try {
-            Set<String> consumed = Sets.newHashSet();
+            Set<String> consumed = new ObjectOpenHashSet<>();
             for (Field field : EmiConfig.class.getFields()) {
                 ConfigValue annot = field.getAnnotation(ConfigValue.class);
                 if (annot != null) {
@@ -470,7 +473,7 @@ public class EmiConfig {
     }
 
     public static String getSavedConfig() {
-        Map<String, List<String>> unparsed = Maps.newLinkedHashMap();
+        Map<String, List<String>> unparsed = new Object2ObjectLinkedOpenHashMap<>();
         StringSplitter wrapper = new StringSplitter((point, style) -> 1);
         for (Field field : EmiConfig.class.getFields()) {
             ConfigValue annot = field.getAnnotation(ConfigValue.class);
@@ -495,7 +498,7 @@ public class EmiConfig {
                 } catch (Exception e) {
                     EmiLog.error("Error serializing config", e);
                 }
-                unparsed.computeIfAbsent(group, g -> Lists.newArrayList()).add(text);
+                unparsed.computeIfAbsent(group, g -> new ObjectArrayList<>()).add(text);
             }
         }
         for (Map.Entry<String, List<String>> entry : EmiConfig.unparsed.entrySet()) {
@@ -503,7 +506,7 @@ public class EmiConfig {
             String group = parts[0];
             String key = parts[1];
             for (String value : entry.getValue()) {
-                unparsed.computeIfAbsent(group, g -> Lists.newArrayList())
+                unparsed.computeIfAbsent(group, g -> new ObjectArrayList<>())
                         .add("\t/** unparsed */\n\t" + key + ": " + value + ";\n");
             }
         }
@@ -600,14 +603,14 @@ public class EmiConfig {
             field.set(null, s);
         }, (String field) -> "\"" + field + "\"");
         defineMultiType(EmiBind.class, (css, annot, field) -> {
-            List<String> strings = Lists.newArrayList(css.getAll(annot));
+            List<String> strings = new ObjectArrayList<>(css.getAll(annot));
             for (int i = 0; i < strings.size(); i++) {
                 String s = strings.get(i);
                 strings.set(i, s.substring(1, s.length() - 1));
             }
             ((EmiBind) field.get(null)).setKey(strings);
         }, (EmiBind field) -> {
-            List<String> list = Lists.newArrayList();
+            List<String> list = new ObjectArrayList<>();
             for (EmiBind.ModifiedKey key : field.boundKeys) {
                 if (!key.isUnbound() || field.boundKeys.size() == 1) {
                     list.add("\"" + key.toName() + "\"");

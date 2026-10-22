@@ -1,11 +1,11 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -44,7 +44,7 @@ public class EmiRepairItemRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<ItemStack> getItems(Random random) {
-        List<ItemStack> items = Lists.newArrayList();
+        List<ItemStack> items = new ObjectArrayList<>();
         items.add(getTool(random));
         items.add(getTool(random));
         return items;

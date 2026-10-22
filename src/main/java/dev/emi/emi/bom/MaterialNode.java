@@ -1,9 +1,9 @@
 package dev.emi.emi.bom;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -53,7 +53,7 @@ public class MaterialNode {
     }
 
     public void recalculate(MaterialTree tree) {
-        recalculate(tree, Lists.newArrayList());
+        recalculate(tree, new ObjectArrayList<>());
     }
 
     private void recalculate(MaterialTree tree, List<EmiRecipe> used) {
@@ -97,7 +97,7 @@ public class MaterialNode {
         if (divisor <= 0) {
             divisor = 1;
         }
-        this.children = Lists.newArrayList();
+        this.children = new ObjectArrayList<>();
         outer:
         for (EmiIngredient i : recipe.getInputs()) {
             EmiStack remainder = EmiStack.EMPTY;

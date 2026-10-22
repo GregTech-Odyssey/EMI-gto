@@ -1,6 +1,5 @@
 package dev.emi.emi.search;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -220,8 +219,8 @@ public class EmiSearch {
         public final Query fullQuery;
 
         public CompiledQuery(String query) {
-            List<Query> full = Lists.newArrayList();
-            List<Query> queries = Lists.newArrayList();
+            List<Query> full = new ObjectArrayList<>();
+            List<Query> queries = new ObjectArrayList<>();
             Matcher matcher = TOKENS.matcher(query);
             while (matcher.find()) {
                 String q = matcher.group();
@@ -241,7 +240,7 @@ public class EmiSearch {
                     case "|" -> {
                         if (!queries.isEmpty()) {
                             full.add(new LogicalAndQuery(queries));
-                            queries = Lists.newArrayList();
+                            queries = new ObjectArrayList<>();
                         }
                         continue;
                     }
@@ -250,8 +249,8 @@ public class EmiSearch {
                 Function<String, Query> constructor = type.queryConstructor;
                 Function<String, Query> regexConstructor = type.regexQueryConstructor;
                 if (type == QueryType.DEFAULT) {
-                    List<Function<String, Query>> constructors = Lists.newArrayList();
-                    List<Function<String, Query>> regexConstructors = Lists.newArrayList();
+                    List<Function<String, Query>> constructors = new ObjectArrayList<>();
+                    List<Function<String, Query>> regexConstructors = new ObjectArrayList<>();
                     constructors.add(constructor);
                     regexConstructors.add(regexConstructor);
 
@@ -343,7 +342,7 @@ public class EmiSearch {
                     apply(this, source);
                     return;
                 }
-                List<EmiIngredient> stacks = Lists.newArrayList();
+                List<EmiIngredient> stacks = new ObjectArrayList<>();
                 int processed = 0;
                 for (EmiIngredient stack : source) {
                     if (processed++ >= 1024) {

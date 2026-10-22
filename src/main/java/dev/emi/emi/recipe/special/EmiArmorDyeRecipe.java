@@ -1,11 +1,11 @@
 package dev.emi.emi.recipe.special;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.GeneratedSlotWidget;
 import dev.emi.emi.api.widget.SlotWidget;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import java.util.List;
@@ -49,7 +49,7 @@ public class EmiArmorDyeRecipe extends EmiPatternCraftingRecipe {
     }
 
     private List<DyeItem> getDyes(Random random) {
-        List<DyeItem> dyes = Lists.newArrayList();
+        List<DyeItem> dyes = new ObjectArrayList<>();
         int amount = 1 + random.nextInt(8);
         for (int i = 0; i < amount; i++) {
             dyes.add(DYES.get(random.nextInt(DYES.size())));

@@ -1,6 +1,5 @@
 package dev.emi.emi.screen;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -14,7 +13,7 @@ public class RecipeTab {
     private static final int RECIPE_PADDING = 10;
     private final ObjectArrayList<RecipeDisplay> displays;
     private final int width;
-    private List<List<RecipeDisplay>> pages = Lists.newArrayList();
+    private List<List<RecipeDisplay>> pages = new ObjectArrayList<>();
     public final EmiRecipeCategory category;
 
     public RecipeTab(@NotNull EmiRecipeCategory category, @NotNull List<EmiRecipe> recipes) {
@@ -62,13 +61,13 @@ public class RecipeTab {
     public void bakePages(int height) {
         height = getVerticalRecipeSpace(height);
         pages.clear();
-        List<RecipeDisplay> current = Lists.newArrayList();
+        List<RecipeDisplay> current = new ObjectArrayList<>();
         int h = 0;
         for (RecipeDisplay recipe : displays) {
             int rh = recipe.getHeight();
             if (!current.isEmpty() && h + rh > height) {
                 pages.add(current);
-                current = Lists.newArrayList();
+                current = new ObjectArrayList<>();
                 h = 0;
             }
             h += rh + RECIPE_PADDING;

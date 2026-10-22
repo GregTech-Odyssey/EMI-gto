@@ -1,6 +1,5 @@
 package dev.emi.emi;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -24,6 +23,7 @@ import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.screen.EmiScreenManager;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -186,7 +186,7 @@ public class EmiRenderHelper {
         }
         y = Math.max(16, y);
         // Some mods assume this list will be mutable, oblige them
-        List<ClientTooltipComponent> mutable = Lists.newArrayList();
+        List<ClientTooltipComponent> mutable = new ObjectArrayList<>();
         int wrapWidth = Math.max(components.stream()
             .map(c -> c instanceof ClientTextTooltip ? 0 : c.getWidth(CLIENT.font))
             .max(Integer::compare).orElse(0), maxWidth);
@@ -336,7 +336,7 @@ public class EmiRenderHelper {
         try {
             renderRecipeBackground(recipe, context, x, y);
 
-            List<Widget> widgets = Lists.newArrayList();
+            List<Widget> widgets = new ObjectArrayList<>();
             WidgetHolder holder = new WidgetHolder() {
 
                 public int getWidth() {

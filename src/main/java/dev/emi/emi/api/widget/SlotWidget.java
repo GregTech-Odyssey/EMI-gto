@@ -1,6 +1,5 @@
 package dev.emi.emi.api.widget;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -19,6 +18,7 @@ import dev.emi.emi.screen.EmiScreenManager;
 import dev.emi.emi.screen.RecipeScreen;
 import dev.emi.emi.screen.tooltip.EmiTooltip;
 import dev.emi.emi.screen.tooltip.RecipeCostTooltipComponent;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -36,7 +36,7 @@ public class SlotWidget extends Widget {
     protected int u, v;
     protected int customWidth, customHeight;
     protected boolean drawBack = true, output = false, catalyst = false, custom = false;
-    protected List<Supplier<ClientTooltipComponent>> tooltipSuppliers = Lists.newArrayList();
+    protected List<Supplier<ClientTooltipComponent>> tooltipSuppliers = new ObjectArrayList<>();
     protected Bounds bounds;
     private EmiRecipe recipe;
 
@@ -215,7 +215,7 @@ public class SlotWidget extends Widget {
     
     @Override
     public List<ClientTooltipComponent> getTooltip(int mouseX, int mouseY) {
-        List<ClientTooltipComponent> list = Lists.newArrayList();
+        List<ClientTooltipComponent> list = new ObjectArrayList<>();
         if (getStack().isEmpty()) {
             return list;
         }

@@ -1,12 +1,12 @@
 package dev.emi.emi.handler;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -22,7 +22,7 @@ public class InventoryRecipeHandler implements StandardRecipeHandler<InventoryMe
 
     @Override
     public List<Slot> getInputSources(InventoryMenu handler) {
-        List<Slot> list = Lists.newArrayList();
+        List<Slot> list = new ObjectArrayList<>();
         for (int i = 1; i < 5; i++) { 
             list.add(handler.getSlot(i));
         }
@@ -35,7 +35,7 @@ public class InventoryRecipeHandler implements StandardRecipeHandler<InventoryMe
     
     @Override
     public List<Slot> getCraftingSlots(InventoryMenu handler) {
-        List<Slot> list = Lists.newArrayList();
+        List<Slot> list = new ObjectArrayList<>();
         // This is like, bad, right? There has to be a better way to do this
         list.add(handler.getSlot(1));
         list.add(handler.getSlot(2));
@@ -52,7 +52,7 @@ public class InventoryRecipeHandler implements StandardRecipeHandler<InventoryMe
     @Override
     public List<Slot> getCraftingSlots(EmiRecipe recipe, InventoryMenu handler) {
         if (recipe instanceof EmiCraftingRecipe craf && craf.shapeless) {
-            List<Slot> list = Lists.newArrayList();
+            List<Slot> list = new ObjectArrayList<>();
             list.add(handler.getSlot(1));
             list.add(handler.getSlot(2));
             list.add(handler.getSlot(3));

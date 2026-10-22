@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.widget.config;
 
-import com.google.common.collect.Lists;
 import dev.emi.emi.config.EmiConfig.ConfigGroup;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.widget.config.GroupNameWidget;
@@ -13,6 +12,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.function.Supplier;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public abstract class ConfigEntryWidget extends Entry {
     private final Component name;
@@ -22,7 +22,7 @@ public abstract class ConfigEntryWidget extends Entry {
     public ConfigGroup group;
     public boolean endGroup = false;
     private List<? extends GuiEventListener> children = List.of();
-    public List<dev.emi.emi.screen.widget.config.GroupNameWidget> parentGroups = Lists.newArrayList();
+    public List<dev.emi.emi.screen.widget.config.GroupNameWidget> parentGroups = new ObjectArrayList<>();
     
     public ConfigEntryWidget(Component name, List<ClientTooltipComponent> tooltip, Supplier<String> search, int height) {
         this.name = name;
