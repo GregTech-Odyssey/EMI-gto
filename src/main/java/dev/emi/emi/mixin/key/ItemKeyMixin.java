@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Unique;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import dev.emi.emi.stack.EmiKeyHolder;
 
 @Mixin(Item.class)

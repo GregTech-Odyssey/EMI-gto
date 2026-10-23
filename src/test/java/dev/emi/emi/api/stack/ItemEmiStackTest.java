@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 
+import dev.emi.emi.stack.EmiItemKey;
+
 import net.minecraft.world.item.ItemStack;
 
 class ItemEmiStackTest {
@@ -14,7 +16,7 @@ class ItemEmiStackTest {
         var key = mock(EmiItemKey.class);
         var rendered = mock(ItemStack.class);
         when(key.toStack(Integer.MAX_VALUE)).thenReturn(rendered);
-        assertSame(rendered, new ItemEmiStack(key, 3_000_000_000L).getItemStack());
-        assertSame(rendered, new ItemEmiStack(key, Long.MAX_VALUE).getItemStack());
+        assertSame(rendered, ItemEmiStack.ofKey(key, 3_000_000_000L).getItemStack());
+        assertSame(rendered, ItemEmiStack.ofKey(key, Long.MAX_VALUE).getItemStack());
     }
 }

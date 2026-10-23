@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 
 import dev.emi.emi.registry.EmiStackList;
+import dev.emi.emi.stack.EmiItemKey;
 
 class ComparisonTest {
     @Test

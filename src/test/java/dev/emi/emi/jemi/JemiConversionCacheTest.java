@@ -20,7 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.Fluids;
 
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiRegistryAdapter;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
@@ -83,7 +83,7 @@ class JemiConversionCacheTest {
                             List.of(new TagEmiIngredient(rawTag, call.getArgument(1), 1)), 3));
             var first = cache.getIngredient(stacks(firstKey, secondKey, 3));
             first.setAmount(9).setChance(0.5f);
-            first.getEmiStacks().getFirst().setRemainder(new ItemEmiStack(firstKey, 2));
+            first.getEmiStacks().getFirst().setRemainder(ItemEmiStack.ofKey(firstKey, 2));
             first.getEmiStacks().getFirst().setAmount(7);
 
             var second = cache.getIngredient(stacks(firstKey, secondKey, 3));
@@ -201,6 +201,6 @@ class JemiConversionCacheTest {
     }
 
     private static ObjectArrayList<EmiStack> stacks(EmiItemKey first, EmiItemKey second, long amount) {
-        return new ObjectArrayList<>(List.of(new ItemEmiStack(first, amount), new ItemEmiStack(second, amount)));
+        return new ObjectArrayList<>(List.of(ItemEmiStack.ofKey(first, amount), ItemEmiStack.ofKey(second, amount)));
     }
 }

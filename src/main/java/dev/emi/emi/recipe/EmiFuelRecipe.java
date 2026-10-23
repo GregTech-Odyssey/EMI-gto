@@ -7,9 +7,9 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
+import dev.emi.emi.stack.StackKeys;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,7 @@ public class EmiFuelRecipe implements EmiRecipe {
         this.stack = stack;
         this.time = time;
         this.id = id;
-        if (stack.getEmiStacks().getFirst().getStackKey() == EmiItemKey.of(Items.LAVA_BUCKET)) {
+        if (stack.getEmiStacks().getFirst().getStackKey() == StackKeys.ofItem(Items.LAVA_BUCKET, null)) {
             stack.getEmiStacks().getFirst().setRemainder(EmiStack.of(Items.BUCKET));
         }
     }

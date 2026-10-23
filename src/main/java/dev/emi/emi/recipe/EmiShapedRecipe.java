@@ -4,8 +4,8 @@ import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
-import dev.emi.emi.api.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.runtime.EmiLog;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -78,8 +78,8 @@ public class EmiShapedRecipe extends EmiCraftingRecipe {
 
     private static boolean hasCraftingRemainingItem(EmiStack stack) {
         // The shared key stack has count one; count-sensitive queries need the actual amount.
-        if (stack.getStackKey() instanceof EmiItemKey key) {
-            return key.getReadOnlyStack().hasCraftingRemainingItem();
+        if (stack instanceof ItemEmiStack item) {
+            return item.getReadOnlyStack().hasCraftingRemainingItem();
         }
         return false;
     }

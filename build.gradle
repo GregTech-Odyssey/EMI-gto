@@ -56,6 +56,7 @@ repositories {
         url = 'https://gtodyssey.com/maven/releases'
         content {
             includeGroup 'com.gto.fastcollection'
+            includeGroup 'appeng'
         }
     }
     maven {
@@ -80,6 +81,7 @@ dependencies {
     // 运行时由整合包里的 LeanObject 提供
     implementation "com.gto.fastcollection:FastCollection:${fastcollection_version}"
 
+    modCompileOnly("appeng:appliedenergistics2-forge-1.20.1:${ae2_version}") { transitive = false }
     modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     modCompileOnly "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
     modRuntimeOnly "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"

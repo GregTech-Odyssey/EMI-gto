@@ -8,6 +8,7 @@ import dev.emi.emi.forge.EmiForgePlatform;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.StackBatcher.Batchable;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
+import dev.emi.emi.stack.StackKeys;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,7 +31,7 @@ import java.util.List;
 public class ItemEmiStack extends EmiStack implements Batchable {
     private static final Minecraft client = Minecraft.getInstance();
 
-    private final EmiItemKey item;
+    private final Object item;
 
     private boolean unbatchable;
 
@@ -39,23 +40,27 @@ public class ItemEmiStack extends EmiStack implements Batchable {
     }
 
     public ItemEmiStack(ItemStack stack, long amount) {
-        this.item = EmiItemKey.of(stack.getItem(), stack.getTag());
+        this.item = StackKeys.ofItem(stack.getItem(), stack.getTag());
         this.amount = amount;
     }
 
     public ItemEmiStack(Item item, CompoundTag nbt, long amount) {
-        this.item = EmiItemKey.of(item, nbt);
+        this.item = StackKeys.ofItem(item, nbt);
         this.amount = amount;
     }
 
-    public ItemEmiStack(EmiItemKey item, long amount) {
+    private ItemEmiStack(Object item, long amount) {
         this.item = item;
         this.amount = amount;
     }
 
+    public static ItemEmiStack ofKey(Object key, long amount) {
+        return new ItemEmiStack(key, amount);
+    }
+
     @Override
     public ItemStack getItemStack() {
-        return item.toStack((int) Math.min(Integer.MAX_VALUE, amount));
+        return StackKeys.toStack(item, (int) Math.min(Integer.MAX_VALUE, amount));
     }
 
     @Override
@@ -69,22 +74,26 @@ public class ItemEmiStack extends EmiStack implements Batchable {
 
     @Override
     public boolean isEmpty() {
-        return amount == 0 || item.getItem() == Items.AIR;
+        return amount == 0 || StackKeys.getItem(item) == Items.AIR;
     }
 
     @Override
     public CompoundTag getNbt() {
-        return item.getTag();
+        return StackKeys.getTag(item);
     }
 
     @Override
     public Object getKey() {
-        return item.getItem();
+        return StackKeys.getItem(item);
     }
 
     @Override
-    public EmiItemKey getStackKey() {
+    public Object getStackKey() {
         return item;
+    }
+
+    public ItemStack getReadOnlyStack() {
+        return StackKeys.getReadOnlyStack(item);
     }
 
     @Override
@@ -94,7 +103,7 @@ public class ItemEmiStack extends EmiStack implements Batchable {
 
     @Override
     public ResourceLocation getId() {
-        return item.getId();
+        return StackKeys.getId(item);
     }
 
     @Override

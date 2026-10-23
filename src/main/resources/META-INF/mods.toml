@@ -36,6 +36,13 @@ versionRange = "[15.20.0.0,)"
 ordering = "BEFORE"
 side = "CLIENT"
 
+[[dependencies.emi]]
+modId = "ae2"
+mandatory = false
+versionRange = "[15.2610.32,)"
+ordering = "NONE"
+side = "BOTH"
+
 [[mods]]
 modId = "emitrades"
 version = "1.2.1-gto.1"

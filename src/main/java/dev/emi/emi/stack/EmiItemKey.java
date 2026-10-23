@@ -1,4 +1,4 @@
-package dev.emi.emi.api.stack;
+package dev.emi.emi.stack;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -10,9 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
-import dev.emi.emi.stack.EmiKeyHolder;
-
-@ApiStatus.Experimental
+@ApiStatus.Internal
 public final class EmiItemKey extends EmiStackKey {
     private final Item item;
     private @Nullable ItemStack readOnlyStack;
@@ -37,11 +35,6 @@ public final class EmiItemKey extends EmiStackKey {
     }
 
     public Item getItem() {
-        return item;
-    }
-
-    @Override
-    public Object getPrimary() {
         return item;
     }
 

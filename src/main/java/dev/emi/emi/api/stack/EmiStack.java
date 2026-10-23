@@ -99,8 +99,11 @@ public abstract class EmiStack implements EmiIngredient {
 
     public abstract Object getKey();
 
-    /** Returns the interned key for item/fluid stacks, or null for custom resources. */
-    public @Nullable EmiStackKey getStackKey() {
+    /**
+     * Returns the interned key for item/fluid stacks, compared with {@code ==}: Applied Energistics' {@code AEKey} when it
+     * is loaded, otherwise an EMI internal key. Null for custom resources.
+     */
+    public @Nullable Object getStackKey() {
         return null;
     }
 

@@ -22,7 +22,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -47,8 +47,8 @@ class EmiShapedRecipeTest {
             when(key.toStack(1)).thenReturn(writable);
             when(readOnly.hasCraftingRemainingItem()).thenReturn(true);
             when(writable.getCraftingRemainingItem()).thenReturn(remainder);
-            var first = new ItemEmiStack(key, 1);
-            var second = new ItemEmiStack(key, 1);
+            var first = ItemEmiStack.ofKey(key, 1);
+            var second = ItemEmiStack.ofKey(key, 1);
             try (var stacks = mockStatic(EmiStack.class)) {
                 stacks.when(() -> EmiStack.of(remainder)).thenReturn(displayed);
                 EmiShapedRecipe.setRemainders(List.of(first, second), recipe);
@@ -73,8 +73,8 @@ class EmiShapedRecipeTest {
         when(key.toStack(2)).thenReturn(counted);
         when(counted.hasCraftingRemainingItem()).thenReturn(true);
         when(counted.getCraftingRemainingItem()).thenReturn(ItemStack.EMPTY);
-        var first = new ItemEmiStack(key, 1);
-        var second = new ItemEmiStack(key, 2);
+        var first = ItemEmiStack.ofKey(key, 1);
+        var second = ItemEmiStack.ofKey(key, 2);
         EmiShapedRecipe.setRemainders(List.of(new ListEmiIngredient(List.of(first, second), 1)),
                 mock(ShapedRecipe.class));
         assertSame(EmiStack.EMPTY, first.getRemainder());
@@ -157,8 +157,8 @@ class EmiShapedRecipeTest {
         grid.setItem(0, bucketKey.toStack(1));
         grid.setItem(1, toolKey.toStack(1));
         var expected = recipe.getRemainingItems(grid);
-        var bucketInput = new ItemEmiStack(bucketKey, 1);
-        var toolInput = new ItemEmiStack(toolKey, 1);
+        var bucketInput = ItemEmiStack.ofKey(bucketKey, 1);
+        var toolInput = ItemEmiStack.ofKey(toolKey, 1);
         try (var stacks = mockStatic(EmiStack.class)) {
             stacks.when(() -> EmiStack.of(any(ItemStack.class))).thenAnswer(call -> {
                 ItemStack remainder = call.getArgument(0);

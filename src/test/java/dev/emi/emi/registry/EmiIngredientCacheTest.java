@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
@@ -47,7 +47,7 @@ class EmiIngredientCacheTest {
                 new ItemStack(Items.PAPER, 3) });
         var key = mock(EmiItemKey.class);
         when(key.getItem()).thenReturn(Items.STICK);
-        var stack = new ItemEmiStack(key, 1);
+        var stack = ItemEmiStack.ofKey(key, 1);
         var rawTag = TagKey.create(Registries.ITEM, new ResourceLocation("test", "alternatives"));
         var tagKey = mock(EmiTagKey.class);
         when(tagKey.id()).thenReturn(rawTag.location());
@@ -62,7 +62,7 @@ class EmiIngredientCacheTest {
 
             var first = EmiIngredient.of(source);
             var second = EmiIngredient.of(source, 7);
-            first.getEmiStacks().getFirst().setRemainder(new ItemEmiStack(key, 2));
+            first.getEmiStacks().getFirst().setRemainder(ItemEmiStack.ofKey(key, 2));
             first.setChance(0.5f);
 
             assertEquals(3, first.getAmount());
@@ -118,8 +118,8 @@ class EmiIngredientCacheTest {
         var originalComparisons = EmiComparisonDefaults.comparisons;
         EmiComparisonDefaults.comparisons = new Reference2ObjectOpenHashMap<>();
         try (var stacks = mockStatic(EmiStack.class)) {
-            stacks.when(() -> EmiStack.of(firstInput)).thenReturn(new ItemEmiStack(firstKey, 2));
-            stacks.when(() -> EmiStack.of(secondInput)).thenReturn(new ItemEmiStack(secondKey, 3));
+            stacks.when(() -> EmiStack.of(firstInput)).thenReturn(ItemEmiStack.ofKey(firstKey, 2));
+            stacks.when(() -> EmiStack.of(secondInput)).thenReturn(ItemEmiStack.ofKey(secondKey, 3));
             var registry = new EmiRegistryImpl();
             registry.setDefaultComparison(Items.STICK, Comparison.COMPARE_STACK_KEY);
             var converted = EmiIngredient.of(source);

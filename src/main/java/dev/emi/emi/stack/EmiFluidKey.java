@@ -1,4 +1,4 @@
-package dev.emi.emi.api.stack;
+package dev.emi.emi.stack;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -8,9 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
 
-import dev.emi.emi.stack.EmiKeyHolder;
-
-@ApiStatus.Experimental
+@ApiStatus.Internal
 public final class EmiFluidKey extends EmiStackKey {
     private final Fluid fluid;
 
@@ -30,11 +28,6 @@ public final class EmiFluidKey extends EmiStackKey {
     }
 
     public Fluid getFluid() {
-        return fluid;
-    }
-
-    @Override
-    public Object getPrimary() {
         return fluid;
     }
 

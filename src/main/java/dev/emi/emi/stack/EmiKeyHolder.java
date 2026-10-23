@@ -7,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.nbt.CompoundTag;
 
-import dev.emi.emi.api.stack.EmiStackKey;
-
 /**
  * Per item or fluid storage of interned stack keys, added to {@code Item} and {@code Fluid} by mixin.
  */

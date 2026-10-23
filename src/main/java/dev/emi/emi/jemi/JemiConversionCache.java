@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import dev.emi.emi.api.stack.EmiStackKey;
 import dev.emi.emi.api.stack.ListEmiIngredient;
 import dev.emi.emi.api.stack.TagEmiIngredient;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -92,13 +91,13 @@ public final class JemiConversionCache {
     }
 
     private static final class IngredientKey {
-        private EmiStackKey[] keys;
+        private Object[] keys;
         private long[] amounts;
         private int size;
         private int hash;
 
         private IngredientKey() {
-            keys = new EmiStackKey[0];
+            keys = new Object[0];
             amounts = new long[0];
         }
 
@@ -112,7 +111,7 @@ public final class JemiConversionCache {
         private boolean set(ObjectArrayList<EmiStack> stacks) {
             size = stacks.size();
             if (keys.length < size) {
-                keys = new EmiStackKey[size];
+                keys = new Object[size];
                 amounts = new long[size];
             }
             int hash = 1;

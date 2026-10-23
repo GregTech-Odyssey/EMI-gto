@@ -6,6 +6,7 @@ import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.forge.EmiForgePlatform;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.screen.tooltip.EmiTextTooltipWrapper;
+import dev.emi.emi.stack.StackKeys;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -19,10 +20,10 @@ import java.util.List;
 
 @ApiStatus.Internal
 public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
-    private final EmiFluidKey fluid;
+    private final Object fluid;
 
     public FluidEmiStack(Fluid fluid) {
-        this.fluid = EmiFluidKey.of(fluid);
+        this.fluid = StackKeys.ofFluid(fluid, null);
         this.amount = 0;
     }
 
@@ -31,13 +32,17 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
     }
 
     public FluidEmiStack(Fluid fluid, @Nullable CompoundTag nbt, long amount) {
-        this.fluid = EmiFluidKey.of(fluid, nbt);
+        this.fluid = StackKeys.ofFluid(fluid, nbt);
         this.amount = amount;
     }
 
-    public FluidEmiStack(EmiFluidKey fluid, long amount) {
+    private FluidEmiStack(Object fluid, long amount) {
         this.fluid = fluid;
         this.amount = amount;
+    }
+
+    public static FluidEmiStack ofKey(Object key, long amount) {
+        return new FluidEmiStack(key, amount);
     }
 
     @Override
@@ -56,16 +61,16 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
 
     @Override
     public CompoundTag getNbt() {
-        return fluid.getTag();
+        return StackKeys.getTag(fluid);
     }
 
     @Override
     public Object getKey() {
-        return fluid.getFluid();
+        return StackKeys.getFluid(fluid);
     }
 
     @Override
-    public EmiFluidKey getStackKey() {
+    public Object getStackKey() {
         return fluid;
     }
 
@@ -76,7 +81,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
 
     @Override
     public ResourceLocation getId() {
-        return fluid.getId();
+        return StackKeys.getId(fluid);
     }
 
     @Override
@@ -95,7 +100,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
 
     @Override
     public List<Component> getTooltipText() {
-        return EmiForgePlatform.getFluidTooltip(fluid.getFluid(), getNbt());
+        return EmiForgePlatform.getFluidTooltip(StackKeys.getFluid(fluid), getNbt());
     }
 
     @Override
@@ -110,7 +115,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
         if (amount > 1) {
             list.add(EmiTooltipComponents.getAmount(this));
         }
-        String namespace = EmiPort.getFluidRegistry().getKey(fluid.getFluid()).getNamespace();
+        String namespace = EmiPort.getFluidRegistry().getKey(StackKeys.getFluid(fluid)).getNamespace();
         EmiTooltipComponents.appendModName(list, namespace);
         list.addAll(super.getTooltip());
         return list;
@@ -118,7 +123,7 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
 
     @Override
     public Component getName() {
-        return EmiForgePlatform.getFluidName(fluid.getFluid(), getNbt());
+        return EmiForgePlatform.getFluidName(StackKeys.getFluid(fluid), getNbt());
     }
 
     static class FluidEntry {

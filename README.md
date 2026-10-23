@@ -24,7 +24,7 @@ EMI 与 EMI Trades 均依据 MIT 许可证开源，本项目沿用 MIT 许可证
 - 显示名为 EMI GTO Edition；模组 ID 仍为 `emi`，Java 包名 `dev.emi.emi` 与资源命名空间不变，以兼容现有的 EMI 插件与存档数据。
 - 只提供 Forge 1.20.1 版，需要 Java 21。运行时需要 FastCollection（整合包中由 LeanObject 提供）。
 - 不能与官方 EMI 同时安装。
-- 本模组不依赖应用能源、GregTech、GTOCore、GTOLib；应用能源的联动写在应用能源 GTO 分支的 `appeng.integration.modules.emi` 中，通过 `dev.emi.emi.api.EmiHooks` 与 `EmiStackKey` 接入。
+- 本模组不依赖应用能源、GregTech、GTOCore、GTOLib；应用能源的联动写在应用能源 GTO 分支的 `appeng.integration.modules.emi` 中，通过 `dev.emi.emi.api.EmiHooks` 接入；装有应用能源时，EMI 直接使用应用能源的物品与流体键，不再另存一份。
 
 ## 构建与发布
 

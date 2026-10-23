@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import io.github.prismwork.emitrades.recipe.VillagerTrade;
 import io.github.prismwork.emitrades.util.EntityEmiStack;
 import io.github.prismwork.emitrades.util.TradeEntitySnapshot;

@@ -14,7 +14,7 @@ import dev.emi.emi.TestBootstrap;
 import dev.emi.emi.api.EmiHooks;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.Comparison;
-import dev.emi.emi.api.stack.EmiItemKey;
+import dev.emi.emi.stack.EmiItemKey;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
 
@@ -31,7 +31,7 @@ class EmiFavoritesTest {
 
     @Test
     void favoriteShortcutRemovesAnExistingItemFavoriteAndPersistsTheChange() {
-        var favorite = new EmiFavorite(new ItemEmiStack(new EmiItemKey(Items.STONE, null), 1), null);
+        var favorite = new EmiFavorite(ItemEmiStack.ofKey(new EmiItemKey(Items.STONE, null), 1), null);
         EmiFavorites.favorites.add(favorite);
 
         try (var data = mockStatic(EmiPersistentData.class); var hooks = mockStatic(EmiHooks.class)) {

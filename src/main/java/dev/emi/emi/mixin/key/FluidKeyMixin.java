@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Unique;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.material.Fluid;
 
-import dev.emi.emi.api.stack.EmiFluidKey;
+import dev.emi.emi.stack.EmiFluidKey;
 import dev.emi.emi.stack.EmiKeyHolder;
 
 @Mixin(Fluid.class)
