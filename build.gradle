@@ -162,11 +162,14 @@ tasks.named('publishMavenJavaPublicationToGtodysseyRepositoryRepository') { depe
 gtoPublish {
     publishMaven      = true
     publishGithub     = false
-    publishCurseforge = false
+    publishCurseforge = true
+    curseforgeProjectId = '1760584'
     mavenRepoName     = 'gtodysseyRepository'
     mavenRepoUrl      = 'releases'
     minecraftVersion  = '1.20.1'
     modLoader         = 'Forge'
     curseforgeJavaVersion = 'Java 21'
     curseforgeEnvironment = 'both'
+    curseforgeRelations = ['lean-object': 'required', emi: 'incompatible',
+                           'emi-trades-villager-trading-emi-plugin': 'incompatible', jei: 'optional']
 }
