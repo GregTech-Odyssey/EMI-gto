@@ -14,7 +14,6 @@ import dev.emi.emi.runtime.EmiLog;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
@@ -230,7 +229,7 @@ public class EmiStackList {
                 var removed = new OpenCacheHashSet<EmiStack>(data.removed().size());
                 for (EmiIngredient ingredient : data.removed()) {
                     for (EmiStack stack : ingredient.getEmiStacks()) {
-                        removed.add(stack.copy().comparison(c -> EmiPort.compareStrict()));
+                        removed.add(stack.copy().comparison(stack.getStrictComparison()));
                     }
                 }
                 stacks.removeAll(removed);
@@ -275,7 +274,7 @@ public class EmiStackList {
                 var removed = new OpenCacheHashSet<EmiStack>(ssd.removed().size());
                 for (EmiIngredient invalidator : ssd.removed()) {
                     for (EmiStack stack : invalidator.getEmiStacks()) {
-                        removed.add(stack.copy().comparison(c -> EmiPort.compareStrict()));
+                        removed.add(stack.copy().comparison(stack.getStrictComparison()));
                     }
                 }
                 stacks.removeAll(removed);
@@ -380,15 +379,14 @@ public class EmiStackList {
             } else if (a.isEmpty() && b.isEmpty()) {
                 return true;
             }
-            return a.isEqual(b, EmiPort.compareStrict());
+            return a.isStrictEqual(b);
         }
 
         @Override
         public int hashCode(EmiStack stack) {
             if (stack != null) {
-                CompoundTag nbtCompound = stack.getNbt();
                 int i = 31 + stack.getKey().hashCode();
-                return 31 * i + (nbtCompound == null ? 0 : nbtCompound.hashCode());
+                return 31 * i + stack.getStrictComparison().getHash(stack);
             }
             return 0;
         }

@@ -147,7 +147,7 @@ public class EmiSearch {
                 String text = I18n.get(key).toLowerCase();
                 for (EmiIngredient ing : alias.stacks()) {
                     for (EmiStack stack : ing.getEmiStacks()) {
-                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text);
+                        aliases.add(stack.copy().comparison(stack.getStrictComparison()), text);
                     }
                 }
             }
@@ -156,7 +156,7 @@ public class EmiSearch {
             for (Component text : alias.text()) {
                 for (EmiIngredient ing : alias.stacks()) {
                     for (EmiStack stack : ing.getEmiStacks()) {
-                        aliases.add(stack.copy().comparison(EmiPort.compareStrict()), text.getString().toLowerCase());
+                        aliases.add(stack.copy().comparison(stack.getStrictComparison()), text.getString().toLowerCase());
                     }
                 }
             }

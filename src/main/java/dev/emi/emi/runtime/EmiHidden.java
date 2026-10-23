@@ -75,7 +75,7 @@ public class EmiHidden {
             EmiIngredient stack = EmiIngredientSerializer.getDeserialized(el).copy();
             if (!stack.isEmpty()) {
                 for (EmiStack es : stack.getEmiStacks()) {
-                    es.comparison(c -> EmiPort.compareStrict());
+                    es.comparison(es.getStrictComparison());
                 }
                 hiddenStacks.add(stack);
             }
@@ -113,7 +113,7 @@ public class EmiHidden {
             for (EmiStack i : EmiStackList.stacks) {
                 if (es.getId().equals(i.getId())) {
                     if (hide) {
-                        hiddenStacks.add(i.copy().comparison(c -> EmiPort.compareStrict()));
+                        hiddenStacks.add(i.copy().comparison(i.getStrictComparison()));
                     } else {
                         hiddenStacks.remove(i);
                     }
@@ -123,7 +123,7 @@ public class EmiHidden {
             if (hide) {
                 stack = stack.copy();
                 for (EmiStack es : stack.getEmiStacks()) {
-                    es.comparison(c -> EmiPort.compareStrict());
+                    es.comparison(es.getStrictComparison());
                 }
                 hiddenStacks.add(stack);
             } else {

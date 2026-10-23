@@ -234,7 +234,7 @@ public class VanillaPlugin implements EmiPlugin {
         registry.setDefaultComparison(Items.SPLASH_POTION, potionComparison);
         registry.setDefaultComparison(Items.LINGERING_POTION, potionComparison);
         registry.setDefaultComparison(Items.TIPPED_ARROW, potionComparison);
-        registry.setDefaultComparison(Items.ENCHANTED_BOOK, dev.emi.emi.EmiPort.compareStrict());
+        registry.setDefaultComparison(Items.ENCHANTED_BOOK, Comparison.COMPARE_STACK_KEY);
 
         var hiddenTag = EmiTagKey.of(EmiPort.getItemRegistry(), EmiTags.HIDDEN_FROM_RECIPE_VIEWERS);
         var hiddenItems = new ReferenceOpenHashSet<Item>(hiddenTag.getList());

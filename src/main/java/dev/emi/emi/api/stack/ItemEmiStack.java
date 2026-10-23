@@ -88,6 +88,11 @@ public class ItemEmiStack extends EmiStack implements Batchable {
     }
 
     @Override
+    public Comparison getStrictComparison() {
+        return Comparison.COMPARE_STACK_KEY;
+    }
+
+    @Override
     public ResourceLocation getId() {
         return item.getId();
     }

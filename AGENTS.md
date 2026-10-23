@@ -11,6 +11,7 @@
 - 只维护 Forge 1.20.1 版，构建与运行用 JDK 21，Mojang 映射，构建插件为 MDG legacyforge。FastCollection 只在编译期引入，运行时由整合包里的 LeanObject 提供。
 - 同一个 jar 里的 `emi` 与 `emitrades` 共用 Forge 的一个排序节点，二者之间的依赖不能写 `BEFORE`/`AFTER`，否则形成自环（`BundledEmiMetadataTest` 会检查）。
 - 普通 JUnit 不会应用 mixin，测试里用到物品或流体键时 `mockStatic(EmiItemKey.class)` 或直接 `new EmiItemKey(...)`；引导 MC 用 `dev.emi.emi.TestBootstrap.init()`。
+- 严格比较走资源的 `getStrictComparison()` / `isStrictEqual()`，比较和 hash 复用同一资源专属比较器。`COMPARE_NBT`、`Comparison.compareNbt()` 和 `EmiPort.compareStrict()` 仅保留为弃用的兼容入口，新调用不得使用；自定义资源不得靠临时序列化 NBT 匹配。
 
 ## 发布
 

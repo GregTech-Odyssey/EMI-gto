@@ -103,7 +103,7 @@ public class EmiFavorite implements EmiIngredient, Batchable {
             return false;
         }
         for (int i = 0; i < as.size(); i++) {
-            if (!as.get(i).isEqual(bs.get(i), EmiPort.compareStrict())) {
+            if (!as.get(i).isStrictEqual(bs.get(i))) {
                 return false;
             }
         }

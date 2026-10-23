@@ -15,7 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.handler.EmiCraftContext;
 import dev.emi.emi.api.recipe.handler.EmiRecipeHandler;
@@ -34,7 +33,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class EmiPlayerInventory {
     private final Comparison none = Comparison.DEFAULT_COMPARISON;
-    private final Comparison strict = EmiPort.compareStrict();
     // Public Map descriptor is retained for EMI integrations; internal lookups use the concrete container.
     private final O2OOpenCacheHashMap<EmiStack, EmiStack> contents;
     public final Map<EmiStack, EmiStack> inventory;
@@ -189,7 +187,7 @@ public class EmiPlayerInventory {
             return false;
         for (var stack : contents.values()) {
             var candidate = other.contents.get(stack);
-            if (candidate == null || candidate.getAmount() != stack.getAmount() || !strict.compare(candidate, stack)) {
+            if (candidate == null || candidate.getAmount() != stack.getAmount() || !candidate.isStrictEqual(stack)) {
                 return false;
             }
         }

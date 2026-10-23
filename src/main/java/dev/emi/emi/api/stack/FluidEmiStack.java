@@ -70,6 +70,11 @@ public class FluidEmiStack extends dev.emi.emi.api.stack.EmiStack {
     }
 
     @Override
+    public Comparison getStrictComparison() {
+        return Comparison.COMPARE_STACK_KEY;
+    }
+
+    @Override
     public ResourceLocation getId() {
         return fluid.getId();
     }

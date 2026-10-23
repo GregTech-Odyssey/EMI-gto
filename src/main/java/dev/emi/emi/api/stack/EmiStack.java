@@ -57,6 +57,18 @@ public abstract class EmiStack implements EmiIngredient {
         return this;
     }
 
+    /**
+     * Returns this resource type's strict comparison. Custom resources should override this with a shared,
+     * type-specific comparison whose hash uses the same identity as its predicate.
+     */
+    public Comparison getStrictComparison() {
+        return comparison == Comparison.DEFAULT_COMPARISON ? EmiComparisonDefaults.get(getKey()) : comparison;
+    }
+
+    public boolean isStrictEqual(EmiStack stack) {
+        return isEqual(stack, getStrictComparison());
+    }
+
     public abstract EmiStack copy();
 
     public abstract boolean isEmpty();

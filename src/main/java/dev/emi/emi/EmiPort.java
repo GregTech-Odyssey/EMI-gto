@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import dev.emi.emi.api.stack.Comparison;
+import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -197,6 +198,8 @@ public final class EmiPort {
         return null;
     }
 
+    /** @deprecated Use the resource's {@link EmiStack#getStrictComparison()} instead. */
+    @Deprecated
     public static Comparison compareStrict() {
         return Comparison.compareNbt();
     }

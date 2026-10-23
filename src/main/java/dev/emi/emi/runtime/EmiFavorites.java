@@ -87,9 +87,10 @@ public class EmiFavorites {
     }
 
     private static int indexOf(EmiIngredient stack) {
+        EmiRecipe context = EmiApi.getRecipeContext(stack);
         for (int i = 0; i < favorites.size(); i++) {
-            if (favorites.get(i).strictEquals(stack)
-                    && favorites.get(i).getRecipe() == EmiApi.getRecipeContext(stack)) {
+            EmiFavorite favorite = favorites.get(i);
+            if (favorite == stack || favorite.getRecipe() == context && favorite.strictEquals(stack)) {
                 return i;
             }
         }

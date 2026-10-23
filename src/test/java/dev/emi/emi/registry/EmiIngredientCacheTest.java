@@ -121,7 +121,7 @@ class EmiIngredientCacheTest {
             stacks.when(() -> EmiStack.of(firstInput)).thenReturn(new ItemEmiStack(firstKey, 2));
             stacks.when(() -> EmiStack.of(secondInput)).thenReturn(new ItemEmiStack(secondKey, 3));
             var registry = new EmiRegistryImpl();
-            registry.setDefaultComparison(Items.STICK, Comparison.compareNbt());
+            registry.setDefaultComparison(Items.STICK, Comparison.COMPARE_STACK_KEY);
             var converted = EmiIngredient.of(source);
             assertEquals(1, converted.getAmount());
             assertEquals(2, converted.getEmiStacks().size());

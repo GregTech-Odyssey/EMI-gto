@@ -7,10 +7,23 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class Comparison {
+    public static final Comparison COMPARE_STACK_KEY = Comparison.of(
+        (a, b) -> a.getStackKey() != null && a.getStackKey() == b.getStackKey(),
+        stack -> stack.getStackKey().hashCode());
+    public static final Comparison COMPARE_STRING = Comparison.of(
+        (a, b) -> a.getKey() instanceof String text && text.equals(b.getKey()),
+        stack -> ((String) stack.getKey()).hashCode());
+    public static final Comparison COMPARE_REFERENCE = Comparison.of(
+        (a, b) -> a.getKey() == b.getKey(),
+        stack -> System.identityHashCode(stack.getKey()));
+    @Deprecated
     private static final Comparison COMPARE_NBT = Comparison.of((a, b) -> {
         var ak = a.getStackKey();
         var bk = b.getStackKey();
-        return bk != null && ak == bk;
+        if (ak == null && bk == null) {
+            return Objects.equals(a.getNbt(), b.getNbt());
+        }
+        return ak == bk;
     }, stack -> stack.getStackKey() != null ? stack.getStackKey().hashCode() : 0);
     public static final Comparison DEFAULT_COMPARISON = Comparison.of((a, b) -> true);
     private Predicate predicate;
@@ -40,8 +53,11 @@ public class Comparison {
     }
 
     /**
-     * Creates a comparison method where stacks are distinct based on NBT
+     * Creates a comparison method where stacks are distinct based on NBT.
+     *
+     * @deprecated Use the resource's dedicated {@link EmiStack#getStrictComparison()} instead.
      */
+    @Deprecated
     public static Comparison compareNbt() {
         return COMPARE_NBT;
     }

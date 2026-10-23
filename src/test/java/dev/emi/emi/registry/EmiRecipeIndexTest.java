@@ -76,7 +76,7 @@ class EmiRecipeIndexTest {
     }
 
     @Test
-    void strictComparisonKeepsNbtVariantsSeparate() {
+    void customResourceUsesItsDedicatedComparisonForVariants() {
         var key = new Object();
         var firstTag = new CompoundTag();
         firstTag.putInt("variant", 1);
@@ -86,17 +86,29 @@ class EmiRecipeIndexTest {
         var identical = new TestStack(key, firstTag.copy());
         var different = new TestStack(key, secondTag);
 
-        assertEquals(Comparison.compareNbt().getHash(first), Comparison.compareNbt().getHash(identical));
+        assertEquals(first.getStrictComparison().getHash(first), identical.getStrictComparison().getHash(identical));
+        assertTrue(first.isStrictEqual(identical));
+        assertFalse(first.isStrictEqual(different));
         assertTrue(first.isEqual(different, Comparison.DEFAULT_COMPARISON));
     }
 
     private static final class TestStack extends EmiStack {
+        private static final Comparison COMPARE_VARIANT = Comparison.of(
+            (a, b) -> ((TestStack) a).variant == ((TestStack) b).variant,
+            stack -> ((TestStack) stack).variant);
         private final Object key;
         private final CompoundTag tag;
+        private final int variant;
 
         TestStack(Object key, CompoundTag tag) {
             this.key = key;
             this.tag = tag;
+            this.variant = tag == null ? 0 : tag.getInt("variant");
+        }
+
+        @Override
+        public Comparison getStrictComparison() {
+            return COMPARE_VARIANT;
         }
 
         @Override
