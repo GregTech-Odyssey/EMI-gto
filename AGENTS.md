@@ -20,4 +20,4 @@
 - 发布的是重混淆后的正式版 `reobfJar`（类里是 SRG 名，如 `m_41720_`），不是开发版 `jar`；发布后要检查 jar 里确实是 SRG 名。
 - 本地联调用 `./gradlew publishToMavenLocal`，应用能源与 GTOCore 的 `emi_version` 改成同一个版本号即可。正式发布用 `./gradlew gtoValidate`，确认无误后 `./gradlew gtoPublishMaven`。
 - 整合包统一发布时，本仓库有改动就要先于应用能源、GTOCore 发布，并同步更新它们的 `emi_version`。
-- CurseForge 项目尚未建立，`publishCurseforge` 为 false；建好后在 `gtoPublish` 里填 `curseforgeProjectId` 并打开。
+- CurseForge 项目 ID 1760584，`gtoPublish` 同时发布到 Maven 与 CurseForge；前置为 Lean Object（运行时提供 FastCollection），与官方 EMI、EMI Trades 不兼容，JEI 可选。
