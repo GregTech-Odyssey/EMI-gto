@@ -23,6 +23,7 @@ import dev.emi.emi.registry.EmiStackList;
 import dev.emi.emi.runtime.EmiDrawContext;
 import dev.emi.emi.runtime.EmiFavorites;
 import dev.emi.emi.runtime.EmiHistory;
+import dev.emi.emi.runtime.EmiTreeProgress;
 import dev.emi.emi.screen.StackBatcher.Batchable;
 import dev.emi.emi.screen.tooltip.EmiTooltip;
 import dev.emi.emi.screen.tooltip.RecipeTooltipComponent;
@@ -41,7 +42,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class BoMScreen extends Screen {
@@ -89,7 +89,7 @@ public class BoMScreen extends Screen {
                 node.x -= horizontalOffset;
             }
             if (!volume.nodes.isEmpty()) {
-                Node node = volume.nodes.get(0);
+                Node node = volume.nodes.getFirst();
                 int width = font.width("x" + BoM.tree.batches);
                 batches = new Bounds(node.x + node.width / 2 + 6, node.y - 10, width + 12, 22);
             }
@@ -97,86 +97,93 @@ public class BoMScreen extends Screen {
             nodeWidth = volume.getMaxRight() - volume.getMinLeft();
             nodeHeight = getNodeHeight(BoM.tree.goal);
             playerInv = EmiPlayerInventory.of(minecraft.player);
-            BoM.tree.calculateProgress(playerInv);
-            var progressCosts = new O2OOpenCacheHashMap<EmiIngredient, FlatMaterialCost>(BoM.tree.cost.costs.size());
-            for (var cost : BoM.tree.cost.costs.values())
-                progressCosts.put(cost.ingredient, cost);
-            var chanceProgressCosts = new O2OOpenCacheHashMap<EmiIngredient, ChanceMaterialCost>(
-                    BoM.tree.cost.chanceCosts.size());
-            for (var cost : BoM.tree.cost.chanceCosts.values())
-                chanceProgressCosts.put(cost.ingredient, cost);
-
-            costs.clear();
-            BoM.tree.calculateCost();
-
-            var treeCosts = new ObjectArrayList<FlatMaterialCost>(
-                    BoM.tree.cost.costs.size() + BoM.tree.cost.chanceCosts.size());
-            treeCosts.addAll(BoM.tree.cost.costs.values());
-            treeCosts.addAll(BoM.tree.cost.chanceCosts.values());
-            treeCosts.sort((a, b) -> Integer.compare(
-                    EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
-                    EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))));
-            int cy = nodeHeight * NODE_VERTICAL_SPACING * 2;
-            int costX = 0;
-            for (FlatMaterialCost node : treeCosts) {
-                Cost cost = new Cost(node, costX, cy, false);
-                if (BoM.craftingMode) {
-                    if (node instanceof ChanceMaterialCost cmc) {
-                        if (!chanceProgressCosts.containsKey(node.ingredient)) {
-                            cost.alreadyDone = node.getEffectiveAmount();
-                        } else {
-                            ChanceMaterialCost progress = chanceProgressCosts.get(node.ingredient);
-                            cost.alreadyDone = (long) Math
-                                    .ceil(cmc.amount * cmc.chance - progress.amount * progress.chance);
-                        }
-                    } else {
-                        if (!progressCosts.containsKey(node.ingredient)) {
-                            cost.alreadyDone = node.amount;
-                        } else {
-                            FlatMaterialCost progress = progressCosts.get(node.ingredient);
-                            cost.alreadyDone = node.amount - progress.amount;
-                        }
-                    }
-                }
-                costs.add(cost);
-                costX += 16 + COST_HORIZONTAL_SPACING + EmiRenderHelper.getAmountOverflow(cost.getAmountText());
+            var calculated = EmiTreeProgress.getCurrent(BoM.tree);
+            if (calculated != null) {
+                applyCosts(calculated.total(), calculated.calculated().cost);
+            } else {
+                costs.clear();
+                hasRemainders = false;
             }
-            int costOffset = (costX - COST_HORIZONTAL_SPACING) / 2;
-            for (Cost cost : costs) {
-                cost.x -= costOffset;
-            }
-
-            int totalCostWidth = font.width(EmiPort.translatable("emi.total_cost"));
-            mode = new Bounds(totalCostWidth / 2 + 4, cy - 20, 16, 16);
-
-            List<Cost> remainders = new ObjectArrayList<>();
-
-            var remainderCosts = new ObjectArrayList<FlatMaterialCost>(
-                    BoM.tree.cost.remainders.size() + BoM.tree.cost.chanceRemainders.size());
-            remainderCosts.addAll(BoM.tree.cost.remainders.values());
-            remainderCosts.addAll(BoM.tree.cost.chanceRemainders.values());
-            remainderCosts.sort((a, b) -> Integer.compare(
-                    EmiStackList.getIndex(a.ingredient.getEmiStacks().get(0)),
-                    EmiStackList.getIndex(b.ingredient.getEmiStacks().get(0))));
-            cy += 40;
-            int remainderX = 0;
-            for (FlatMaterialCost node : remainderCosts) {
-                if (node.getEffectiveAmount() <= 0) {
-                    continue;
-                }
-                Cost cost = new Cost(node, remainderX, cy, true);
-                remainders.add(cost);
-                remainderX += 16 + COST_HORIZONTAL_SPACING + EmiRenderHelper.getAmountOverflow(cost.getAmountText());
-            }
-            costOffset = (remainderX - COST_HORIZONTAL_SPACING) / 2;
-            for (Cost cost : remainders) {
-                cost.x -= costOffset;
-            }
-            costs.addAll(remainders);
-            hasRemainders = !remainders.isEmpty();
         } else {
             nodes = new ObjectArrayList<>();
+            costs.clear();
+            hasRemainders = false;
         }
+        batcher.repopulate();
+    }
+
+    public void applyCosts(TreeCost total, TreeCost progressCost) {
+        playerInv = EmiScreenManager.lastPlayerInventory;
+        var progressCosts = progressCost.costs;
+        var chanceProgressCosts = progressCost.chanceCosts;
+
+        costs.clear();
+
+        var treeCosts = new ObjectArrayList<FlatMaterialCost>(
+                total.costs.size() + total.chanceCosts.size());
+        treeCosts.addAll(total.costs.values());
+        treeCosts.addAll(total.chanceCosts.values());
+        treeCosts.sort((a, b) -> Integer.compare(
+                EmiStackList.getIndex(a.ingredient.getEmiStacks().getFirst()),
+                EmiStackList.getIndex(b.ingredient.getEmiStacks().getFirst())));
+        int cy = nodeHeight * NODE_VERTICAL_SPACING * 2;
+        int costX = 0;
+        for (FlatMaterialCost node : treeCosts) {
+            Cost cost = new Cost(node, costX, cy, false);
+            if (BoM.craftingMode) {
+                if (node instanceof ChanceMaterialCost cmc) {
+                    if (!chanceProgressCosts.containsKey(node.ingredient)) {
+                        cost.alreadyDone = node.getEffectiveAmount();
+                    } else {
+                        ChanceMaterialCost progress = chanceProgressCosts.get(node.ingredient);
+                        cost.alreadyDone = (long) Math
+                                .ceil(cmc.amount * cmc.chance - progress.amount * progress.chance);
+                    }
+                } else {
+                    if (!progressCosts.containsKey(node.ingredient)) {
+                        cost.alreadyDone = node.amount;
+                    } else {
+                        FlatMaterialCost progress = progressCosts.get(node.ingredient);
+                        cost.alreadyDone = node.amount - progress.amount;
+                    }
+                }
+            }
+            costs.add(cost);
+            costX += 16 + COST_HORIZONTAL_SPACING + EmiRenderHelper.getAmountOverflow(cost.getAmountText());
+        }
+        int costOffset = (costX - COST_HORIZONTAL_SPACING) / 2;
+        for (Cost cost : costs) {
+            cost.x -= costOffset;
+        }
+
+        int totalCostWidth = font.width(EmiPort.translatable("emi.total_cost"));
+        mode = new Bounds(totalCostWidth / 2 + 4, cy - 20, 16, 16);
+
+        List<Cost> remainders = new ObjectArrayList<>();
+
+        var remainderCosts = new ObjectArrayList<FlatMaterialCost>(
+                total.remainders.size() + total.chanceRemainders.size());
+        remainderCosts.addAll(total.remainders.values());
+        remainderCosts.addAll(total.chanceRemainders.values());
+        remainderCosts.sort((a, b) -> Integer.compare(
+                EmiStackList.getIndex(a.ingredient.getEmiStacks().getFirst()),
+                EmiStackList.getIndex(b.ingredient.getEmiStacks().getFirst())));
+        cy += 40;
+        int remainderX = 0;
+        for (FlatMaterialCost node : remainderCosts) {
+            if (node.getEffectiveAmount() <= 0) {
+                continue;
+            }
+            Cost cost = new Cost(node, remainderX, cy, true);
+            remainders.add(cost);
+            remainderX += 16 + COST_HORIZONTAL_SPACING + EmiRenderHelper.getAmountOverflow(cost.getAmountText());
+        }
+        costOffset = (remainderX - COST_HORIZONTAL_SPACING) / 2;
+        for (Cost cost : remainders) {
+            cost.x -= costOffset;
+        }
+        costs.addAll(remainders);
+        hasRemainders = !remainders.isEmpty();
         batcher.repopulate();
     }
 
@@ -310,8 +317,8 @@ public class BoMScreen extends Screen {
         if (node.recipe != null && node.children.size() > 0 && node.state == FoldState.EXPANDED) {
             ChanceState produced = chance.produce(node.produceChance);
             if (node.recipe instanceof EmiResolutionRecipe) {
-                TreeVolume volume = addNewNodes(node.children.get(0), multiplier, node.divisor, depth, produced);
-                volume.nodes.get(0).resolution = node;
+                TreeVolume volume = addNewNodes(node.children.getFirst(), multiplier, node.divisor, depth, produced);
+                volume.nodes.getFirst().resolution = node;
                 return volume;
             }
             TreeVolume left = null;
@@ -411,7 +418,7 @@ public class BoMScreen extends Screen {
                         }
                     }
                 }
-                consumer.accept(hover.stack, new EmiResolutionRecipe(hover.stack, stacks.get(0)));
+                consumer.accept(hover.stack, new EmiResolutionRecipe(hover.stack, stacks.getFirst()));
                 return true;
             } else {
                 EmiRecipe recipe = EmiUtil.getRecipeResolution(hover.stack, inv);
@@ -806,8 +813,8 @@ public class BoMScreen extends Screen {
                 n.y += NODE_VERTICAL_SPACING;
             }
             int l = newNode.width / 2;
-            widths.add(0, new Width(x - l, x + newNode.width - l));
-            nodes.add(0, newNode);
+            widths.addFirst(new Width(x - l, x + newNode.width - l));
+            nodes.addFirst(newNode);
         }
 
         public int getDepth() {

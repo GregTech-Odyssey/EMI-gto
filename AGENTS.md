@@ -12,6 +12,7 @@
 - 同一个 jar 里的 `emi` 与 `emitrades` 共用 Forge 的一个排序节点，二者之间的依赖不能写 `BEFORE`/`AFTER`，否则形成自环（`BundledEmiMetadataTest` 会检查）。
 - 普通 JUnit 不会应用 mixin，也没有 FML 模组列表，此时按类路径上有没有应用能源选键；本仓库测试走自带的键，用到时 `mockStatic(EmiItemKey.class)` 或直接 `new EmiItemKey(...)`；引导 MC 用 `dev.emi.emi.TestBootstrap.init()`。
 - 严格比较走资源的 `getStrictComparison()` / `isStrictEqual()`，比较和 hash 复用同一资源专属比较器。`COMPARE_NBT`、`Comparison.compareNbt()` 和 `EmiPort.compareStrict()` 仅保留为弃用的兼容入口，新调用不得使用；自定义资源不得靠临时序列化 NBT 匹配。
+- 修改容器时按语义选型：注册对象、配方实例用 fastutil 引用容器，数值用原始类型容器，枚举用 `EnumMap` / `EnumSet`，复杂值键用 FastCollection 哈希缓存容器；内部声明保留具体类型，协议边界保留接口。不要用 Guava `Maps` / `Sets` / `Lists` 工厂隐式创建默认容器。有序容器必须保留顺序；需要同时保留插入顺序和哈希缓存时可用 `LinkedHashMap` / `LinkedHashSet`。
 
 ## 发布
 

@@ -9,14 +9,13 @@ import dev.emi.emi.runtime.EmiLog;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class EmiIngredientSerializers {
-    public static final Map<Class<?>, EmiIngredientSerializer<?>> BY_CLASS = new Reference2ObjectOpenHashMap<>();
-    public static final Map<String, EmiIngredientSerializer<?>> BY_TYPE = new O2OOpenCacheHashMap<>();
+    public static final Reference2ObjectOpenHashMap<Class<?>, EmiIngredientSerializer<?>> BY_CLASS = new Reference2ObjectOpenHashMap<>();
+    public static final O2OOpenCacheHashMap<String, EmiIngredientSerializer<?>> BY_TYPE = new O2OOpenCacheHashMap<>();
 
     public static void clear() {
         BY_CLASS.clear();

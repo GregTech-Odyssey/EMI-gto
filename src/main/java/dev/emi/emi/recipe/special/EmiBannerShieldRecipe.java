@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiBannerShieldRecipe extends EmiPatternCraftingRecipe {
@@ -22,8 +21,12 @@ public class EmiBannerShieldRecipe extends EmiPatternCraftingRecipe {
             Items.YELLOW_BANNER, Items.LIME_BANNER, Items.PINK_BANNER, Items.GRAY_BANNER,
             Items.LIGHT_GRAY_BANNER, Items.CYAN_BANNER, Items.PURPLE_BANNER, Items.BLUE_BANNER,
             Items.BROWN_BANNER, Items.GREEN_BANNER, Items.RED_BANNER, Items.BLACK_BANNER);
-    private static final List<EmiStack> EMI_BANNERS = BANNERS.stream().map(i -> EmiStack.of(i))
-            .collect(Collectors.toList());
+    private static final ObjectArrayList<EmiStack> EMI_BANNERS = new ObjectArrayList<>(BANNERS.size());
+    static {
+        for (var banner : BANNERS) {
+            EMI_BANNERS.add(EmiStack.of(banner));
+        }
+    }
     public static final EmiStack SHIELD = EmiStack.of(Items.SHIELD);
 
     @SuppressWarnings("unchecked")

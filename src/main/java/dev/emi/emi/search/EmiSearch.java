@@ -20,7 +20,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -45,7 +44,7 @@ public class EmiSearch {
     public static volatile Thread searchThread = null;
     public static volatile List<? extends EmiIngredient> stacks = EmiStackList.stacks;
     public static volatile CompiledQuery compiledQuery;
-    public static Set<EmiStack> bakedStacks;
+    public static ReferenceOpenHashSet<EmiStack> bakedStacks;
     public static SuffixArray<SearchStack> names, tooltips, mods;
     public static SuffixArray<EmiStack> aliases;
 

@@ -13,6 +13,7 @@ import net.minecraftforge.client.ForgeRenderTypes;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -36,7 +37,8 @@ public class EmiClientForge {
     public static void clientInit(FMLClientSetupEvent event) {
         StackBatcher.EXTRA_RENDER_LAYERS.addAll(Arrays.stream(ForgeRenderTypes.values()).map(f -> f.get()).toList());
         EmiClient.init();
-        EmiNetwork.initClient(packet -> EmiPacketHandler.CHANNEL.sendToServer(packet));
+        EmiNetwork.initClient(EmiPacketHandler.CHANNEL::sendToServer);
+        MinecraftForge.EVENT_BUS.addListener(EmiClientForge::clientTick);
         MinecraftForge.EVENT_BUS.addListener(EmiClientForge::recipesReloaded);
         MinecraftForge.EVENT_BUS.addListener(EmiClientForge::tagsReloaded);
         MinecraftForge.EVENT_BUS.addListener(EmiClientForge::renderScreenBackground);
@@ -55,6 +57,12 @@ public class EmiClientForge {
     @SubscribeEvent
     public static void registerResourceReloaders(RegisterClientReloadListenersEvent event) {
         EmiData.init(event::registerReloadListener);
+    }
+
+    public static void clientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            EmiScreenManager.tick();
+        }
     }
 
     public static void recipesReloaded(RecipesUpdatedEvent event) {

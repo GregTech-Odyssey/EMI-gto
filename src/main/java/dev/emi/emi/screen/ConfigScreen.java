@@ -3,10 +3,10 @@ package dev.emi.emi.screen;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.lwjgl.glfw.GLFW;
@@ -61,7 +61,6 @@ import dev.emi.emi.screen.widget.config.SidebarSubpanelsWidget;
 import dev.emi.emi.screen.widget.config.SubGroupNameWidget;
 import dev.emi.emi.search.EmiSearch;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ConfigScreen extends Screen {
     private static final int maxWidth = 240;
@@ -122,7 +121,7 @@ public class ConfigScreen extends Screen {
         super.init(); // Persistent-ish state
         int scroll = 0;
         String query = "";
-        Set<String> collapsed = new ObjectOpenHashSet<>();
+        var collapsed = new OpenCacheHashSet<String>();
         if (list != null) {
             scroll = (int) list.getScrollAmount();
             query = search.getSearch();

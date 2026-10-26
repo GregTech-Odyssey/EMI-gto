@@ -12,11 +12,16 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class EmiRepairItemRecipe extends EmiPatternCraftingRecipe {
-    public static final List<Item> TOOLS = EmiPort.getItemRegistry().stream()
-            .filter(Item::canBeDepleted).collect(Collectors.toList());
+    public static final List<Item> TOOLS = new ObjectArrayList<>();
+    static {
+        for (var item : EmiPort.getItemRegistry()) {
+            if (item.canBeDepleted()) {
+                TOOLS.add(item);
+            }
+        }
+    }
     private final Item tool;
 
     public EmiRepairItemRecipe(Item tool, ResourceLocation id) {

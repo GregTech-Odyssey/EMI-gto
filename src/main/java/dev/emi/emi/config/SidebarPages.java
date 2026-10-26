@@ -5,10 +5,9 @@ import dev.emi.emi.config.SidebarSubpanels;
 import dev.emi.emi.config.SidebarTheme;
 import dev.emi.emi.config.SidebarType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 public class SidebarPages {
     public final dev.emi.emi.config.SidebarSettings settings;
@@ -21,21 +20,17 @@ public class SidebarPages {
     }
 
     public void unique() {
-        Set<SidebarType> types = new ReferenceOpenHashSet<>();
+        var types = EnumSet.noneOf(SidebarType.class);
         for (int i = 0; i < pages.size(); i++) {
-            if (pages.get(i).type == SidebarType.NONE || types.contains(pages.get(i).type)) {
+            if (pages.get(i).type == SidebarType.NONE || !types.add(pages.get(i).type)) {
                 pages.remove(i--);
-            } else {
-                types.add(pages.get(i).type);
             }
         }
         if (settings.subpanels() != null) {
             List<SidebarSubpanels.Subpanel> subpanels = settings.subpanels().subpanels;
             for (int i = 0; i < subpanels.size(); i++) {
-                if (subpanels.get(i).type == SidebarType.NONE || types.contains(subpanels.get(i).type)) {
+                if (subpanels.get(i).type == SidebarType.NONE || !types.add(subpanels.get(i).type)) {
                     subpanels.remove(i--);
-                } else {
-                    types.add(subpanels.get(i).type);
                 }
             }
         }

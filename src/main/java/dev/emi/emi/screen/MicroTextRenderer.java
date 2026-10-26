@@ -7,12 +7,11 @@ import net.minecraft.resources.ResourceLocation;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.runtime.EmiDrawContext;
-import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 
 public class MicroTextRenderer {
     private static final ResourceLocation TEXTURE = EmiPort.id("emi", "textures/gui/microfont.png");
-    private static final Char2ObjectMap<MicroChar> MICRO_CHARS = new Char2ObjectOpenHashMap<>();
+    private static final Char2ObjectOpenHashMap<MicroChar> MICRO_CHARS = new Char2ObjectOpenHashMap<>(17);
     private static final List<UnitScale> QUANTITY_SCALES = List.of(new UnitScale("", 0), new UnitScale("k", 3),
             new UnitScale("M", 6), new UnitScale("B", 9), new UnitScale("T", 12), new UnitScale("Q", 15));
     private static final List<UnitScale> BUCKET_VOLUME_SCALES = List.of(new UnitScale("mB", 0), new UnitScale("B", 3),

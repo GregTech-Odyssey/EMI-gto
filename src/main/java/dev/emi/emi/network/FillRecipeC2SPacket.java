@@ -1,8 +1,8 @@
 package dev.emi.emi.network;
 
 import java.util.List;
-import java.util.function.Consumer;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ import dev.emi.emi.runtime.EmiLog;
 public class FillRecipeC2SPacket implements EmiPacket {
     private final int syncId;
     private final int action;
-    private final List<Integer> slots, crafting;
+    private final IntArrayList slots, crafting;
     private final int output;
     private final List<ItemStack> stacks;
 
@@ -28,8 +28,8 @@ public class FillRecipeC2SPacket implements EmiPacket {
             @Nullable Slot output, List<ItemStack> stacks) {
         this.syncId = handler.containerId;
         this.action = action;
-        this.slots = slots.stream().map(s -> s == null ? -1 : s.index).toList();
-        this.crafting = crafting.stream().map(s -> s == null ? -1 : s.index).toList();
+        this.slots = getSlotIds(slots);
+        this.crafting = getSlotIds(crafting);
         this.output = output == null ? -1 : output.index;
         this.stacks = stacks;
     }
@@ -38,8 +38,8 @@ public class FillRecipeC2SPacket implements EmiPacket {
         syncId = buf.readInt();
         action = buf.readByte();
         slots = parseCompressedSlots(buf);
-        crafting = new ObjectArrayList<>();
         int craftingSize = buf.readVarInt();
+        crafting = new IntArrayList(craftingSize);
         for (int i = 0; i < craftingSize; i++) {
             int s = buf.readVarInt();
             crafting.add(s);
@@ -50,7 +50,7 @@ public class FillRecipeC2SPacket implements EmiPacket {
             output = -1;
         }
         int size = buf.readVarInt();
-        stacks = new ObjectArrayList<>();
+        stacks = new ObjectArrayList<>(size);
         for (int i = 0; i < size; i++) {
             stacks.add(buf.readItem());
         }
@@ -62,8 +62,8 @@ public class FillRecipeC2SPacket implements EmiPacket {
         buf.writeByte(action);
         writeCompressedSlots(slots, buf);
         buf.writeVarInt(crafting.size());
-        for (Integer s : crafting) {
-            buf.writeVarInt(s);
+        for (int i = 0; i < crafting.size(); i++) {
+            buf.writeVarInt(crafting.getInt(i));
         }
         if (output != -1) {
             buf.writeBoolean(true);
@@ -88,17 +88,19 @@ public class FillRecipeC2SPacket implements EmiPacket {
             EmiLog.warn("Client requested fill but screen handler has changed, aborting");
             return;
         }
-        List<Slot> slots = new ObjectArrayList<>();
-        List<Slot> crafting = new ObjectArrayList<>();
+        var slots = new ObjectArrayList<Slot>(this.slots.size());
+        var crafting = new ObjectArrayList<Slot>(this.crafting.size());
         Slot output = null;
-        for (int i : this.slots) {
+        for (var iterator = this.slots.iterator(); iterator.hasNext();) {
+            int i = iterator.nextInt();
             if (i < 0 || i >= handler.slots.size()) {
                 EmiLog.error("Client requested fill but passed input slots don't exist, aborting");
                 return;
             }
             slots.add(handler.slots.get(i));
         }
-        for (int i : this.crafting) {
+        for (var iterator = this.crafting.iterator(); iterator.hasNext();) {
+            int i = iterator.nextInt();
             if (i >= 0 && i < handler.slots.size()) {
                 crafting.add(handler.slots.get(i));
             } else {
@@ -171,9 +173,17 @@ public class FillRecipeC2SPacket implements EmiPacket {
         }
     }
 
-    private static List<Integer> parseCompressedSlots(FriendlyByteBuf buf) {
-        List<Integer> list = new ObjectArrayList<>();
+    private static IntArrayList getSlotIds(List<Slot> slots) {
+        var ids = new IntArrayList(slots.size());
+        for (Slot slot : slots) {
+            ids.add(slot == null ? -1 : slot.index);
+        }
+        return ids;
+    }
+
+    private static IntArrayList parseCompressedSlots(FriendlyByteBuf buf) {
         int amount = buf.readVarInt();
+        var list = new IntArrayList(amount);
         for (int i = 0; i < amount; i++) {
             int low = buf.readVarInt();
             int high = buf.readVarInt();
@@ -187,26 +197,22 @@ public class FillRecipeC2SPacket implements EmiPacket {
         return list;
     }
 
-    private static void writeCompressedSlots(List<Integer> list, FriendlyByteBuf buf) {
-        List<Consumer<FriendlyByteBuf>> postWrite = new ObjectArrayList<>();
+    private static void writeCompressedSlots(IntArrayList list, FriendlyByteBuf buf) {
         int groups = 0;
-        int i = 0;
-        while (i < list.size()) {
-            groups++;
-            int start = i;
-            int startValue = list.get(start);
-            while (i < list.size() && i - start == list.get(i) - startValue) {
-                i++;
+        for (int i = 0; i < list.size(); i++) {
+            if (i == 0 || list.getInt(i) != list.getInt(i - 1) + 1) {
+                groups++;
             }
-            int end = i - 1;
-            postWrite.add(b -> {
-                b.writeVarInt(startValue);
-                b.writeVarInt(list.get(end));
-            });
         }
         buf.writeVarInt(groups);
-        for (Consumer<FriendlyByteBuf> consumer : postWrite) {
-            consumer.accept(buf);
+        int i = 0;
+        while (i < list.size()) {
+            int start = i++;
+            while (i < list.size() && i - start == list.getInt(i) - list.getInt(start)) {
+                i++;
+            }
+            buf.writeVarInt(list.getInt(start));
+            buf.writeVarInt(list.getInt(i - 1));
         }
     }
 

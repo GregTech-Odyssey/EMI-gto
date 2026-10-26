@@ -1,17 +1,13 @@
 package dev.emi.emi.bom;
 
-import java.util.Map;
-import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -31,22 +27,23 @@ import dev.emi.emi.runtime.EmiPersistentData;
 public class BoM {
     private static RecipeDefaults defaults = new RecipeDefaults();
     public static MaterialTree tree;
-    public static Map<EmiIngredient, EmiRecipe> defaultRecipes = new Object2ObjectOpenHashMap<>();
-    public static Map<EmiIngredient, EmiRecipe> addedRecipes = Maps.newHashMap();
-    public static Set<EmiRecipe> disabledRecipes = Sets.newHashSet();
+    public static O2OOpenCacheHashMap<EmiIngredient, EmiRecipe> defaultRecipes = new O2OOpenCacheHashMap<>();
+    public static O2OOpenCacheHashMap<EmiIngredient, EmiRecipe> addedRecipes = new O2OOpenCacheHashMap<>();
+    public static ReferenceOpenHashSet<EmiRecipe> disabledRecipes = new ReferenceOpenHashSet<>();
     public static boolean craftingMode = false;
 
     public static void setDefaults(RecipeDefaults defaults) {
         BoM.defaults = defaults;
-        Minecraft.getInstance().execute(() -> reload());
+        Minecraft.getInstance().execute(BoM::reload);
     }
 
     public static JsonObject saveAdded() {
         JsonArray added = new JsonArray();
         JsonObject addedTags = new JsonObject();
         JsonObject resolutions = new JsonObject();
-        Set<ResourceLocation> placed = new ObjectOpenHashSet<>();
-        for (Map.Entry<EmiIngredient, EmiRecipe> entry : addedRecipes.entrySet()) {
+        var placed = new OpenCacheHashSet<ResourceLocation>(addedRecipes.size());
+        for (var entries = addedRecipes.object2ObjectEntrySet().fastIterator(); entries.hasNext();) {
+            var entry = entries.next();
             EmiRecipe recipe = entry.getValue();
             if (recipe instanceof EmiResolutionRecipe err) {
                 if (err.ingredient instanceof TagEmiIngredient tei) {
@@ -56,9 +53,8 @@ public class BoM {
                         addedTags.add(el.getAsString(), val);
                     }
                 }
-            } else if (recipe != null && recipe.getId() != null && !placed.contains(recipe.getId())) {
+            } else if (recipe != null && recipe.getId() != null && placed.add(recipe.getId())) {
                 DefaultStatus status = getRecipeStatus(recipe);
-                placed.add(recipe.getId());
                 if (status == DefaultStatus.FULL) {
                     added.add(recipe.getId().toString());
                 } else if (status == DefaultStatus.PARTIAL) {
@@ -129,8 +125,8 @@ public class BoM {
             EmiIngredient tag = EmiIngredientSerializer.getDeserialized(new JsonPrimitive(key));
             EmiIngredient stack = EmiIngredientSerializer.getDeserialized(addedTags.get(key));
             if (!tag.isEmpty() && !stack.isEmpty() && stack.getEmiStacks().size() == 1
-                    && tag.getEmiStacks().containsAll(stack.getEmiStacks())) {
-                addedRecipes.put(tag, new EmiResolutionRecipe(tag, stack.getEmiStacks().get(0)));
+                    && tag.getEmiStacks().contains(stack.getEmiStacks().getFirst())) {
+                addedRecipes.put(tag, new EmiResolutionRecipe(tag, stack.getEmiStacks().getFirst()));
             }
         }
     }
@@ -141,7 +137,7 @@ public class BoM {
 
     public static boolean isRecipeEnabled(EmiRecipe recipe) {
         return !disabledRecipes.contains(recipe)
-                && (defaultRecipes.values().contains(recipe) || addedRecipes.values().contains(recipe));
+                && (defaultRecipes.containsValue(recipe) || addedRecipes.containsValue(recipe));
     }
 
     public static DefaultStatus getRecipeStatus(EmiRecipe recipe) {

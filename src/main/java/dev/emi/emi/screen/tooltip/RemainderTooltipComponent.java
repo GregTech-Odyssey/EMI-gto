@@ -1,6 +1,5 @@
 package dev.emi.emi.screen.tooltip;
 
-import com.google.common.collect.Maps;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
@@ -12,15 +11,15 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
-import java.util.Map;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RemainderTooltipComponent implements EmiTooltipComponent {
     public List<Remainder> remainders = new ObjectArrayList<>();
 
     public RemainderTooltipComponent(EmiIngredient ingredient) {
-        Map<Integer, List<EmiStack>> tools = Maps.newHashMap();
+        var tools = new Int2ObjectOpenHashMap<ObjectArrayList<EmiStack>>();
         outer:
         for (EmiStack stack : ingredient.getEmiStacks()) {
             int damage = getDamageDelta(stack, stack.getRemainder());
@@ -38,8 +37,9 @@ public class RemainderTooltipComponent implements EmiTooltipComponent {
                 remainders.add(new Remainder(stack, stack.getRemainder()));
             }
         }
-        for (Map.Entry<Integer, List<EmiStack>> entry : tools.entrySet()) {
-            remainders.add(new Remainder(entry.getValue(), entry.getKey()));
+        for (var entries = tools.int2ObjectEntrySet().fastIterator(); entries.hasNext();) {
+            var entry = entries.next();
+            remainders.add(new Remainder(entry.getValue(), entry.getIntKey()));
         }
     }
 

@@ -40,7 +40,6 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceLinkedOpenHashSet;
 
-
 public class EmiApi {
     private static final Minecraft client = Minecraft.getInstance();
 
@@ -298,8 +297,9 @@ public class EmiApi {
         return smallestPresence;
     }
 
-    private static Map<EmiRecipeCategory, List<EmiRecipe>> mapRecipes(List<EmiRecipe> list) {
-        var map = new Reference2ObjectOpenHashMap<EmiRecipeCategory, List<EmiRecipe>>();
+    private static Reference2ObjectOpenHashMap<EmiRecipeCategory, List<EmiRecipe>> mapRecipes(List<EmiRecipe> list) {
+        var map = new Reference2ObjectOpenHashMap<EmiRecipeCategory, List<EmiRecipe>>(
+                Math.min(list.size(), getRecipeManager().getCategories().size()));
         for (EmiRecipe recipe : list) {
             map.computeIfAbsent(recipe.getCategory(), k -> new ObjectArrayList<>()).add(recipe);
         }

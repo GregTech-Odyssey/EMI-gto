@@ -26,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -108,6 +109,8 @@ public class EmiScreenManager {
     public static ItemStack lastStackTooltipRendered;
     private static long lastPlayerInventorySync = 0;
     public static EmiPlayerInventory lastPlayerInventory;
+    private static Screen inventoryScreen;
+    private static final EmiInventorySnapshotCache renderInventories = new EmiInventorySnapshotCache();
     public static int lastMouseX, lastMouseY; // The stack that was clicked on, for determining when a drag properly
                                               // starts
     public static EmiIngredient pressedStack = EmiStack.EMPTY;
@@ -132,8 +135,29 @@ public class EmiScreenManager {
         return !EmiReloadManager.isLoaded() || !EmiConfig.enabled;
     }
 
-    public static void recalculate() {
+    public static void tick() {
+        renderInventories.clear();
+        if (isDisabled() || client.player == null
+                || (EmiScreenBase.getCurrent().isEmpty() && !(client.screen instanceof BoMScreen))) {
+            lastPlayerInventory = null;
+            inventoryScreen = null;
+            EmiTreeProgress.update(null);
+            return;
+        }
+        if (inventoryScreen != client.screen) {
+            inventoryScreen = client.screen;
+            lastPlayerInventory = null;
+        }
         updateCraftables();
+        EmiTreeProgress.update(lastPlayerInventory);
+    }
+
+    public static <T extends AbstractContainerMenu> EmiPlayerInventory getRenderInventory(
+            EmiRecipeHandler<T> handler, AbstractContainerScreen<T> screen) {
+        return renderInventories.get(handler, screen);
+    }
+
+    public static void recalculate() {
         SidebarPanel searchPanel = getSearchPanel();
         if (searchPanel != null && searchPanel.space != null) {
             if (searchedStacks != EmiSearch.stacks) {
@@ -183,7 +207,7 @@ public class EmiScreenManager {
                 new Bounds(right, 0, screen.width - right, screen.height), SidebarSettings.RIGHT);
         spaceExclusion = new ObjectArrayList<>();
         if (panels.get(0).isVisible()) {
-            spaceExclusion.add(panels.get(0).getBounds());
+            spaceExclusion.add(panels.getFirst().getBounds());
         }
         if (panels.get(1).isVisible()) {
             spaceExclusion.add(panels.get(1).getBounds());
@@ -234,7 +258,6 @@ public class EmiScreenManager {
                         EmiSearch.update();
                     }
                 }
-                EmiFavorites.updateSynthetic(inv);
                 repopulatePanels(SidebarType.CRAFTABLES);
             }
         }
@@ -817,8 +840,8 @@ public class EmiScreenManager {
                     for (var warning : EmiReloadLog.warnings) {
                         var text = warning;
                         if (text.length() > 10 && client.font.width(text) > screen.width - 20) {
-                            text = new StringBuilder(client.font.plainSubstrByWidth(text, screen.width - 30))
-                                    .append("...").toString();
+                            text = client.font.plainSubstrByWidth(text, screen.width - 30) +
+                                    "...";
                         }
                         tooltip.add(EmiPort.literal(text));
                     }
@@ -839,7 +862,7 @@ public class EmiScreenManager {
                 }
             }
             List<Bounds> exclusions = EmiExclusionAreas.getExclusion(base);
-            if (exclusions.size() == 0) {
+            if (exclusions.isEmpty()) {
                 return;
             }
             for (int i = 0; i < exclusions.size(); i++) {
@@ -922,9 +945,9 @@ public class EmiScreenManager {
                 search.y = screen.height - 21;
                 search.setWidth(panels.get(1).space.tw * ENTRY_SIZE);
             } else {
-                search.x = panels.get(0).space.tx;
+                search.x = panels.getFirst().space.tx;
                 search.y = screen.height - 21 - 21;
-                search.setWidth(panels.get(0).space.tw * ENTRY_SIZE);
+                search.setWidth(panels.getFirst().space.tw * ENTRY_SIZE);
             }
         }
         EmiPort.focus(search, false);
@@ -1217,15 +1240,15 @@ public class EmiScreenManager {
             if (EmiApi.isCheatMode()) {
                 if (ingredient.getEmiStacks().size() == 1 && stack instanceof SidebarEmiStackInteraction) {
                     if (function.apply(EmiConfig.cheatOneToInventory)) {
-                        return give(ingredient.getEmiStacks().get(0), 1, 0);
+                        return give(ingredient.getEmiStacks().getFirst(), 1, 0);
                     } else if (function.apply(EmiConfig.cheatStackToInventory)) {
-                        return give(ingredient.getEmiStacks().get(0),
-                                ingredient.getEmiStacks().get(0).getItemStack().getMaxStackSize(), 0);
+                        return give(ingredient.getEmiStacks().getFirst(),
+                                ingredient.getEmiStacks().getFirst().getItemStack().getMaxStackSize(), 0);
                     } else if (function.apply(EmiConfig.cheatOneToCursor)) {
-                        return give(ingredient.getEmiStacks().get(0), 1, 1);
+                        return give(ingredient.getEmiStacks().getFirst(), 1, 1);
                     } else if (function.apply(EmiConfig.cheatStackToCursor)) {
-                        return give(ingredient.getEmiStacks().get(0),
-                                ingredient.getEmiStacks().get(0).getItemStack().getMaxStackSize(), 1);
+                        return give(ingredient.getEmiStacks().getFirst(),
+                                ingredient.getEmiStacks().getFirst().getItemStack().getMaxStackSize(), 1);
                     }
                 }
             }
@@ -1323,8 +1346,8 @@ public class EmiScreenManager {
         if (recipe == null) {
             return false;
         }
-        if (function.apply(EmiConfig.favorite) && recipe.getOutputs().size() > 0) {
-            EmiFavorites.addFavorite(recipe.getOutputs().get(0), recipe);
+        if (function.apply(EmiConfig.favorite) && !recipe.getOutputs().isEmpty()) {
+            EmiFavorites.addFavorite(recipe.getOutputs().getFirst(), recipe);
             repopulatePanels(SidebarType.FAVORITES);
             return true;
         } else if (function.apply(EmiConfig.copyId)) {
@@ -1648,7 +1671,7 @@ public class EmiScreenManager {
             if (getType() == SidebarType.CHESS && (space.tw != 8 || space.th != 8)) {
                 return false;
             }
-            return !isDisabled() && space.pageSize > 0 && pages.pages.size() > 0;
+            return !isDisabled() && space.pageSize > 0 && !pages.pages.isEmpty();
         }
 
         public void updateWidgetVisibility() {
@@ -1689,7 +1712,7 @@ public class EmiScreenManager {
                 return Bounds.EMPTY;
             }
             int headerOffset = (header ? 18 : 0);
-            ScreenSpace end = getSpaces().get(getSpaces().size() - 1);
+            ScreenSpace end = getSpaces().getLast();
             return new Bounds(space.tx - theme.horizontalPadding, space.ty - theme.verticalPadding - headerOffset,
                     space.tw * ENTRY_SIZE + theme.horizontalPadding * 2,
                     (end.ty - space.ty) + end.th * ENTRY_SIZE + theme.verticalPadding * 2 + headerOffset);

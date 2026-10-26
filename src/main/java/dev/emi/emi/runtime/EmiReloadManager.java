@@ -1,5 +1,7 @@
 package dev.emi.emi.runtime;
 
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.EmiInitRegistry;
 import dev.emi.emi.api.EmiRegistry;
@@ -15,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.HashMap;
 import java.util.Comparator;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -168,7 +169,7 @@ public class EmiReloadManager {
                     EmiTags.reload();
 
                     step(EmiPort.translatable("emi.reload.constructing_index"));
-                    EmiComparisonDefaults.comparisons = new HashMap<>();
+                    EmiComparisonDefaults.comparisons = new O2OOpenCacheHashMap<>();
                     EmiStackList.reload();
                     if (restart) {
                         continue;

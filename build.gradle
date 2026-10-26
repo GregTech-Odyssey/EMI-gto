@@ -44,6 +44,8 @@ legacyForge {
     addModdingDependenciesTo(sourceSets.test)
 }
 
+obfuscation.createRemappingConfiguration(configurations.testImplementation)
+
 mixin {
     add sourceSets.main, "emi.refmap.json"
     config "emi.mixins.json"
@@ -51,6 +53,10 @@ mixin {
 }
 
 repositories {
+    exclusiveContent {
+        forRepository { maven { url = 'https://cursemaven.com' } }
+        filter { includeGroup 'curse.maven' }
+    }
     maven {
         name = 'GTOdyssey'
         url = 'https://gtodyssey.com/maven/releases'
@@ -92,6 +98,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.3.1'
+    modTestImplementation 'curse.maven:sophisticated-core-618298:9112479'
+    modTestImplementation 'curse.maven:sophisticated-backpacks-422301:9083935'
+    modTestImplementation 'curse.maven:sophisticated-storage-619320:9083978'
 }
 
 sourceSets.test.compileClasspath += sourceSets.main.compileClasspath

@@ -40,10 +40,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.inventory.BlastFurnaceMenu;
-import net.minecraft.world.inventory.FurnaceMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.SmokerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
@@ -61,7 +58,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import static dev.emi.emi.api.recipe.VanillaEmiRecipeCategories.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 
 @EmiEntrypoint
@@ -511,7 +507,7 @@ public class VanillaPlugin implements EmiPlugin {
         }
     }
 
-    private static void addWorldInteraction(EmiRegistry registry, Set<Item> hiddenItems, List<Item> dyeableItems) {
+    private static void addWorldInteraction(EmiRegistry registry, ReferenceOpenHashSet<Item> hiddenItems, List<Item> dyeableItems) {
         EmiStack concreteWater = EmiStack.of(Fluids.WATER);
         concreteWater.setRemainder(concreteWater);
         addConcreteRecipe(registry, Blocks.WHITE_CONCRETE_POWDER, concreteWater, Blocks.WHITE_CONCRETE);
@@ -710,9 +706,7 @@ public class VanillaPlugin implements EmiPlugin {
     }
 
     private static void addFuel(EmiRegistry registry, ReferenceOpenHashSet<Item> hiddenItems) {
-        var fuels = EmiForgePlatform.getFuelMap();
-        var fuelMap = new Reference2IntOpenHashMap<Item>(fuels.size());
-        fuels.forEach((item, time) -> fuelMap.put(item, time.intValue()));
+        var fuelMap = EmiForgePlatform.getFuelMap();
         compressRecipesToTags(new ReferenceOpenHashSet<>(fuelMap.keySet()), (a, b) -> {
             return Integer.compare(fuelMap.getInt(a), fuelMap.getInt(b));
         }, tag -> {

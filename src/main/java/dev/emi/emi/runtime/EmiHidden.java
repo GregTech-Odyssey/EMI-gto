@@ -2,7 +2,6 @@ package dev.emi.emi.runtime;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
@@ -12,7 +11,6 @@ import dev.emi.emi.registry.EmiStackList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import com.gto.fastcollection.fastutil.O2ZOpenCacheHashMap;
 import com.gto.fastcollection.fastutil.OpenCacheHashSet;
@@ -20,15 +18,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EmiHidden {
     // Data loaded
-    public static Set<EmiIngredient> disabledStacks = new OpenCacheHashSet<>();
+    public static OpenCacheHashSet<EmiIngredient> disabledStacks = new OpenCacheHashSet<>();
     public static List<IndexStackData.Filter> disabledFilters = new ObjectArrayList<>();
     private static final O2ZOpenCacheHashMap<String> FILTER_LOOKUP = new O2ZOpenCacheHashMap<>();
     public static Map<String, Boolean> disabledFilterLookup = FILTER_LOOKUP;
     // Plugin defined
-    public static Set<EmiIngredient> pluginDisabledStacks = new OpenCacheHashSet<>();
+    public static OpenCacheHashSet<EmiIngredient> pluginDisabledStacks = new OpenCacheHashSet<>();
     public static List<Predicate<EmiStack>> pluginDisabledFilters = new ObjectArrayList<>();
-    // User edited
-    public static Set<EmiIngredient> hiddenStacks = new LinkedHashSet<>();
+    // User edited: preserve insertion order and cached hashes for ingredient keys.
+    public static LinkedHashSet<EmiIngredient> hiddenStacks = new LinkedHashSet<>();
 
     public static void clear() {
         disabledStacks.clear();

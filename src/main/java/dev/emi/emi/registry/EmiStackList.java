@@ -295,13 +295,13 @@ public class EmiStackList {
                     continue;
                 }
                 if (added.after().isEmpty()) {
-                    stacks.add(added.added().getEmiStacks().get(0));
+                    stacks.add(added.added().getEmiStacks().getFirst());
                 } else {
                     int i = stacks.indexOf(added.after());
                     if (i == -1) {
                         i = stacks.size() - 1;
                     }
-                    stacks.add(i + 1, added.added().getEmiStacks().get(0));
+                    stacks.add(i + 1, added.added().getEmiStacks().getFirst());
                 }
             }
         }
@@ -346,7 +346,7 @@ public class EmiStackList {
     }
 
     public static int getIndex(EmiIngredient ingredient) {
-        EmiStack stack = ingredient.getEmiStacks().get(0);
+        EmiStack stack = ingredient.getEmiStacks().getFirst();
         int ret = strictIndices.getOrDefault(stack, Integer.MAX_VALUE);
         if (ret == Integer.MAX_VALUE) {
             ret = keyIndices.getOrDefault(stack.getKey(), ret);
@@ -356,7 +356,7 @@ public class EmiStackList {
 
     public static class IndexGroup {
         public List<EmiStack> stacks = new ObjectArrayList<>();
-        public Set<IndexGroup> suppressedBy = new ReferenceOpenHashSet<>();
+        public ReferenceOpenHashSet<IndexGroup> suppressedBy = new ReferenceOpenHashSet<>();
 
         public boolean shouldDisplay() {
             for (IndexGroup suppressor : suppressedBy) {

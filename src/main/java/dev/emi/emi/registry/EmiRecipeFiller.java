@@ -1,7 +1,8 @@
 package dev.emi.emi.registry;
 
+import com.gto.fastcollection.fastutil.O2IOpenCacheHashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.Nullable;
@@ -33,15 +34,13 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.handler.CoercedRecipeHandler;
 import dev.emi.emi.runtime.EmiLog;
 import dev.emi.emi.runtime.EmiSidebars;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 import dev.emi.emi.mixin.accessor.CraftingResultSlotAccessor;
 
 public class EmiRecipeFiller {
-    public static Map<MenuType<?>, List<EmiRecipeHandler<?>>> handlers = new Reference2ObjectOpenHashMap<>();
+    public static Reference2ObjectOpenHashMap<MenuType<?>, List<EmiRecipeHandler<?>>> handlers = new Reference2ObjectOpenHashMap<>();
     public static BiFunction<AbstractContainerMenu, EmiRecipe, EmiRecipeHandler<?>> extraHandlers = (h, r) -> null;
 
     public static void clear() {
@@ -145,7 +144,7 @@ public class EmiRecipeFiller {
                 List<Slot> craftingSlots = handler.getCraftingSlots(recipe, screenHandler);
                 List<EmiIngredient> ingredients = recipe.getInputs();
                 List<DiscoveredItem> discovered = new ObjectArrayList<>();
-                Object2IntMap<EmiStack> weightDivider = new Object2IntOpenHashMap<>();
+                var weightDivider = new O2IOpenCacheHashMap<EmiStack>(ingredients.size());
                 for (int i = 0; i < ingredients.size(); i++) {
                     List<DiscoveredItem> d = new ObjectArrayList<>();
                     EmiIngredient ingredient = ingredients.get(i);
@@ -175,9 +174,9 @@ public class EmiRecipeFiller {
                         if (biggest == null) {
                             biggest = di;
                         } else {
-                            int a = di.amount / (weightDivider.getOrDefault(di.ingredient, 0) + di.consumed);
+                            int a = di.amount / (weightDivider.getInt(di.ingredient) + di.consumed);
                             int ba = biggest.amount
-                                    / (weightDivider.getOrDefault(biggest.ingredient, 0) + biggest.consumed);
+                                    / (weightDivider.getInt(biggest.ingredient) + biggest.consumed);
                             if (ba < a) {
                                 biggest = di;
                             }
@@ -190,8 +189,7 @@ public class EmiRecipeFiller {
                     if (slot == null) {
                         return null;
                     }
-                    weightDivider.put(biggest.ingredient,
-                            weightDivider.getOrDefault(biggest.ingredient, 0) + biggest.consumed);
+                    weightDivider.addTo(biggest.ingredient, biggest.consumed);
                     biggest.max = Math.min(biggest.max, slot.getMaxStackSize());
                     discovered.add(biggest);
                 }

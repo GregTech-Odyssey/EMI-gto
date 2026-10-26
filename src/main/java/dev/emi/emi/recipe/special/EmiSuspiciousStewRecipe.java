@@ -1,5 +1,7 @@
 package dev.emi.emi.recipe.special;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiPatternCraftingRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
@@ -11,12 +13,16 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.FlowerBlock;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class EmiSuspiciousStewRecipe extends EmiPatternCraftingRecipe {
-    private static final List<Item> FLOWERS = EmiPort.getItemRegistry().stream()
-            .filter(i -> i instanceof BlockItem bi && bi.getBlock() instanceof FlowerBlock)
-            .collect(Collectors.toList());
+    private static final ObjectArrayList<Item> FLOWERS = new ObjectArrayList<>();
+    static {
+        for (var item : EmiPort.getItemRegistry()) {
+            if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof FlowerBlock) {
+                FLOWERS.add(item);
+            }
+        }
+    }
 
     public EmiSuspiciousStewRecipe(ResourceLocation id) {
         super(List.of(

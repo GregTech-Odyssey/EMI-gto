@@ -10,6 +10,7 @@ import dev.emi.emi.api.widget.SlotWidget;
 import dev.emi.emi.api.widget.Widget;
 import dev.emi.emi.registry.EmiRecipeFiller;
 import dev.emi.emi.runtime.EmiDrawContext;
+import it.unimi.dsi.fastutil.objects.Reference2BooleanOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -19,9 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
-import java.util.Map;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public interface StandardRecipeHandler<T extends AbstractContainerMenu> extends EmiRecipeHandler<T> {
 
@@ -97,13 +96,13 @@ public interface StandardRecipeHandler<T extends AbstractContainerMenu> extends 
     public static void renderMissing(EmiRecipe recipe, EmiPlayerInventory inv, List<Widget> widgets, GuiGraphics draw) {
         EmiDrawContext context = EmiDrawContext.wrap(draw);
         context.enableDepthTest();
-        Map<EmiIngredient, Boolean> availableForCrafting = getAvailable(recipe, inv);
+        var availableForCrafting = getAvailable(recipe, inv);
         for (Widget w : widgets) {
             if (w instanceof SlotWidget sw) {
                 EmiIngredient stack = sw.getStack();
                 Bounds bounds = sw.getBounds();
                 if (sw.getRecipe() == null && availableForCrafting.containsKey(stack) && !stack.isEmpty()) {
-                    if (availableForCrafting.get(stack)) {
+                    if (availableForCrafting.getBoolean(stack)) {
                         // context.fill(bounds.x(), bounds.y(), bounds.width(), bounds.height(), 0x4400FF00);
                     } else {
                         context.fill(bounds.x(), bounds.y(), bounds.width(), bounds.height(), 0x44FF0000);
@@ -113,15 +112,15 @@ public interface StandardRecipeHandler<T extends AbstractContainerMenu> extends 
         }
     }
 
-    private static Map<EmiIngredient, Boolean> getAvailable(EmiRecipe recipe, EmiPlayerInventory inventory) {
-        Map<EmiIngredient, Boolean> availableForCrafting = new Reference2ObjectOpenHashMap<>();
+    private static Reference2BooleanOpenHashMap<EmiIngredient> getAvailable(EmiRecipe recipe, EmiPlayerInventory inventory) {
         List<Boolean> list = inventory.getCraftAvailability(recipe);
         List<EmiIngredient> inputs = recipe.getInputs();
+        var availableForCrafting = new Reference2BooleanOpenHashMap<EmiIngredient>(inputs.size());
         if (list.size() != inputs.size()) {
-            return Map.of();
+            return availableForCrafting;
         }
         for (int i = 0; i < list.size(); i++) {
-            availableForCrafting.put(inputs.get(i), list.get(i));
+            availableForCrafting.put(inputs.get(i), list.get(i).booleanValue());
         }
         return availableForCrafting;
     }

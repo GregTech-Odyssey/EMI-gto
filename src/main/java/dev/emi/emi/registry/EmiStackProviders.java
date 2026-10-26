@@ -18,12 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import java.util.List;
-import java.util.Map;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class EmiStackProviders {
-    public static Map<Class<?>, List<EmiStackProvider<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
+    public static Reference2ObjectOpenHashMap<Class<?>, List<EmiStackProvider<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
     public static List<EmiStackProvider<?>> generic = new ObjectArrayList<>();
 
     public static void clear() {
@@ -61,7 +60,7 @@ public class EmiStackProviders {
                             List<CraftingRecipe> list = client.level.getRecipeManager()
                                     .getRecipesFor(RecipeType.CRAFTING, inv, client.level);
                             if (!list.isEmpty()) {
-                                ResourceLocation id = EmiPort.getId(list.get(0));
+                                ResourceLocation id = EmiPort.getId(list.getFirst());
                                 EmiRecipe recipe = EmiApi.getRecipeManager().getRecipe(id);
                                 if (recipe != null) {
                                     return new EmiStackInteraction(EmiStack.of(stack), recipe, false);

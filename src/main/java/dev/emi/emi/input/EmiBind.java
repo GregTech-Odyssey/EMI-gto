@@ -8,11 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EmiBind {
     public static final EmiBind LEFT_CLICK = new EmiBind("", new ModifiedKey(InputConstants.Type.MOUSE.getOrCreate(0), 0));
@@ -32,7 +29,7 @@ public class EmiBind {
     public EmiBind(String translationKey, ModifiedKey... defaultKeys) {
         this.translationKey = translationKey;
         this.defaultKeys = Arrays.asList(defaultKeys);
-        this.boundKeys = this.defaultKeys.stream().collect(Collectors.toCollection(ArrayList::new));
+        this.boundKeys = new ObjectArrayList<>(this.defaultKeys);
         updateBinds();
     }
 
@@ -73,12 +70,12 @@ public class EmiBind {
     }
 
     public void setToDefault() {
-        this.boundKeys = this.defaultKeys.stream().collect(Collectors.toCollection(ArrayList::new));
+        this.boundKeys = new ObjectArrayList<>(this.defaultKeys);
         updateBinds();
     }
 
     public void setBinds(ModifiedKey... keys) {
-        this.boundKeys = Stream.of(keys).collect(Collectors.toCollection(ArrayList::new));
+        this.boundKeys = new ObjectArrayList<>(keys);
         updateBinds();
     }
 

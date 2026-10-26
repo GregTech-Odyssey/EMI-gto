@@ -1,15 +1,13 @@
 package dev.emi.emi.api;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.google.common.collect.Maps;
-
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -47,7 +45,7 @@ public interface EmiDragDropHandler<T extends Screen> {
 
         public BoundsBased(BiConsumer<T, BiConsumer<Bounds, Consumer<EmiIngredient>>> bounds) {
             this.bounds = screen -> {
-                Map<Bounds, Consumer<EmiIngredient>> map = Maps.newHashMap();
+                var map = new Object2ObjectOpenHashMap<Bounds, Consumer<EmiIngredient>>();
                 bounds.accept(screen, (b, consumer) -> map.put(b, consumer));
                 return map;
             };
@@ -96,8 +94,8 @@ public interface EmiDragDropHandler<T extends Screen> {
 
         private static <T extends AbstractContainerScreen<?>> Collection<Slot> filter(T t,
                 BiPredicate<T, Slot> slotFilter) {
-            List<Slot> slots = new ObjectArrayList<>();
             AbstractContainerMenu handler = t.getMenu();
+            var slots = new ObjectArrayList<Slot>(handler.slots.size());
             for (Slot slot : handler.slots) {
                 if (slotFilter.test(t, slot)) {
                     slots.add(slot);
@@ -106,10 +104,11 @@ public interface EmiDragDropHandler<T extends Screen> {
             return slots;
         }
 
-        private static <T extends AbstractContainerScreen<?>> Map<Bounds, Consumer<EmiIngredient>> map(T t,
+        private static <T extends AbstractContainerScreen<?>> Object2ObjectOpenHashMap<Bounds, Consumer<EmiIngredient>> map(T t,
                 Function<T, Collection<Slot>> slots, TriConsumer<T, Slot, EmiIngredient> consumer) {
-            Map<Bounds, Consumer<EmiIngredient>> map = Maps.newHashMap();
-            for (Slot slot : slots.apply(t)) {
+            var targets = slots.apply(t);
+            var map = new Object2ObjectOpenHashMap<Bounds, Consumer<EmiIngredient>>(targets.size());
+            for (Slot slot : targets) {
                 map.put(new Bounds(((HandledScreenAccessor) t).getX() + slot.x - 1,
                         ((HandledScreenAccessor) t).getY() + slot.y - 1, 18, 18), i -> consumer.accept(t, slot, i));
             }

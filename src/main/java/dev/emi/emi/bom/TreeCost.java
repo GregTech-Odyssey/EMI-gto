@@ -1,6 +1,7 @@
 package dev.emi.emi.bom;
 
-import com.google.common.collect.Maps;
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
+
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiResolutionRecipe;
@@ -13,13 +14,12 @@ import dev.emi.emi.bom.MaterialNode;
 import dev.emi.emi.bom.ProgressState;
 
 import java.util.List;
-import java.util.Map;
 
 public class TreeCost {
-    public Map<EmiIngredient, FlatMaterialCost> costs = Maps.newHashMap();
-    public Map<EmiIngredient, ChanceMaterialCost> chanceCosts = Maps.newHashMap();
-    public Map<EmiStack, FlatMaterialCost> remainders = Maps.newHashMap();
-    public Map<EmiStack, ChanceMaterialCost> chanceRemainders = Maps.newHashMap();
+    public O2OOpenCacheHashMap<EmiIngredient, FlatMaterialCost> costs = new O2OOpenCacheHashMap<>();
+    public O2OOpenCacheHashMap<EmiIngredient, ChanceMaterialCost> chanceCosts = new O2OOpenCacheHashMap<>();
+    public O2OOpenCacheHashMap<EmiStack, FlatMaterialCost> remainders = new O2OOpenCacheHashMap<>();
+    public O2OOpenCacheHashMap<EmiStack, ChanceMaterialCost> chanceRemainders = new O2OOpenCacheHashMap<>();
 
     public void calculate(MaterialNode node, long batches) {
         costs.clear();
@@ -43,17 +43,20 @@ public class TreeCost {
 
     private void addCost(EmiIngredient stack, long amount, long minBatch, ChanceState chance) {
         if (chance.chanced()) {
-            if (chanceCosts.containsKey(stack)) {
-                chanceCosts.get(stack).merge(amount, chance.chance());
+            var cost = chanceCosts.get(stack);
+            if (cost == null) {
+                cost = new ChanceMaterialCost(stack, amount, chance.chance());
+                chanceCosts.put(stack, cost);
             } else {
-                chanceCosts.put(stack, new ChanceMaterialCost(stack, amount, chance.chance()));
+                cost.merge(amount, chance.chance());
             }
-            chanceCosts.get(stack).minBatch(minBatch);
+            cost.minBatch(minBatch);
         } else {
-            if (costs.containsKey(stack)) {
-                costs.get(stack).amount += amount;
-            } else {
+            var cost = costs.get(stack);
+            if (cost == null) {
                 costs.put(stack, new FlatMaterialCost(stack, amount));
+            } else {
+                cost.amount += amount;
             }
         }
     }
@@ -62,16 +65,18 @@ public class TreeCost {
         if (amount > 0) {
             stack = stack.copy().setAmount(1);
             if (chance.chanced()) {
-                if (chanceRemainders.containsKey(stack)) {
-                    chanceRemainders.get(stack).merge(amount, chance.chance());
-                } else {
+                var remainder = chanceRemainders.get(stack);
+                if (remainder == null) {
                     chanceRemainders.put(stack, new ChanceMaterialCost(stack, amount, chance.chance()));
+                } else {
+                    remainder.merge(amount, chance.chance());
                 }
             } else {
-                if (remainders.containsKey(stack)) {
-                    remainders.get(stack).amount += amount;
-                } else {
+                var remainder = remainders.get(stack);
+                if (remainder == null) {
                     remainders.put(stack, new FlatMaterialCost(stack, amount));
+                } else {
+                    remainder.amount += amount;
                 }
             }
         }
@@ -170,7 +175,7 @@ public class TreeCost {
         }
         EmiRecipe recipe = node.recipe;
         if (recipe instanceof EmiResolutionRecipe err) {
-            calculateCost(node.children.get(0), amount, chance, trackProgress);
+            calculateCost(node.children.getFirst(), amount, chance, trackProgress);
             if (catalyst) {
                 addRemainder(err.stack, amount, chance);
             }
@@ -215,10 +220,10 @@ public class TreeCost {
             for (MaterialNode n : node.children) {
                 calculateCost(n, minBatches * n.amount, produced.consume(n.consumeChance), trackProgress);
             }
-            EmiStack stack = node.ingredient.getEmiStacks().get(0);
+            EmiStack stack = node.ingredient.getEmiStacks().getFirst();
             addRemainder(stack, effectiveCrafts - amount, produced);
 
-            for (EmiStack es : recipe.getOutputs()) {
+            for (EmiStack es : node.getCalculationOutputs()) {
                 if (!stack.equals(es)) {
                     addRemainder(es, minBatches * es.getAmount(), produced.consume(es.getChance()));
                 }
@@ -244,7 +249,7 @@ public class TreeCost {
         }
         if (node.divisor > 0) {
             long mod = node.divisor / gcd(node.divisor, amount);
-            total *= mod / gcd(total, mod);
+            total = (long) (total * ((double) mod / gcd(total, mod)));
         }
         if (node.children != null) {
             for (MaterialNode n : node.children) {

@@ -9,7 +9,6 @@ import dev.emi.emi.network.EmiChessPacket;
 import dev.emi.emi.network.EmiNetwork;
 import dev.emi.emi.screen.EmiScreenManager;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -29,7 +28,7 @@ public class EmiChess {
     public MoveGenerator generator = new StandardMoveGenerator(PieceColor.BLACK);
     public PieceColor turn = dev.emi.emi.chess.PieceColor.WHITE;
     public int lastChecked = -1;
-    public IntSet targets = new IntOpenHashSet();
+    public IntOpenHashSet targets = new IntOpenHashSet();
     public int promotionStart = -1;
     public int pendingPromotion = -1;
 

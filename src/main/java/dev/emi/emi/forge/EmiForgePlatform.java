@@ -14,9 +14,8 @@ import dev.emi.emi.mixin.accessor.BakedModelManagerAccessor;
 import dev.emi.emi.recipe.EmiBrewingRecipe;
 import dev.emi.emi.registry.EmiPluginContainer;
 import dev.emi.emi.runtime.EmiLog;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -55,7 +54,6 @@ import org.objectweb.asm.Type;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -271,8 +269,8 @@ public final class EmiForgePlatform {
         return model != null && model.getClass() == SimpleBakedModel.class;
     }
 
-    public static Map<Item, Integer> getFuelMap() {
-        Object2IntMap<Item> fuelMap = new Object2IntOpenHashMap<>();
+    public static Reference2IntOpenHashMap<Item> getFuelMap() {
+        var fuelMap = new Reference2IntOpenHashMap<Item>();
         for (Item item : EmiPort.getItemRegistry()) {
             int time = ForgeHooks.getBurnTime(item.getDefaultInstance(), null);
             if (time > 0) {

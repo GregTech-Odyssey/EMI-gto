@@ -369,7 +369,7 @@ public class EmiRenderHelper {
                 AbstractContainerScreen hs = EmiApi.getHandledScreen();
                 EmiRecipeHandler handler = EmiRecipeFiller.getFirstValidHandler(recipe, hs);
                 if (handler != null) {
-                    handler.render(recipe, new EmiCraftContext(hs, handler.getInventory(hs), EmiCraftContext.Type.FILL_BUTTON), widgets, context.raw());
+                    handler.render(recipe, new EmiCraftContext(hs, EmiScreenManager.getRenderInventory(handler, hs), EmiCraftContext.Type.FILL_BUTTON), widgets, context.raw());
                 } else if (EmiScreenManager.lastPlayerInventory != null) {
                     StandardRecipeHandler.renderMissing(recipe, EmiScreenManager.lastPlayerInventory, widgets, context.raw());
                 }

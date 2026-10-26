@@ -7,13 +7,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
 import com.mojang.blaze3d.platform.InputConstants;
 
 import org.lwjgl.glfw.GLFW;
@@ -30,18 +30,16 @@ import dev.emi.emi.input.EmiInput;
 import dev.emi.emi.runtime.EmiLog;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import joptsimple.internal.Strings;
 
 public class EmiConfig {
-    private static final Map<Class<?>, Setter> SETTERS = new Reference2ObjectOpenHashMap<>();
-    private static final Map<Class<?>, Writer<?>> WRITERS = new Reference2ObjectOpenHashMap<>();
-    private static final Map<Class<?>, MultiWriter<?>> MULTI_WRITERS = new Reference2ObjectOpenHashMap<>();
-    private static final Map<String, List<String>> unparsed = new HashMap<>();
-    public static final Map<String, Predicate<?>> FILTERS = new Object2ObjectOpenHashMap<>();
+    private static final Reference2ObjectOpenHashMap<Class<?>, Setter> SETTERS = new Reference2ObjectOpenHashMap<>();
+    private static final Reference2ObjectOpenHashMap<Class<?>, Writer<?>> WRITERS = new Reference2ObjectOpenHashMap<>();
+    private static final Reference2ObjectOpenHashMap<Class<?>, MultiWriter<?>> MULTI_WRITERS = new Reference2ObjectOpenHashMap<>();
+    private static final O2OOpenCacheHashMap<String, List<String>> unparsed = new O2OOpenCacheHashMap<>();
+    public static final O2OOpenCacheHashMap<String, Predicate<?>> FILTERS = new O2OOpenCacheHashMap<>();
     public static final String DEFAULT_CONFIG;
     public static boolean useGlobalConfig = false;
     public static String startupConfig; // General
@@ -442,7 +440,7 @@ public class EmiConfig {
 
     public static void loadConfig(QDCSS css) {
         try {
-            Set<String> consumed = new ObjectOpenHashSet<>();
+            var consumed = new OpenCacheHashSet<String>(css.size());
             for (Field field : EmiConfig.class.getFields()) {
                 ConfigValue annot = field.getAnnotation(ConfigValue.class);
                 if (annot != null) {
@@ -473,7 +471,7 @@ public class EmiConfig {
     }
 
     public static String getSavedConfig() {
-        Map<String, List<String>> unparsed = new Object2ObjectLinkedOpenHashMap<>();
+        Object2ObjectLinkedOpenHashMap<String, List<String>> unparsed = new Object2ObjectLinkedOpenHashMap<>();
         StringSplitter wrapper = new StringSplitter((point, style) -> 1);
         for (Field field : EmiConfig.class.getFields()) {
             ConfigValue annot = field.getAnnotation(ConfigValue.class);
@@ -501,7 +499,8 @@ public class EmiConfig {
                 unparsed.computeIfAbsent(group, g -> new ObjectArrayList<>()).add(text);
             }
         }
-        for (Map.Entry<String, List<String>> entry : EmiConfig.unparsed.entrySet()) {
+        for (var entries = EmiConfig.unparsed.object2ObjectEntrySet().fastIterator(); entries.hasNext();) {
+            var entry = entries.next();
             String[] parts = entry.getKey().split("\\.");
             String group = parts[0];
             String key = parts[1];
@@ -513,7 +512,8 @@ public class EmiConfig {
         String ret = "";
         ret += "/** EMI Config */\n\n";
         boolean firstCategory = true;
-        for (Map.Entry<String, List<String>> category : unparsed.entrySet()) {
+        for (var categories = unparsed.object2ObjectEntrySet().fastIterator(); categories.hasNext();) {
+            var category = categories.next();
             if (!firstCategory) {
                 ret += "\n";
             }

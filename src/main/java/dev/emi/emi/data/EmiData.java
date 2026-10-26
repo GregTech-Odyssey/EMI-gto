@@ -3,6 +3,7 @@ package dev.emi.emi.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.api.recipe.EmiInfoRecipe;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -19,14 +20,12 @@ import dev.emi.emi.data.EmiResourceReloadListener;
 import dev.emi.emi.data.EmiTagExclusionsLoader;
 import dev.emi.emi.data.IndexStackData;
 import dev.emi.emi.data.RecipeDefaultLoader;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -35,7 +34,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class EmiData {
-    public static Map<String, EmiRecipeCategoryProperties> categoryPriorities = Map.of();
+    public static O2OOpenCacheHashMap<String, EmiRecipeCategoryProperties> categoryPriorities = new O2OOpenCacheHashMap<>();
     public static List<Predicate<EmiRecipe>> recipeFilters = List.of();
     public static List<Supplier<dev.emi.emi.data.IndexStackData>> stackData = List.of();
     public static List<Supplier<dev.emi.emi.data.EmiAlias>> aliases = List.of();
@@ -45,8 +44,8 @@ public class EmiData {
         register.accept(new RecipeDefaultLoader());
         register.accept(new EmiTagExclusionsLoader());
         register.accept(
-            new EmiDataLoader<Map<String, EmiRecipeCategoryProperties>>(
-                EmiPort.id("emi:category_properties"), "category/properties", Object2ObjectOpenHashMap::new,
+            new EmiDataLoader<O2OOpenCacheHashMap<String, EmiRecipeCategoryProperties>>(
+                EmiPort.id("emi:category_properties"), "category/properties", O2OOpenCacheHashMap::new,
                 (map, json, id) -> {
                     for (String k : json.keySet()) {
                         if (GsonHelper.isObjectNode(json, k)) {

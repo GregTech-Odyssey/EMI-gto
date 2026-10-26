@@ -1,10 +1,10 @@
 package dev.emi.emi.mixin.jei;
 
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
+
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
@@ -23,8 +23,8 @@ import mezz.jei.library.load.PluginCaller;
 @Mixin(PluginCaller.class)
 public class PluginCallerMixin {
     @Unique
-    private static final Set<ResourceLocation> SKIPPED = ObjectOpenHashSet.of(
-            EmiPort.id("jei", "minecraft"), EmiPort.id("jei", "gui"), EmiPort.id("jei", "forge_gui"));
+    private static final OpenCacheHashSet<ResourceLocation> SKIPPED = new OpenCacheHashSet<>(
+            new ResourceLocation[] { EmiPort.id("jei", "minecraft"), EmiPort.id("jei", "gui"), EmiPort.id("jei", "forge_gui") });
     @Unique
     private static final Set<String> SKIPPED_MODS = JemiUtil.getHandledMods();
 

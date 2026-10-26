@@ -7,13 +7,12 @@ import dev.emi.emi.screen.EmiScreenBase;
 import dev.emi.emi.screen.EmiScreenManager;
 import net.minecraft.client.gui.screens.Screen;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 public class EmiExclusionAreas {
-    public static Map<Class<?>, List<EmiExclusionArea<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
+    public static Reference2ObjectOpenHashMap<Class<?>, List<EmiExclusionArea<?>>> fromClass = new Reference2ObjectOpenHashMap<>();
     public static List<EmiExclusionArea<?>> generic = new ObjectArrayList<>();
 
     public static void clear() {

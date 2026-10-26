@@ -38,6 +38,27 @@ public class EmiPlayerInventory {
     public final Map<EmiStack, EmiStack> inventory;
     private final Reference2LongOpenHashMap<EmiStack> used = new Reference2LongOpenHashMap<>();
 
+    private EmiPlayerInventory(int size) {
+        contents = new O2OOpenCacheHashMap<>(size);
+        inventory = contents;
+    }
+
+    /** An empty calculation inventory, without consulting the current screen or carried stack. */
+    @ApiStatus.Internal
+    public static EmiPlayerInventory empty() {
+        return new EmiPlayerInventory(0);
+    }
+
+    /** Owns its stacks and reservation scratch space; safe to hand to a background calculation. */
+    @ApiStatus.Internal
+    public EmiPlayerInventory copy() {
+        var copy = new EmiPlayerInventory(contents.size());
+        for (var stack : contents.values()) {
+            copy.addStack(stack.copy());
+        }
+        return copy;
+    }
+
     @Deprecated
     @ApiStatus.Internal
     public EmiPlayerInventory(@NotNull Player entity) {
@@ -158,8 +179,13 @@ public class EmiPlayerInventory {
     }
 
     public boolean canCraft(EmiRecipe recipe, long amount) {
+        return canCraftInputs(recipe.getInputs(), amount);
+    }
+
+    @ApiStatus.Internal
+    public boolean canCraftInputs(List<EmiIngredient> inputs, long amount) {
         used.clear();
-        for (var ingredient : recipe.getInputs()) {
+        for (var ingredient : inputs) {
             if (!ingredient.isEmpty() && !reserveIngredient(ingredient, amount)) {
                 return false;
             }

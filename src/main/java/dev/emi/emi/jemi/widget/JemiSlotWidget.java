@@ -1,5 +1,7 @@
 package dev.emi.emi.jemi.widget;
 
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
+
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.widget.Bounds;
@@ -21,8 +23,6 @@ import net.minecraft.network.chat.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JemiSlotWidget extends SlotWidget {
     public final JemiRecipeSlot slot;
@@ -107,7 +107,7 @@ public class JemiSlotWidget extends SlotWidget {
     @SuppressWarnings("unchecked")
     public static void addTooltip(List<ClientTooltipComponent> list, JemiRecipeSlot slot, EmiIngredient stack, IIngredientRenderer<?> renderer) {
         if (renderer != null) {
-            if (stack.getEmiStacks().size() == 1 && stack.getEmiStacks().get(0) instanceof JemiStack js) {
+            if (stack.getEmiStacks().size() == 1 && stack.getEmiStacks().getFirst() instanceof JemiStack js) {
                 js = js.copy();
                 js.renderer = renderer;
                 stack = js;
@@ -124,14 +124,17 @@ public class JemiSlotWidget extends SlotWidget {
             }
         } else if (slot.tooltipCallback != null) {
             try {
-                List<Component> event = new ObjectArrayList<>();
-                List<Component> original = stack.getEmiStacks().get(0).getTooltipText();
-                Set<Component> toRemove = original.stream().collect(Collectors.toSet());
-                event.addAll(stack.getEmiStacks().get(0).getTooltipText());
+                List<Component> original = stack.getEmiStacks().getFirst().getTooltipText();
+                var toRemove = new OpenCacheHashSet<Component>(original);
+                var event = new ObjectArrayList<Component>(original);
                 slot.tooltipCallback.onTooltip(slot, event);
                 int index = Math.min(list.size(), 1);
                 if (!event.isEmpty()) {
-                    list.addAll(index, event.stream().filter(t -> !toRemove.contains(t) && !JemiIngredientAcceptor.FLUID_END.matcher(t.getString()).find()).map(t -> ClientTooltipComponent.create(t.getVisualOrderText())).toList());
+                    for (Component text : event) {
+                        if (!toRemove.contains(text) && !JemiIngredientAcceptor.FLUID_END.matcher(text.getString()).find()) {
+                            list.add(index++, ClientTooltipComponent.create(text.getVisualOrderText()));
+                        }
+                    }
                 }
             } catch (Exception e) {
                 EmiLog.error("Error initializing JEI tooltip", e);

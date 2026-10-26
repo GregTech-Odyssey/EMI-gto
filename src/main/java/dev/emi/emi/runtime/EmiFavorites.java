@@ -2,7 +2,6 @@ package dev.emi.emi.runtime;
 
 import java.util.AbstractList;
 import java.util.List;
-import java.util.Map;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -20,15 +19,13 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
 import dev.emi.emi.api.stack.serializer.EmiIngredientSerializer;
-import dev.emi.emi.bom.BoM;
 import dev.emi.emi.bom.ChanceMaterialCost;
 import dev.emi.emi.bom.FlatMaterialCost;
 import dev.emi.emi.bom.MaterialNode;
-import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import dev.emi.emi.bom.MaterialTree;
+import dev.emi.emi.bom.TreeCost;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-
+import it.unimi.dsi.fastutil.objects.Reference2LongLinkedOpenHashMap;
 
 public class EmiFavorites {
     public static List<EmiFavorite> favorites = new ObjectArrayList<>();
@@ -198,66 +195,73 @@ public class EmiFavorites {
     }
 
     public static void updateSynthetic(EmiPlayerInventory inv) {
-        syntheticFavorites.clear();
-        if (BoM.tree != null && BoM.craftingMode) {
-            BoM.tree.calculateCost();
-            Map<EmiIngredient, FlatMaterialCost> originalCosts = new Object2ObjectOpenHashMap<>(BoM.tree.cost.costs);
-            Map<EmiIngredient, ChanceMaterialCost> chancedCosts = new Object2ObjectOpenHashMap<>(BoM.tree.cost.chanceCosts);
-            Object2LongMap<EmiRecipe> originalBatches = new Object2LongLinkedOpenHashMap<>();
-            Object2LongMap<EmiRecipe> originalAmounts = new Object2LongLinkedOpenHashMap<>();
-            EmiPlayerInventory emptyInventory = new EmiPlayerInventory(List.of());
-            emptyInventory.inventory.clear();
-            BoM.tree.calculateProgress(emptyInventory);
-            countRecipes(originalBatches, originalAmounts, BoM.tree.goal);
-            BoM.tree.calculateProgress(inv);
-            Object2LongMap<EmiRecipe> batches = new Object2LongLinkedOpenHashMap<>();
-            Object2LongMap<EmiRecipe> amounts = new Object2LongLinkedOpenHashMap<>();
-            countRecipes(batches, amounts, BoM.tree.goal);
-            boolean hasSomething = false;
-            for (Object2LongMap.Entry<EmiRecipe> entry : batches.object2LongEntrySet()) {
-                EmiRecipe recipe = entry.getKey();
-                long amount = amounts.getOrDefault(recipe, 0);
-                long batch = entry.getLongValue();
-                if (amount == 0) {
-                    continue;
-                }
-                hasSomething = true;
-                int state = 0;
-                if (inv.canCraft(recipe, batch)) {
-                    state = 2;
-                } else if (inv.canCraft(recipe)) {
-                    state = 1;
-                }
-                syntheticFavorites.add(new EmiFavorite.Synthetic(recipe, batch, amount,
-                        originalAmounts.getOrDefault(recipe, amount), state));
+        EmiTreeProgress.update(inv);
+    }
+
+    static SyntheticResult calculateSynthetic(MaterialTree tree, EmiPlayerInventory inv, TreeCost total) {
+        var result = new ObjectArrayList<EmiFavorite.Synthetic>();
+        var originalCosts = total.costs;
+        var chancedCosts = total.chanceCosts;
+        Reference2LongLinkedOpenHashMap<EmiRecipe> originalBatches = new Reference2LongLinkedOpenHashMap<>();
+        Reference2LongLinkedOpenHashMap<EmiRecipe> originalAmounts = new Reference2LongLinkedOpenHashMap<>();
+        EmiPlayerInventory emptyInventory = EmiPlayerInventory.empty();
+        tree.calculateProgress(emptyInventory);
+        countRecipes(originalBatches, originalAmounts, tree.goal);
+        tree.calculateProgress(inv);
+        Reference2LongLinkedOpenHashMap<EmiRecipe> batches = new Reference2LongLinkedOpenHashMap<>();
+        Reference2LongLinkedOpenHashMap<EmiRecipe> amounts = new Reference2LongLinkedOpenHashMap<>();
+        countRecipes(batches, amounts, tree.goal);
+        boolean hasSomething = false;
+        for (var entries = batches.reference2LongEntrySet().fastIterator(); entries.hasNext();) {
+            var entry = entries.next();
+            EmiRecipe recipe = entry.getKey();
+            long amount = amounts.getLong(recipe);
+            long batch = entry.getLongValue();
+            if (amount == 0) {
+                continue;
             }
-            if (!hasSomething) {
-                BoM.craftingMode = false;
-            } else {
-                for (FlatMaterialCost cost : BoM.tree.cost.costs.values()) {
-                    if (cost.amount > 0) {
-                        syntheticFavorites.add(new EmiFavorite.Synthetic(cost.ingredient, cost.amount,
-                                originalCosts.getOrDefault(cost.ingredient, cost).amount));
-                    }
+            hasSomething = true;
+            int state = 0;
+            var calculationRecipe = tree.getCalculationRecipe(recipe);
+            if (inv.canCraftInputs(calculationRecipe.getCalculationInputs(), batch)) {
+                state = 2;
+            } else if (inv.canCraftInputs(calculationRecipe.getCalculationInputs(), 1)) {
+                state = 1;
+            }
+            result.add(new EmiFavorite.Synthetic(calculationRecipe.getCalculationOutputs().getFirst(), recipe, batch,
+                    amount,
+                    originalAmounts.getOrDefault(recipe, amount), state));
+        }
+        if (!hasSomething) {
+            return new SyntheticResult(result, true);
+        } else {
+            for (FlatMaterialCost cost : tree.cost.costs.values()) {
+                if (cost.amount > 0) {
+                    result.add(new EmiFavorite.Synthetic(cost.ingredient, cost.amount,
+                            originalCosts.getOrDefault(cost.ingredient, cost).amount));
                 }
-                for (ChanceMaterialCost cost : BoM.tree.cost.chanceCosts.values()) {
-                    if (cost.getEffectiveAmount() > 0) {
-                        long needed = cost.getEffectiveAmount();
-                        if (chancedCosts.containsKey(cost.ingredient)) {
-                            ChanceMaterialCost original = chancedCosts.get(cost.ingredient);
-                            long done = (long) Math.ceil(original.amount * original.chance - cost.amount * cost.chance);
-                            needed = original.getEffectiveAmount() - done;
-                        }
-                        if (needed > 0) {
-                            syntheticFavorites.add(new EmiFavorite.Synthetic(cost.ingredient, needed, needed));
-                        }
+            }
+            for (ChanceMaterialCost cost : tree.cost.chanceCosts.values()) {
+                if (cost.getEffectiveAmount() > 0) {
+                    long needed = cost.getEffectiveAmount();
+                    if (chancedCosts.containsKey(cost.ingredient)) {
+                        ChanceMaterialCost original = chancedCosts.get(cost.ingredient);
+                        long done = (long) Math.ceil(original.amount * original.chance - cost.amount * cost.chance);
+                        needed = original.getEffectiveAmount() - done;
+                    }
+                    if (needed > 0) {
+                        result.add(new EmiFavorite.Synthetic(cost.ingredient, needed, needed));
                     }
                 }
             }
         }
+        return new SyntheticResult(result, false);
     }
 
-    public static void countRecipes(Object2LongMap<EmiRecipe> batches, Object2LongMap<EmiRecipe> amounts,
+    record SyntheticResult(ObjectArrayList<EmiFavorite.Synthetic> favorites, boolean complete) {}
+
+    public static void countRecipes(Reference2LongLinkedOpenHashMap<EmiRecipe> batches,
+            Reference2LongLinkedOpenHashMap<EmiRecipe> amounts,
             MaterialNode node) {
         if (node.recipe instanceof EmiResolutionRecipe recipe) {
             countRecipes(batches, amounts, node.children.get(0));
@@ -265,20 +269,8 @@ public class EmiFavorites {
         }
         // Include empty costs for proper sorting
         if (node.recipe != null) {
-            long amount = node.neededBatches;
-            if (batches.containsKey(node.recipe)) {
-                // Remove?
-                amount += batches.getLong(node.recipe);
-                batches.removeLong(node.recipe);
-            }
-            batches.put(node.recipe, amount);
-            amount = node.totalNeeded;
-            if (amounts.containsKey(node.recipe)) {
-                // Remove?
-                amount += amounts.getLong(node.recipe);
-                amounts.removeLong(node.recipe);
-            }
-            amounts.put(node.recipe, amount);
+            batches.putAndMoveToLast(node.recipe, batches.getLong(node.recipe) + node.neededBatches);
+            amounts.putAndMoveToLast(node.recipe, amounts.getLong(node.recipe) + node.totalNeeded);
             for (MaterialNode child : node.children) {
                 countRecipes(batches, amounts, child);
             }

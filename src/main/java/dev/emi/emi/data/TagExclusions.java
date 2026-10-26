@@ -1,22 +1,20 @@
 package dev.emi.emi.data;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
+import com.gto.fastcollection.fastutil.OpenCacheHashSet;
+
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Map;
-import java.util.Set;
-
 public class TagExclusions {
-    public final Set<ResourceLocation> globalExclusions = new ObjectOpenHashSet<>();
-    public final Map<ResourceLocation, Set<ResourceLocation>> exclusions = new Object2ObjectOpenHashMap<>();
+    public final OpenCacheHashSet<ResourceLocation> globalExclusions = new OpenCacheHashSet<>();
+    public final O2OOpenCacheHashMap<ResourceLocation, OpenCacheHashSet<ResourceLocation>> exclusions = new O2OOpenCacheHashMap<>();
 
     public void add(ResourceLocation id) {
         globalExclusions.add(id);
     }
 
     public void add(ResourceLocation type, ResourceLocation id) {
-        exclusions.computeIfAbsent(type, t -> new ObjectOpenHashSet<>()).add(id);
+        exclusions.computeIfAbsent(type, t -> new OpenCacheHashSet<>()).add(id);
     }
 
     public void clear() {
@@ -25,6 +23,10 @@ public class TagExclusions {
     }
 
     public boolean contains(ResourceLocation type, ResourceLocation id) {
-        return globalExclusions.contains(id) || (exclusions.containsKey(type) && exclusions.get(type).contains(id));
+        if (globalExclusions.contains(id)) {
+            return true;
+        }
+        var excluded = exclusions.get(type);
+        return excluded != null && excluded.contains(id);
     }
 }

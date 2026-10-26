@@ -282,7 +282,7 @@ public class QDCSS {
      * {@link #get}, this is equivalent to an override.
      */
     public QDCSS merge(QDCSS that) {
-        Map<String, List<BlameString>> newData = new Object2ObjectLinkedOpenHashMap<>(Math.max(this.size(), that.size()));
+        Object2ObjectLinkedOpenHashMap<String, List<BlameString>> newData = new Object2ObjectLinkedOpenHashMap<>(Math.max(this.size(), that.size()));
         newData.putAll(data);
         for (Map.Entry<String, List<BlameString>> en : that.data.entrySet()) {
             if (newData.containsKey(en.getKey())) {
@@ -363,7 +363,7 @@ public class QDCSS {
     
     public static QDCSS load(String fileName, String s) throws SyntaxErrorException {
         // vanilla CSS is a very simple grammar, so we can parse it using only regexes
-        Map<String, List<BlameString>> data = new Object2ObjectLinkedOpenHashMap<>();
+        Object2ObjectLinkedOpenHashMap<String, List<BlameString>> data = new Object2ObjectLinkedOpenHashMap<>();
         Matcher ruleset = RULESET_PATTERN.matcher(s);
         int lastEnd = 0;
         while (ruleset.find()) {

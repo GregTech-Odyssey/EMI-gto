@@ -14,11 +14,10 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class EmiClient {
-    public static final Map<Consumer<UseOnContext>, List<ItemLike>> HOE_ACTIONS = new Reference2ObjectOpenHashMap<>();
+    public static final Reference2ObjectOpenHashMap<Consumer<UseOnContext>, List<ItemLike>> HOE_ACTIONS = new Reference2ObjectOpenHashMap<>();
     public static boolean onServer = false;
 
     public static void init() {

@@ -10,12 +10,16 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class EmiArmorDyeRecipe extends EmiPatternCraftingRecipe {
-    private static final List<DyeItem> DYES = Stream.of(DyeColor.values()).map(c -> DyeItem.byColor(c))
-            .collect(Collectors.toList());
+    private static final ObjectArrayList<DyeItem> DYES;
+    static {
+        var colors = DyeColor.values();
+        DYES = new ObjectArrayList<>(colors.length);
+        for (var color : colors) {
+            DYES.add(DyeItem.byColor(color));
+        }
+    }
     private final Item armor;
 
     public EmiArmorDyeRecipe(Item armor, ResourceLocation id) {

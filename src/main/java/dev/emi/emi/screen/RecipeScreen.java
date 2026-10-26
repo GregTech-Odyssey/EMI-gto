@@ -103,8 +103,8 @@ public class RecipeScreen extends Screen {
         }
         if (recipes != null) {
             EmiRecipe current = null;
-            if (tab < tabs.size() && page < tabs.get(tab).getPageCount() && tabs.get(tab).getPage(page).size() > 0) {
-                current = tabs.get(tab).getPage(page).get(0).recipe;
+            if (tab < tabs.size() && page < tabs.get(tab).getPageCount() && !tabs.get(tab).getPage(page).isEmpty()) {
+                current = tabs.get(tab).getPage(page).getFirst().recipe;
             }
             tabs.clear();
             if (!recipes.isEmpty()) {
@@ -263,7 +263,7 @@ public class RecipeScreen extends Screen {
                         EmiRecipeHandler handler = EmiRecipeFiller.getFirstValidHandler(group.recipe, hs);
                         if (handler != null) {
                             handler.render(group.recipe,
-                                    new EmiCraftContext(hs, handler.getInventory(hs), EmiCraftContext.Type.FILL_BUTTON),
+                                    new EmiCraftContext(hs, EmiScreenManager.getRenderInventory(handler, hs), EmiCraftContext.Type.FILL_BUTTON),
                                     group.widgets, context.raw());
                         } else if (EmiScreenManager.lastPlayerInventory != null) {
                             StandardRecipeHandler.renderMissing(group.recipe, EmiScreenManager.lastPlayerInventory,
