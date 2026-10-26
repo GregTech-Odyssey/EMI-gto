@@ -5,6 +5,7 @@ import com.gto.fastcollection.fastutil.O2OOpenCacheHashMap;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiResolutionRecipe;
+import dev.emi.emi.api.recipe.EmiToolInventory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.bom.ChanceMaterialCost;
@@ -20,12 +21,14 @@ public class TreeCost {
     public O2OOpenCacheHashMap<EmiIngredient, ChanceMaterialCost> chanceCosts = new O2OOpenCacheHashMap<>();
     public O2OOpenCacheHashMap<EmiStack, FlatMaterialCost> remainders = new O2OOpenCacheHashMap<>();
     public O2OOpenCacheHashMap<EmiStack, ChanceMaterialCost> chanceRemainders = new O2OOpenCacheHashMap<>();
+    private final EmiToolInventory tools = new EmiToolInventory();
 
     public void calculate(MaterialNode node, long batches) {
         costs.clear();
         chanceCosts.clear();
         remainders.clear();
         chanceRemainders.clear();
+        tools.clear();
         calculateCost(node, batches * node.amount, ChanceState.DEFAULT, false);
     }
 
@@ -34,6 +37,7 @@ public class TreeCost {
         chanceCosts.clear();
         remainders.clear();
         chanceRemainders.clear();
+        tools.copyFrom(inventory.getTools());
         for (EmiStack stack : inventory.inventory.values()) {
             stack = stack.copy();
             remainders.put(stack, new FlatMaterialCost(stack, stack.getAmount()));
@@ -164,18 +168,26 @@ public class TreeCost {
     }
 
     private void calculateCost(MaterialNode node, long amount, ChanceState chance, boolean trackProgress) {
+        calculateCost(node, amount, chance, trackProgress, false);
+    }
+
+    private void calculateCost(MaterialNode node, long amount, ChanceState chance, boolean trackProgress, boolean toolSupply) {
         if (trackProgress) {
             node.progress = ProgressState.UNSTARTED;
             node.totalNeeded = 0;
             node.neededBatches = 0;
         }
-        boolean catalyst = node.catalyst;
+        if (node.durabilityTool && !toolSupply) {
+            calculateToolCost(node, amount, chance, trackProgress);
+            return;
+        }
+        boolean catalyst = node.catalyst && !toolSupply;
         if (catalyst) {
             amount = node.amount;
         }
         EmiRecipe recipe = node.recipe;
         if (recipe instanceof EmiResolutionRecipe err) {
-            calculateCost(node.children.getFirst(), amount, chance, trackProgress);
+            calculateCost(node.children.getFirst(), amount, chance, trackProgress, toolSupply);
             if (catalyst) {
                 addRemainder(err.stack, amount, chance);
             }
@@ -183,7 +195,7 @@ public class TreeCost {
         }
         long original = amount;
         List<EmiStack> ingredientStacks = node.ingredient.getEmiStacks();
-        for (int i = 0; i < ingredientStacks.size(); i++) {
+        for (int i = 0; !toolSupply && i < ingredientStacks.size(); i++) {
             if (chance.chanced()) {
                 double desired = amount * chance.chance();
                 double given = getChancedRemainder(ingredientStacks.get(i), desired, catalyst, chance);
@@ -230,7 +242,7 @@ public class TreeCost {
             }
 
             for (MaterialNode n : node.children) {
-                if (!n.remainder.isEmpty() && n.remainderAmount > 0) {
+                if (!n.durabilityTool && !n.remainder.isEmpty() && n.remainderAmount > 0) {
                     if (n.catalyst) {
                         addRemainder(n.remainder, n.remainderAmount, produced.consume(n.consumeChance));
                     } else {
@@ -241,6 +253,28 @@ public class TreeCost {
         } else {
             addCost(node.ingredient, amount, node.amount, chance);
         }
+    }
+
+    private void calculateToolCost(MaterialNode node, long amount, ChanceState chance, boolean trackProgress) {
+        var selected = node;
+        while (selected.recipe instanceof EmiResolutionRecipe) selected = selected.children.getFirst();
+        long desired = Math.max(node.amount, (long) Math.ceil(amount * (double) chance.chance()));
+        long batches = EmiToolInventory.ceilDiv(desired, node.amount);
+        long given = tools.reserve(selected.ingredient, desired, batches, false);
+        if (given == desired) {
+            if (trackProgress) complete(node);
+            return;
+        }
+        long missing = desired - given;
+        long capacity = selected.toolUses > 0 ? selected.toolUses : node.toolUses;
+        long count = EmiToolInventory.ceilDiv(missing, Math.min(capacity, batches));
+        calculateCost(node, count, ChanceState.DEFAULT, trackProgress, true);
+        if (trackProgress && given > 0) node.progress = ProgressState.PARTIAL;
+        long supplied = selected.recipe == null ? count
+            : EmiToolInventory.multiply(EmiToolInventory.ceilDiv(count, selected.divisor), selected.divisor);
+        long available = EmiToolInventory.multiply(supplied, capacity);
+        tools.add(selected.toolStack, supplied,
+            available == Long.MAX_VALUE ? available : available - missing);
     }
 
     public long getIdealBatch(MaterialNode node, long total, long amount) {

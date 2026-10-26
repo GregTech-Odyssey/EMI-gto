@@ -1,6 +1,7 @@
 package dev.emi.emi.bom;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.EmiToolInventory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -18,6 +19,9 @@ public class MaterialNode {
     public long divisor = 1;
     public long remainderAmount = 0;
     public boolean catalyst = false;
+    public final boolean durabilityTool;
+    public final long toolUses;
+    public final EmiStack toolStack;
     // Should these be decoupled from material nodes?
     public FoldState state = FoldState.EXPANDED;
     public ProgressState progress = ProgressState.UNSTARTED;
@@ -26,6 +30,20 @@ public class MaterialNode {
     private @Nullable ObjectArrayList<EmiIngredient> calculationInputs;
 
     public MaterialNode(EmiIngredient ingredient) {
+        EmiStack selected = null;
+        long uses = 0;
+        for (var stack : ingredient.getEmiStacks()) {
+            if (EmiToolInventory.isReusableTool(stack)) {
+                long candidateUses = EmiToolInventory.uses(stack);
+                if (selected == null || candidateUses > uses) {
+                    selected = stack;
+                    uses = candidateUses;
+                }
+            }
+        }
+        durabilityTool = selected != null;
+        toolStack = durabilityTool ? selected : ingredient.getEmiStacks().getFirst();
+        toolUses = durabilityTool ? Math.max(1, uses) : EmiToolInventory.uses(toolStack);
         this.amount = ingredient.getAmount();
         this.ingredient = ingredient.copy().setAmount(1).setChance(1);
         if (this.ingredient.getEmiStacks().size() == 1) {
@@ -46,6 +64,9 @@ public class MaterialNode {
     }
 
     public MaterialNode(MaterialNode node) {
+        this.durabilityTool = node.durabilityTool;
+        this.toolUses = node.toolUses;
+        this.toolStack = node.toolStack;
         this.ingredient = node.ingredient.copy();
         this.remainder = node.remainder.copy();
         this.recipe = node.recipe;

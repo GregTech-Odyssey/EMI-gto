@@ -8,6 +8,7 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Durability information for a crafting ingredient. Implemented on every Item by EMI's mixin;
  * item subclasses can override these methods for custom durability rules.
+ * Item-tag ingredients delegate to the selected matching stack's item, so alternatives can have different costs.
  * All amounts describe a single item, independently of the stack count. Methods must not modify the stack.
  */
 public interface EmiDurabilityTool {

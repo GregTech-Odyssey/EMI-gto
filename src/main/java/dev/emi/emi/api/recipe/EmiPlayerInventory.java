@@ -37,6 +37,12 @@ public class EmiPlayerInventory {
     private final O2OOpenCacheHashMap<EmiStack, EmiStack> contents;
     public final Map<EmiStack, EmiStack> inventory;
     private final Reference2LongOpenHashMap<EmiStack> used = new Reference2LongOpenHashMap<>();
+    private final EmiToolInventory tools = new EmiToolInventory();
+
+    @ApiStatus.Internal
+    public EmiToolInventory getTools() {
+        return tools;
+    }
 
     private EmiPlayerInventory(int size) {
         contents = new O2OOpenCacheHashMap<>(size);
@@ -54,8 +60,10 @@ public class EmiPlayerInventory {
     public EmiPlayerInventory copy() {
         var copy = new EmiPlayerInventory(contents.size());
         for (var stack : contents.values()) {
-            copy.addStack(stack.copy());
+            var owned = stack.copy();
+            copy.contents.put(owned, owned);
         }
+        copy.tools.copyFrom(tools);
         return copy;
     }
 
@@ -124,6 +132,7 @@ public class EmiPlayerInventory {
 
     private void addStack(EmiStack stack) {
         if (!stack.isEmpty()) {
+            tools.capture(stack);
             contents.merge(stack, stack, (a, b) -> a.setAmount(a.getAmount() + b.getAmount()));
         }
     }
@@ -167,6 +176,7 @@ public class EmiPlayerInventory {
 
     public List<Boolean> getCraftAvailability(EmiRecipe recipe) {
         used.clear();
+        tools.reset();
         var states = new BooleanArrayList(recipe.getInputs().size());
         for (var ingredient : recipe.getInputs()) {
             states.add(reserveIngredient(ingredient, 1));
@@ -185,6 +195,7 @@ public class EmiPlayerInventory {
     @ApiStatus.Internal
     public boolean canCraftInputs(List<EmiIngredient> inputs, long amount) {
         used.clear();
+        tools.reset();
         for (var ingredient : inputs) {
             if (!ingredient.isEmpty() && !reserveIngredient(ingredient, amount)) {
                 return false;
@@ -194,12 +205,17 @@ public class EmiPlayerInventory {
     }
 
     private boolean reserveIngredient(EmiIngredient ingredient, long amount) {
+        if (amount > 0 && EmiToolInventory.isToolIngredient(ingredient)) {
+            long desired = EmiToolInventory.multiply(ingredient.getAmount(), amount);
+            return tools.reserve(ingredient, desired, amount, true) == desired;
+        }
         for (var stack : ingredient.getEmiStacks()) {
             var identity = contents.get(stack);
             if (identity != null) {
                 long desired = stack.getAmount() * amount;
                 long alreadyUsed = used.getLong(identity);
                 if (identity.getAmount() - alreadyUsed >= desired) {
+                    if (!tools.reserveItems(identity, desired)) continue;
                     used.put(identity, desired + alreadyUsed);
                     return true;
                 }
@@ -211,6 +227,7 @@ public class EmiPlayerInventory {
     public boolean isEqual(EmiPlayerInventory other) {
         if (other == null || other.contents.size() != contents.size())
             return false;
+        if (!tools.isEqual(other.tools)) return false;
         for (var stack : contents.values()) {
             var candidate = other.contents.get(stack);
             if (candidate == null || candidate.getAmount() != stack.getAmount() || !candidate.isStrictEqual(stack)) {

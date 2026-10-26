@@ -12,12 +12,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import dev.emi.emi.TestBootstrap;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiDurabilityTool;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ItemEmiStack;
+import dev.emi.emi.api.stack.TagEmiIngredient;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.bom.MaterialTree;
 import dev.emi.emi.bom.ProgressState;
@@ -86,6 +94,45 @@ class EmiTreeProgressTest {
         assertEquals(ProgressState.COMPLETED, result.calculated().goal.progress);
         assertEquals(ProgressState.UNSTARTED, tree.goal.progress);
         assertEquals(3, available.getAmount());
+    }
+
+    @Test
+    void syntheticSidebarDoesNotRequest53MoreToolsForAMixedToolTag() {
+        var item = mock(Item.class, withSettings().extraInterfaces(EmiDurabilityTool.class));
+        var raw = mock(ItemStack.class);
+        when(raw.getItem()).thenReturn(item);
+        var provider = (EmiDurabilityTool) item;
+        when(provider.emi$isDurabilityTool(raw)).thenReturn(true);
+        when(provider.emi$getRemainingDurability(raw)).thenReturn(2500);
+        when(provider.emi$getCraftingDurabilityCost(raw)).thenReturn(4);
+        var key = mock(EmiItemKey.class);
+        when(key.getItem()).thenReturn(item);
+        when(key.getReadOnlyStack()).thenReturn(raw);
+        var tool = ItemEmiStack.ofKey(key, 1);
+        tool.setRemainder(tool.copy());
+        var tagKey = TagKey.create(Registries.ITEM, new ResourceLocation("gtceu", "tools/crafting_wire_cutters"));
+        var wrapped = mock(EmiTagKey.class);
+        when(wrapped.id()).thenReturn(tagKey.location());
+        when(wrapped.raw()).thenReturn(tagKey);
+        try (var keys = mockStatic(EmiTagKey.class); var api = mockStatic(EmiApi.class)) {
+            keys.when(() -> EmiTagKey.of(tagKey)).thenReturn(wrapped);
+            var disposable = stack(Items.STICK, 1);
+            var tag = new TagEmiIngredient(tagKey, List.of(disposable, tool), 1);
+            var recipe = recipe(tool, stack(Items.STONE, 1));
+            when(recipe.getInputs()).thenReturn(List.of(tag));
+            var tree = new MaterialTree(recipe);
+            tree.batches = 54;
+            var inventory = new EmiPlayerInventory(List.of(tool.copy()));
+            var result = EmiTreeProgress.calculate(tree.copyForCalculation(), inventory.copy(), true);
+            assertEquals(1, result.total().costs.get(tag).amount);
+            assertTrue(result.calculated().cost.costs.isEmpty());
+            assertEquals(1, result.synthetic().favorites().size());
+            var favorite = result.synthetic().favorites().getFirst();
+            assertSame(recipe, favorite.getRecipe());
+            assertEquals(54, favorite.batches);
+            assertEquals(2, favorite.state);
+            assertEquals(1, tool.getAmount());
+        }
     }
 
     @Test

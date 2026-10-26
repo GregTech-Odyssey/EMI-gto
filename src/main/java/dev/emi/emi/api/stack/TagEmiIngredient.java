@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Lighting;
 import dev.emi.emi.EmiPort;
 import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.recipe.EmiDurabilityTool;
 import dev.emi.emi.api.render.EmiRender;
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.forge.EmiForgePlatform;
@@ -25,8 +26,10 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -36,7 +39,7 @@ import org.joml.Matrix4f;
 import java.util.List;
 
 @ApiStatus.Internal
-public class TagEmiIngredient implements EmiIngredient {
+public class TagEmiIngredient implements EmiIngredient, EmiDurabilityTool {
     private final ResourceLocation id;
     private List<EmiStack> stacks;
     public final TagKey<?> key;
@@ -79,7 +82,7 @@ public class TagEmiIngredient implements EmiIngredient {
 
     @Override
     public EmiIngredient copy() {
-        EmiIngredient stack = new TagEmiIngredient(tagKey, amount);
+        EmiIngredient stack = new TagEmiIngredient(tagKey, stacks, amount);
         stack.setChance(chance);
         return stack;
     }
@@ -87,6 +90,23 @@ public class TagEmiIngredient implements EmiIngredient {
     @Override
     public @NotNull List<EmiStack> getEmiStacks() {
         return stacks;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean emi$isDurabilityTool(@NotNull ItemStack stack) {
+        return key.isFor(Registries.ITEM) && stack.is((TagKey<Item>) key)
+            && stack.getItem() instanceof EmiDurabilityTool tool && tool.emi$isDurabilityTool(stack);
+    }
+
+    @Override
+    public int emi$getRemainingDurability(@NotNull ItemStack stack) {
+        return ((EmiDurabilityTool) stack.getItem()).emi$getRemainingDurability(stack);
+    }
+
+    @Override
+    public int emi$getCraftingDurabilityCost(@NotNull ItemStack stack) {
+        return ((EmiDurabilityTool) stack.getItem()).emi$getCraftingDurabilityCost(stack);
     }
 
     @Override
