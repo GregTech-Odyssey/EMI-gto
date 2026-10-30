@@ -13,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class EmiToolInventory {
     private final Reference2ObjectOpenHashMap<Item, ObjectArrayList<Entry>> byItem = new Reference2ObjectOpenHashMap<>();
     private final ObjectArrayList<Entry> entries = new ObjectArrayList<>();
+    private final ObjectArrayList<Entry> touched = new ObjectArrayList<>();
     private long reservation;
 
     public static long uses(EmiStack stack) {
@@ -72,12 +73,22 @@ public final class EmiToolInventory {
     public void clear() {
         entries.clear();
         byItem.clear();
+        touched.clear();
     }
 
     public void reset() {
-        for (var entry : entries) {
+        for (var entry : touched) {
             entry.remaining = entry.totalUses;
             entry.slots = 0;
+            entry.touched = false;
+        }
+        touched.clear();
+    }
+
+    private void touch(Entry entry) {
+        if (!entry.touched) {
+            entry.touched = true;
+            touched.add(entry);
         }
     }
 
@@ -94,6 +105,7 @@ public final class EmiToolInventory {
                 long count = entry.count - (reserveSlots ? entry.slots : 0);
                 long taken = Math.min(desired - given, Math.min(entry.remaining, multiply(count, batches)));
                 if (taken <= 0) continue;
+                touch(entry);
                 if (entry.remaining != Long.MAX_VALUE) entry.remaining -= taken;
                 if (reserveSlots) entry.slots += ceilDiv(taken, batches);
                 given += taken;
@@ -112,6 +124,8 @@ public final class EmiToolInventory {
         if (available < desired) return false;
         for (var entry : group) {
             long taken = Math.min(desired, entry.count - entry.slots);
+            if (taken <= 0) continue;
+            touch(entry);
             entry.slots += taken;
             long uses = multiply(taken, entry.totalUses / entry.count);
             entry.remaining -= Math.min(entry.remaining, uses);
@@ -138,6 +152,7 @@ public final class EmiToolInventory {
         long remaining;
         long slots;
         long reservation;
+        boolean touched;
 
         Entry(EmiStack stack, long count, long uses) {
             this.stack = stack;

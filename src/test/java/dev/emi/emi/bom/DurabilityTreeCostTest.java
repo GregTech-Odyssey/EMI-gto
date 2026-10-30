@@ -185,6 +185,10 @@ class DurabilityTreeCostTest {
             var consumed = input.copy().setRemainder(EmiStack.EMPTY);
             assertFalse(inventory.canCraftInputs(List.of(input, consumed), 1));
             assertFalse(inventory.canCraftInputs(List.of(consumed, input), 1));
+            assertTrue(inventory.canCraftInputs(List.of(input), 1));
+            assertTrue(inventory.canCraftInputs(List.of(consumed), 1));
+            assertFalse(inventory.canCraftInputs(List.of(consumed, input), 1));
+            assertTrue(inventory.canCraftInputs(List.of(input), 1));
             cost.calculateProgress(root(consumed), 48, inventory);
             assertEquals(47, cost.costs.get(input).amount);
             assertFalse(inventory.canCraftInputs(List.of(consumed), 48));
