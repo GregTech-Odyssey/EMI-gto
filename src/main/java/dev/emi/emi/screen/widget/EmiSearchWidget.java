@@ -32,6 +32,7 @@ public class EmiSearchWidget extends EditBox {
     private List<Tuple<Integer, Style>> styles;
     private long lastClick = 0;
     private String last = "";
+    private String lastSearch;
     private long lastRender = System.currentTimeMillis();
     private long accumulatedSpin = 0;
     public boolean highlight = false;
@@ -76,7 +77,10 @@ public class EmiSearchWidget extends EditBox {
             }
             return EmiPort.ordered(text);
         });
-        this.setResponder(string -> {
+        this.setResponder(ignored -> {
+            var string = getValue();
+            if (string.equals(lastSearch)) return;
+            lastSearch = string;
             if (string.isEmpty()) {
                 this.setSuggestion(I18n.get("emi.search"));
             } else {
@@ -133,6 +137,7 @@ public class EmiSearchWidget extends EditBox {
     }
 
     public void update() {
+        lastSearch = null;
         setValue(getValue());
     }
 
