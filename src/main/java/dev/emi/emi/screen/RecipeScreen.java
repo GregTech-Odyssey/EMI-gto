@@ -397,7 +397,10 @@ public class RecipeScreen extends Screen {
         RecipeTab tab = tabs.get(this.tab);
         page = wrap(p, tab.getPageCount());
         if (page < tab.getPageCount()) {
-            int width = Math.max(minimumWidth - 16, tab.getWidth());
+            int width = minimumWidth - 16;
+            for (RecipeDisplay display : tab.getPage(page)) {
+                width = Math.max(width, display.getWidth());
+            }
             setRecipePageWidth(width + 16);
             currentPage = new ObjectArrayList<>();
             currentPage.addAll(tab.constructWidgets(page, x, y, backgroundWidth, backgroundHeight));
