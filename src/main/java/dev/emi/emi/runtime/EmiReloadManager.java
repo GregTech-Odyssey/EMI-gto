@@ -8,7 +8,6 @@ import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.bom.BoM;
 import dev.emi.emi.forge.EmiForgePlatform;
-import dev.emi.emi.jemi.JemiPlugin;
 import dev.emi.emi.registry.*;
 import dev.emi.emi.screen.EmiScreenBase;
 import dev.emi.emi.screen.EmiScreenManager;
@@ -18,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.Comparator;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class EmiReloadManager {
@@ -108,7 +106,6 @@ public class EmiReloadManager {
             int retries = 3;
             outer:
             do {
-                CompletableFuture<Void> jeiLoad = null;
                 try {
                     if (!clear) {
                         EmiLog.info("Starting EMI reload...");
@@ -143,11 +140,6 @@ public class EmiReloadManager {
                     var plugins = new ObjectArrayList<>(EmiForgePlatform.getPlugins());
                     plugins.sort(Comparator.comparingInt(ReloadWorker::entrypointPriority));
 
-                    JemiPlugin jemi = null;
-                    if (EmiForgePlatform.isModLoaded("jei")) {
-                        jemi = new JemiPlugin();
-                        jeiLoad = JemiPlugin.startDeferredJeiAsync();
-                    }
                     EmiInitRegistry initRegistry = new EmiInitRegistryImpl();
                     for (EmiPluginContainer container : plugins) {
                         step(EmiPort.translatable("emi.reload.initializing_plugin", container.id()), 5_000);
@@ -177,8 +169,6 @@ public class EmiReloadManager {
                     EmiRegistry registry = new EmiRegistryImpl();
 
                     for (EmiPluginContainer container : plugins) {
-                        if (container.plugin() instanceof JemiPlugin)
-                            continue;
                         step(EmiPort.translatable("emi.reload.loading_plugin", container.id()), 10_000);
                         long start = System.currentTimeMillis();
                         try {
@@ -194,21 +184,6 @@ public class EmiReloadManager {
                         if (restart) {
                             continue outer;
                         }
-                    }
-                    if (restart) {
-                        continue;
-                    }
-                    // Only this worker writes to the EMI registry. Join JEI before JEMI conversion.
-                    if (jeiLoad != null) {
-                        step(EmiPort.translatable("emi.reload.jei.waiting"), 20_000);
-                        jeiLoad.join();
-                    }
-                    if (restart || client.level != level)
-                        continue;
-                    if (jemi != null) {
-                        long start = System.currentTimeMillis();
-                        jemi.register(registry);
-                        EmiLog.info("Converted JEMI recipes in " + (System.currentTimeMillis() - start) + "ms");
                     }
                     if (restart || client.level != level)
                         continue;
@@ -246,17 +221,9 @@ public class EmiReloadManager {
                     if (retries-- > 0) {
                         restart = true;
                     }
-                } finally {
-                    // A failed/restarted native load must drain its workers before clearing shared state again.
-                    awaitCompletion(jeiLoad);
                 }
             } while (restart);
             thread = null;
-        }
-
-        private static void awaitCompletion(CompletableFuture<?> task) {
-            if (task != null)
-                task.handle((result, error) -> null).join();
         }
 
         private final static int entrypointPriority(EmiPluginContainer container) {
